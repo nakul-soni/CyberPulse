@@ -49,9 +49,22 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     restDelta: 0.001
   });
 
-  const analysis = typeof incident.analysis === 'string' 
+  const rawAnalysis = typeof incident.analysis === 'string' 
     ? JSON.parse(incident.analysis) 
     : incident.analysis;
+
+  const analysis = rawAnalysis ? {
+    ...rawAnalysis,
+    case_study: {
+      title: rawAnalysis.case_study?.title || `Case Study: ${incident.title}`,
+      background: rawAnalysis.case_study?.background || 'Background information is being analyzed...',
+      attack_vector: rawAnalysis.case_study?.attack_vector || 'Attack vector analysis pending...',
+      incident_flow: rawAnalysis.case_study?.incident_flow || ['Timeline analysis in progress...'],
+      outcome: rawAnalysis.case_study?.outcome || 'Outcome assessment pending...',
+      lessons_learned: rawAnalysis.case_study?.lessons_learned || ['Analysis in progress...'],
+      recommendations: rawAnalysis.case_study?.recommendations || ['Recommendations being generated...'],
+    }
+  } : null;
 
     const sections = [
       { id: 'hero', title: 'Introduction' },
