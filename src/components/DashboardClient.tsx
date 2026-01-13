@@ -169,19 +169,19 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
             </p>
           </div>
           
-          <div className="flex items-center gap-3 p-3 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-lg">
+          <div className="flex items-center gap-3 p-2.5 sm:p-3 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-lg">
             <div className="relative">
-              <div className="w-9 h-9 bg-[var(--severity-low)]/10 rounded-lg flex items-center justify-center">
-                <Server className="w-4 h-4 text-[var(--severity-low)]" />
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[var(--severity-low)]/10 rounded-lg flex items-center justify-center">
+                <Server className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--severity-low)]" />
               </div>
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[var(--severity-low)] rounded-full animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[var(--severity-low)] rounded-full animate-pulse" />
             </div>
             <div>
-              <p className="text-[9px] font-mono uppercase tracking-wider text-[var(--text-muted)]">System Status</p>
-              <p className="text-xs font-medium text-[var(--text-primary)]">
+              <p className="text-[8px] sm:text-[9px] font-mono uppercase tracking-wider text-[var(--text-muted)]">System Status</p>
+              <p className="text-[10px] sm:text-xs font-medium text-[var(--text-primary)]">
                 AI Engine: <span className="text-[var(--severity-low)]">Online</span>
                 {isPolling && (
-                  <span className="ml-1.5 text-[10px] text-[var(--accent-cyan)]">(Processing...)</span>
+                  <span className="ml-1 sm:ml-1.5 text-[9px] sm:text-[10px] text-[var(--accent-cyan)]">(Processing...)</span>
                 )}
               </p>
             </div>
@@ -289,13 +289,13 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         </div>
       )}
 
-      <div className="mt-10 p-5 bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-2xl flex items-start gap-4 opacity-0 animate-fade-in-up">
+      <div className="mt-10 p-4 sm:p-5 bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-2xl flex flex-col sm:flex-row items-start gap-4 opacity-0 animate-fade-in-up">
         <div className="w-10 h-10 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-purple)]/20 rounded-lg flex items-center justify-center shrink-0">
           <Info className="w-5 h-5 text-[var(--accent-cyan)]" />
         </div>
         <div>
-          <h4 className="font-bold text-base mb-1 text-[var(--text-primary)]">About CyberPulse AI</h4>
-          <p className="text-[var(--text-secondary)] text-xs leading-relaxed max-w-3xl">
+          <h4 className="font-bold text-sm sm:text-base mb-1 text-[var(--text-primary)]">About CyberPulse AI</h4>
+          <p className="text-[var(--text-secondary)] text-[11px] sm:text-xs leading-relaxed max-w-3xl">
             CyberPulse uses advanced LLMs to process raw technical data into structured intelligence. Our models classify attack types, determine severity, and generate step-by-step mitigation guides tailored for both technical and non-technical stakeholders.
           </p>
         </div>
