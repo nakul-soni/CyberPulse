@@ -168,24 +168,6 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
               Real-time cyber threat monitoring powered by advanced AI. Track global incidents with structured technical analysis.
             </p>
           </div>
-          
-          <div className="flex items-center gap-4 p-5 sm:p-3 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-lg shadow-xl shadow-black/20">
-            <div className="relative shrink-0">
-              <div className="w-12 h-12 sm:w-9 sm:h-9 bg-[var(--severity-low)]/10 rounded-xl flex items-center justify-center">
-                <Server className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--severity-low)]" />
-              </div>
-              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 sm:w-2.5 sm:h-2.5 bg-[var(--severity-low)] rounded-full animate-pulse border-2 border-[var(--bg-card)]" />
-            </div>
-            <div>
-              <p className="text-[10px] sm:text-[9px] font-mono uppercase tracking-widest text-[var(--text-muted)] mb-0.5">Engine Status</p>
-              <p className="text-sm sm:text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
-                AI Pipeline: <span className="text-[var(--severity-low)]">Online</span>
-                {isPolling && (
-                  <span className="text-[10px] text-[var(--accent-cyan)] animate-pulse">(Processing...)</span>
-                )}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
