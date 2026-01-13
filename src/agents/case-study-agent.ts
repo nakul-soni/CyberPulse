@@ -28,20 +28,22 @@ export class CaseStudyAgent {
       incidentTitle: string,
       incidentDescription?: string
     ): CaseStudy {
-      // Ensure all required fields exist
+      // Support variations in field names
+      const raw = rawCaseStudy || {};
+      
       const caseStudy: CaseStudy = {
-        title: rawCaseStudy?.title || `Case Study: ${incidentTitle}`,
-        background: rawCaseStudy?.background || incidentDescription || 'Background information pending',
-        attack_vector: rawCaseStudy?.attack_vector || 'Technical analysis pending',
-        incident_flow: Array.isArray(rawCaseStudy?.incident_flow) 
-          ? rawCaseStudy.incident_flow 
+        title: raw.title || `Case Study: ${incidentTitle}`,
+        background: raw.background || incidentDescription || 'Background information pending',
+        attack_vector: raw.attack_vector || raw.attackVector || 'Technical analysis pending',
+        incident_flow: Array.isArray(raw.incident_flow || raw.incidentFlow) 
+          ? (raw.incident_flow || raw.incidentFlow) 
           : ['Incident flow analysis pending'],
-        outcome: rawCaseStudy?.outcome || 'Outcome analysis pending',
-        lessons_learned: Array.isArray(rawCaseStudy?.lessons_learned)
-          ? rawCaseStudy.lessons_learned
+        outcome: raw.outcome || 'Outcome analysis pending',
+        lessons_learned: Array.isArray(raw.lessons_learned || raw.lessonsLearned)
+          ? (raw.lessons_learned || raw.lessonsLearned)
           : ['Lessons learned analysis pending'],
-        recommendations: Array.isArray(rawCaseStudy?.recommendations)
-          ? rawCaseStudy.recommendations
+        recommendations: Array.isArray(raw.recommendations)
+          ? raw.recommendations
           : ['Prevention recommendations pending'],
       };
 

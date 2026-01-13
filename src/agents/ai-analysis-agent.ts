@@ -155,14 +155,17 @@ Constraints:
     // Ensure arrays exist
     const mistakes = Array.isArray(analysis.mistakes) ? analysis.mistakes : [];
     const mitigation = Array.isArray(analysis.mitigation) ? analysis.mitigation : [];
-    const incidentFlow = Array.isArray(analysis.case_study?.incident_flow)
-      ? analysis.case_study.incident_flow
+    
+    // Support variations in case study field names (camelCase vs snake_case)
+    const rawCS = analysis.case_study || {};
+    const incidentFlow = Array.isArray(rawCS.incident_flow || rawCS.incidentFlow)
+      ? (rawCS.incident_flow || rawCS.incidentFlow)
       : [];
-    const lessonsLearned = Array.isArray(analysis.case_study?.lessons_learned)
-      ? analysis.case_study.lessons_learned
+    const lessonsLearned = Array.isArray(rawCS.lessons_learned || rawCS.lessonsLearned)
+      ? (rawCS.lessons_learned || rawCS.lessonsLearned)
       : [];
-    const recommendations = Array.isArray(analysis.case_study?.recommendations)
-      ? analysis.case_study.recommendations
+    const recommendations = Array.isArray(rawCS.recommendations)
+      ? rawCS.recommendations
       : [];
 
     return {
@@ -176,11 +179,11 @@ Constraints:
       why_it_matters: analysis.why_it_matters || 'Analysis pending',
       risk_score: riskScore,
       case_study: {
-        title: analysis.case_study?.title || 'Case Study',
-        background: analysis.case_study?.background || 'Analysis pending',
-        attack_vector: analysis.case_study?.attack_vector || 'Analysis pending',
+        title: rawCS.title || 'Case Study',
+        background: rawCS.background || 'Analysis pending',
+        attack_vector: rawCS.attack_vector || rawCS.attackVector || 'Analysis pending',
         incident_flow: incidentFlow.length > 0 ? incidentFlow : ['Analysis pending'],
-        outcome: analysis.case_study?.outcome || 'Analysis pending',
+        outcome: rawCS.outcome || 'Analysis pending',
         lessons_learned: lessonsLearned.length > 0 ? lessonsLearned : ['Analysis pending'],
         recommendations: recommendations.length > 0 ? recommendations : ['Analysis pending'],
       },
