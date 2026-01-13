@@ -51,74 +51,74 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
 
   return (
     <Link href={`/incident/${incident.id}`} className="block h-full">
-      <div 
-        className={`
-          relative h-full p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl 
-          transition-all duration-200 ease-out cursor-pointer group overflow-hidden
-          ${isHovered 
-            ? 'scale-[1.02] z-20 shadow-xl shadow-[var(--accent-blue)]/10 border-[var(--accent-blue)]/50' 
-            : isOtherHovered 
-              ? 'scale-[0.98] opacity-60' 
-              : 'hover:border-[var(--accent-blue)]/30'}
-        `}
-        style={{
-          boxShadow: isHovered 
-            ? '0 0 25px rgba(59, 130, 246, 0.12), 0 15px 30px rgba(0, 0, 0, 0.3)' 
-            : undefined
-        }}
-      >
-        {isHovered && (
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-blue)]/5 to-transparent pointer-events-none" />
-        )}
-        
-        <div className="relative z-10">
-          <div className="flex items-start justify-between mb-2.5 gap-2">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <SeverityBadge severity={incident.severity} />
-              {incident.attack_type && (
-                <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${getAttackTypeStyle(incident.attack_type)}`}>
-                  {incident.attack_type}
+        <div 
+          className={`
+            relative h-full p-6 sm:p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl 
+            transition-all duration-200 ease-out cursor-pointer group overflow-hidden
+            ${isHovered 
+              ? 'scale-[1.02] z-20 shadow-xl shadow-[var(--accent-blue)]/10 border-[var(--accent-blue)]/50' 
+              : isOtherHovered 
+                ? 'scale-[0.98] opacity-60' 
+                : 'hover:border-[var(--accent-blue)]/30'}
+          `}
+          style={{
+            boxShadow: isHovered 
+              ? '0 0 25px rgba(59, 130, 246, 0.12), 0 15px 30px rgba(0, 0, 0, 0.3)' 
+              : undefined
+          }}
+        >
+          {isHovered && (
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-blue)]/5 to-transparent pointer-events-none" />
+          )}
+          
+          <div className="relative z-10">
+            <div className="flex items-start justify-between mb-4 sm:mb-2.5 gap-2">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <SeverityBadge severity={incident.severity} />
+                {incident.attack_type && (
+                  <span className={`text-[10px] sm:text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${getAttackTypeStyle(incident.attack_type)}`}>
+                    {incident.attack_type}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1 text-[var(--text-muted)] shrink-0">
+                <Calendar className="w-3 h-3 sm:w-2.5 sm:h-2.5" />
+                <span className="text-[10px] sm:text-[9px] font-mono uppercase tracking-tighter">{formattedDate}</span>
+              </div>
+            </div>
+  
+            <h3 className={`text-lg sm:text-[15px] font-bold leading-tight mb-3 sm:mb-2 line-clamp-2 transition-colors duration-200 ${isHovered ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}>
+              {incident.title}
+            </h3>
+  
+            <p className="text-[var(--text-secondary)] text-sm sm:text-xs line-clamp-2 mb-4 sm:mb-3 leading-relaxed">
+              {analysis?.summary || analysis?.why_it_matters || (
+                <span className="flex items-center gap-1.5 text-[var(--text-muted)]">
+                  <span className="w-1.5 h-1.5 bg-[var(--accent-cyan)] rounded-full animate-pulse" />
+                  Analyzing...
                 </span>
               )}
-            </div>
-            <div className="flex items-center gap-1 text-[var(--text-muted)] shrink-0">
-              <Calendar className="w-2.5 h-2.5" />
-              <span className="text-[9px] font-mono uppercase tracking-tighter">{formattedDate}</span>
-            </div>
-          </div>
-
-          <h3 className={`text-[15px] font-bold leading-tight mb-2 line-clamp-2 transition-colors duration-200 ${isHovered ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}>
-            {incident.title}
-          </h3>
-
-          <p className="text-[var(--text-secondary)] text-xs line-clamp-2 mb-3 leading-relaxed">
-            {analysis?.summary || analysis?.why_it_matters || (
-              <span className="flex items-center gap-1.5 text-[var(--text-muted)]">
-                <span className="w-1.5 h-1.5 bg-[var(--accent-cyan)] rounded-full animate-pulse" />
-                Analyzing...
-              </span>
-            )}
-          </p>
-
-          <div className="pt-3 border-t border-[var(--border-primary)] flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Newspaper className="w-3 h-3 text-[var(--text-muted)]" />
-              <span className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-card-hover)] px-1.5 py-0.5 rounded uppercase tracking-tight">
-                {incident.source}
+            </p>
+  
+            <div className="pt-4 sm:pt-3 border-t border-[var(--border-primary)] flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Newspaper className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-[var(--text-muted)]" />
+                <span className="text-[11px] sm:text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-card-hover)] px-2 py-0.5 sm:px-1.5 sm:py-0.5 rounded uppercase tracking-tight">
+                  {incident.source}
+                </span>
+              </div>
+              <span 
+                className={`
+                  flex items-center gap-1 text-[11px] sm:text-[10px] font-black uppercase tracking-widest transition-all duration-200
+                  ${isHovered ? 'text-[var(--accent-cyan)] translate-x-0' : 'text-[var(--accent-blue)] sm:opacity-0 sm:-translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}
+                `}
+              >
+                Details
+                <ArrowUpRight className="w-3 h-3 sm:w-2.5 sm:h-2.5" />
               </span>
             </div>
-            <span 
-              className={`
-                flex items-center gap-1 text-[10px] font-black uppercase tracking-widest transition-all duration-200
-                ${isHovered ? 'text-[var(--accent-cyan)] translate-x-0' : 'text-[var(--accent-blue)] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}
-              `}
-            >
-              Details
-              <ArrowUpRight className="w-2.5 h-2.5" />
-            </span>
           </div>
         </div>
-      </div>
     </Link>
   );
 }
