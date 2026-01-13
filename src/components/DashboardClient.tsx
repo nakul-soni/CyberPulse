@@ -41,7 +41,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         limit: '50',
       });
 
-      if (!filter.date) {
+      if (!query && !filter.date && !filter.severity && !filter.attackType) {
         params.set('todayOnly', 'true');
       }
 
