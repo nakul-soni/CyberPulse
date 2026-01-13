@@ -164,8 +164,8 @@ Constraints:
     const lessonsLearned = Array.isArray(rawCS.lessons_learned || rawCS.lessonsLearned)
       ? (rawCS.lessons_learned || rawCS.lessonsLearned)
       : [];
-    const recommendations = Array.isArray(rawCS.recommendations)
-      ? rawCS.recommendations
+    const recommendations = Array.isArray(rawCS.recommendations || rawCS.recommendation)
+      ? (rawCS.recommendations || rawCS.recommendation)
       : [];
 
     return {
@@ -181,7 +181,7 @@ Constraints:
       case_study: {
         title: rawCS.title || 'Case Study',
         background: rawCS.background || 'Analysis pending',
-        attack_vector: rawCS.attack_vector || rawCS.attackVector || 'Analysis pending',
+        attack_vector: rawCS.attack_vector || rawCS.attackVector || analysis.attack_vector || 'Analysis pending',
         incident_flow: incidentFlow.length > 0 ? incidentFlow : ['Analysis pending'],
         outcome: rawCS.outcome || 'Analysis pending',
         lessons_learned: lessonsLearned.length > 0 ? lessonsLearned : ['Analysis pending'],
