@@ -21,9 +21,11 @@ export interface AIAnalysis {
   case_study: {
     title: string;
     background: string;
+    attack_vector: string;
     incident_flow: string[];
     outcome: string;
     lessons_learned: string[];
+    recommendations: string[];
   };
 }
 
@@ -118,9 +120,11 @@ The response MUST be a valid JSON object matching this exact structure:
   "case_study": {
     "title": "A catchy, descriptive title for this case study",
     "background": "Context about the victim organization/environment and why they were targeted",
+    "attack_vector": "Technical breakdown of the specific attack methods, tools, and vulnerabilities exploited",
     "incident_flow": ["Event 1: What happened first", "Event 2: What happened next", "Event 3: Final event"],
     "outcome": "Final result - what happened to the victim, data lost, systems affected, etc.",
-    "lessons_learned": ["Lesson 1", "Lesson 2", "Lesson 3"]
+    "lessons_learned": ["Lesson 1", "Lesson 2", "Lesson 3"],
+    "recommendations": ["Prevention step 1", "Prevention step 2", "Prevention step 3"]
   }
 }
 
@@ -157,6 +161,9 @@ Constraints:
     const lessonsLearned = Array.isArray(analysis.case_study?.lessons_learned)
       ? analysis.case_study.lessons_learned
       : [];
+    const recommendations = Array.isArray(analysis.case_study?.recommendations)
+      ? analysis.case_study.recommendations
+      : [];
 
     return {
       summary: analysis.summary || 'Analysis pending',
@@ -171,9 +178,11 @@ Constraints:
       case_study: {
         title: analysis.case_study?.title || 'Case Study',
         background: analysis.case_study?.background || 'Analysis pending',
+        attack_vector: analysis.case_study?.attack_vector || 'Analysis pending',
         incident_flow: incidentFlow.length > 0 ? incidentFlow : ['Analysis pending'],
         outcome: analysis.case_study?.outcome || 'Analysis pending',
         lessons_learned: lessonsLearned.length > 0 ? lessonsLearned : ['Analysis pending'],
+        recommendations: recommendations.length > 0 ? recommendations : ['Analysis pending'],
       },
     };
   }
