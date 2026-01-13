@@ -18,9 +18,11 @@ import {
   Clock,
   Zap,
   Award,
-  TrendingUp
+  TrendingUp,
+  RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
+import ReanalyzeButton from '@/components/ReanalyzeButton';
 
 interface Incident {
   id: string;
@@ -128,6 +130,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
         </Link>
         
         <div className="flex items-center gap-6">
+          <ReanalyzeButton incidentId={incident.id} />
           <div className="flex flex-col items-end">
             <span className="text-[10px] font-bold text-[var(--accent-cyan)] uppercase tracking-[0.2em]">Live Analysis</span>
             <span className="text-xs font-mono text-[var(--text-muted)]">SECTION 0{activeSection + 1} / 0{sections.length}</span>
