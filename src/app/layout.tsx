@@ -17,18 +17,18 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased">
         <div className="min-h-screen flex flex-col bg-grid-pattern">
-          <header className="sticky top-0 z-50 bg-[var(--bg-secondary)]/90 backdrop-blur-xl border-b border-[var(--border-primary)]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-xl flex items-center justify-center overflow-hidden">
-                  <Shield className="w-5 h-5 text-white relative z-10" />
-                  <div className="absolute inset-0 cyber-scan" />
+            <header className="sticky top-0 z-50 bg-[var(--bg-secondary)]/90 backdrop-blur-xl border-b border-[var(--border-primary)]">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="relative w-8 h-8 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-lg flex items-center justify-center overflow-hidden">
+                    <Shield className="w-4 h-4 text-white relative z-10" />
+                    <div className="absolute inset-0 cyber-scan" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-base font-bold tracking-tight text-[var(--text-primary)] leading-none mb-0.5">CyberPulse</span>
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-[var(--accent-cyan)] leading-none">Intelligence Platform</span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold tracking-tight text-[var(--text-primary)]">CyberPulse</span>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--accent-cyan)]">Intelligence Platform</span>
-                </div>
-              </div>
               <nav className="flex items-center gap-4">
                 <a 
                   href="/" 
@@ -43,23 +43,23 @@ export default function RootLayout({
           <main className="flex-grow">
             {children}
           </main>
-          <footer className="bg-[var(--bg-secondary)] border-t border-[var(--border-primary)] py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-md flex items-center justify-center">
-                    <Shield className="w-3 h-3 text-white" />
+            <footer className="bg-[var(--bg-secondary)] border-t border-[var(--border-primary)] py-4">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded flex items-center justify-center">
+                      <Shield className="w-2.5 h-2.5 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-[var(--text-secondary)]">CyberPulse</span>
                   </div>
-                  <span className="text-sm font-medium text-[var(--text-secondary)]">CyberPulse</span>
-                </div>
-                <p className="text-xs font-mono text-[var(--text-muted)]">© 2026 · Production-ready Cyber Intelligence</p>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-[var(--severity-low)] rounded-full animate-pulse" />
-                  <span className="text-xs font-mono text-[var(--text-muted)]">All Systems Operational</span>
+                  <p className="text-[10px] font-mono text-[var(--text-muted)]">© 2026 · Production-ready Intelligence</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-[var(--severity-low)] rounded-full animate-pulse" />
+                    <span className="text-[10px] font-mono text-[var(--text-muted)]">All Systems Operational</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </footer>
+            </footer>
         </div>
       </body>
     </html>

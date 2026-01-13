@@ -152,36 +152,36 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   }, {} as Record<string, number>);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8 opacity-0 animate-fade-in-up stagger-1">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="mb-6 opacity-0 animate-fade-in-up stagger-1">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-widest bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
                 Live Feed
               </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] tracking-tight mb-3">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight mb-2">
               Threat Intelligence Dashboard
             </h1>
-            <p className="text-[var(--text-secondary)] max-w-2xl text-sm sm:text-base">
+            <p className="text-[var(--text-secondary)] max-w-2xl text-xs sm:text-sm">
               Real-time cyber threat intelligence powered by AI. Monitoring global feeds with actionable analysis.
             </p>
           </div>
           
-          <div className="flex items-center gap-3 p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-lg">
             <div className="relative">
-              <div className="w-10 h-10 bg-[var(--severity-low)]/10 rounded-lg flex items-center justify-center">
-                <Server className="w-5 h-5 text-[var(--severity-low)]" />
+              <div className="w-9 h-9 bg-[var(--severity-low)]/10 rounded-lg flex items-center justify-center">
+                <Server className="w-4 h-4 text-[var(--severity-low)]" />
               </div>
-              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[var(--severity-low)] rounded-full animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[var(--severity-low)] rounded-full animate-pulse" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)]">System Status</p>
-              <p className="text-sm font-medium text-[var(--text-primary)]">
+              <p className="text-[9px] font-mono uppercase tracking-wider text-[var(--text-muted)]">System Status</p>
+              <p className="text-xs font-medium text-[var(--text-primary)]">
                 AI Engine: <span className="text-[var(--severity-low)]">Online</span>
                 {isPolling && (
-                  <span className="ml-2 text-xs text-[var(--accent-cyan)]">(Processing...)</span>
+                  <span className="ml-1.5 text-[10px] text-[var(--accent-cyan)]">(Processing...)</span>
                 )}
               </p>
             </div>
@@ -189,34 +189,34 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 opacity-0 animate-fade-in-up stagger-2">
-        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
-          <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-4 h-4 text-[var(--accent-blue)]" />
-            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">Total</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 opacity-0 animate-fade-in-up stagger-2">
+        <div className="p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Activity className="w-3.5 h-3.5 text-[var(--accent-blue)]" />
+            <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">Total</span>
           </div>
-          <p className="text-2xl font-bold text-[var(--text-primary)]">{totalResults}</p>
+          <p className="text-xl font-bold text-[var(--text-primary)]">{totalResults}</p>
         </div>
-        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 text-[var(--severity-high)]" />
-            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">High</span>
+        <div className="p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-[var(--severity-high)]" />
+            <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">High</span>
           </div>
-          <p className="text-2xl font-bold text-[var(--severity-high)]">{severityCounts['High'] || 0}</p>
+          <p className="text-xl font-bold text-[var(--severity-high)]">{severityCounts['High'] || 0}</p>
         </div>
-        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-[var(--severity-medium)]" />
-            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">Medium</span>
+        <div className="p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-1.5">
+            <TrendingUp className="w-3.5 h-3.5 text-[var(--severity-medium)]" />
+            <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">Medium</span>
           </div>
-          <p className="text-2xl font-bold text-[var(--severity-medium)]">{severityCounts['Medium'] || 0}</p>
+          <p className="text-xl font-bold text-[var(--severity-medium)]">{severityCounts['Medium'] || 0}</p>
         </div>
-        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
-          <div className="flex items-center gap-2 mb-2">
-            <Zap className="w-4 h-4 text-[var(--severity-low)]" />
-            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">Low</span>
+        <div className="p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Zap className="w-3.5 h-3.5 text-[var(--severity-low)]" />
+            <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">Low</span>
           </div>
-          <p className="text-2xl font-bold text-[var(--severity-low)]">{severityCounts['Low'] || 0}</p>
+          <p className="text-xl font-bold text-[var(--severity-low)]">{severityCounts['Low'] || 0}</p>
         </div>
       </div>
 
@@ -236,26 +236,26 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="p-5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl animate-pulse">
-              <div className="flex gap-2 mb-4">
-                <div className="h-5 w-16 bg-[var(--bg-card-hover)] rounded-full" />
-                <div className="h-5 w-20 bg-[var(--bg-card-hover)] rounded" />
+            <div key={i} className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl animate-pulse">
+              <div className="flex gap-2 mb-3">
+                <div className="h-4 w-14 bg-[var(--bg-card-hover)] rounded-full" />
+                <div className="h-4 w-16 bg-[var(--bg-card-hover)] rounded" />
               </div>
-              <div className="h-6 w-3/4 bg-[var(--bg-card-hover)] rounded mb-3" />
-              <div className="h-4 w-full bg-[var(--bg-card-hover)] rounded mb-2" />
-              <div className="h-4 w-2/3 bg-[var(--bg-card-hover)] rounded mb-4" />
-              <div className="flex justify-between pt-4 border-t border-[var(--border-primary)]">
-                <div className="h-5 w-24 bg-[var(--bg-card-hover)] rounded" />
-                <div className="h-5 w-20 bg-[var(--bg-card-hover)] rounded" />
+              <div className="h-5 w-3/4 bg-[var(--bg-card-hover)] rounded mb-2" />
+              <div className="h-3.5 w-full bg-[var(--bg-card-hover)] rounded mb-1.5" />
+              <div className="h-3.5 w-2/3 bg-[var(--bg-card-hover)] rounded mb-3" />
+              <div className="flex justify-between pt-3 border-t border-[var(--border-primary)]">
+                <div className="h-4 w-20 bg-[var(--bg-card-hover)] rounded" />
+                <div className="h-4 w-16 bg-[var(--bg-card-hover)] rounded" />
               </div>
             </div>
           ))}
         </div>
       ) : incidents && incidents.length > 0 ? (
         <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           onMouseLeave={() => setHoveredId(null)}
         >
           {incidents.map((incident, index) => (
@@ -273,29 +273,29 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl border-dashed opacity-0 animate-fade-in-up">
-          <div className="w-16 h-16 bg-[var(--bg-card-hover)] rounded-full flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-[var(--text-muted)]" />
+        <div className="text-center py-16 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl border-dashed opacity-0 animate-fade-in-up">
+          <div className="w-14 h-14 bg-[var(--bg-card-hover)] rounded-full flex items-center justify-center mx-auto mb-3">
+            <Shield className="w-7 h-7 text-[var(--text-muted)]" />
           </div>
-          <h3 className="text-lg font-semibold text-[var(--text-primary)]">No incidents found</h3>
-          <p className="text-[var(--text-secondary)] mb-6">Start by refreshing the news feed to fetch the latest intelligence.</p>
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">No incidents found</h3>
+          <p className="text-[var(--text-secondary)] text-xs mb-5">Start by refreshing the news feed to fetch the latest intelligence.</p>
           <a 
             href="/api/ingest" 
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-3.5 h-3.5" />
             Refresh Now
           </a>
         </div>
       )}
 
-      <div className="mt-12 p-6 bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-2xl flex items-start gap-5 opacity-0 animate-fade-in-up">
-        <div className="w-12 h-12 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-purple)]/20 rounded-xl flex items-center justify-center shrink-0">
-          <Info className="w-6 h-6 text-[var(--accent-cyan)]" />
+      <div className="mt-10 p-5 bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-2xl flex items-start gap-4 opacity-0 animate-fade-in-up">
+        <div className="w-10 h-10 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-purple)]/20 rounded-lg flex items-center justify-center shrink-0">
+          <Info className="w-5 h-5 text-[var(--accent-cyan)]" />
         </div>
         <div>
-          <h4 className="font-bold text-lg mb-2 text-[var(--text-primary)]">About CyberPulse AI</h4>
-          <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
+          <h4 className="font-bold text-base mb-1 text-[var(--text-primary)]">About CyberPulse AI</h4>
+          <p className="text-[var(--text-secondary)] text-xs leading-relaxed max-w-3xl">
             CyberPulse uses advanced LLMs to process raw technical data into structured intelligence. Our models classify attack types, determine severity, and generate step-by-step mitigation guides tailored for both technical and non-technical stakeholders.
           </p>
         </div>
