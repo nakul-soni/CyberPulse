@@ -13,7 +13,12 @@ import {
   Lightbulb,
   CheckCircle2,
   ChevronDown,
-  MousePointer2
+  MousePointer2,
+  BookOpen,
+  Clock,
+  Zap,
+  Award,
+  TrendingUp
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -48,13 +53,15 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     ? JSON.parse(incident.analysis) 
     : incident.analysis;
 
-  const sections = [
-    { id: 'hero', title: 'Introduction' },
-    { id: 'overview', title: 'Incident Overview' },
-    { id: 'rootcause', title: 'Root Cause' },
-    { id: 'mistakes', title: 'Key Mistakes' },
-    { id: 'mitigation', title: 'Mitigation Strategy' },
-  ];
+    const sections = [
+      { id: 'hero', title: 'Introduction' },
+      { id: 'overview', title: 'Incident Overview' },
+      { id: 'rootcause', title: 'Root Cause' },
+      { id: 'mistakes', title: 'Key Mistakes' },
+      { id: 'mitigation', title: 'Mitigation Strategy' },
+      { id: 'casestudy', title: 'Case Study' },
+    ];
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -327,7 +334,99 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
             </div>
           </motion.div>
         </section>
-      </main>
+          {/* CASE STUDY SECTION */}
+          <section className="h-full w-full snap-start snap-always flex items-center justify-center p-6 bg-[var(--bg-secondary)]/10">
+            <motion.div 
+              {...animationProps}
+              className="max-w-6xl w-full bg-[var(--bg-card)] rounded-[2.5rem] border border-[var(--border-primary)] p-8 sm:p-12 shadow-2xl relative overflow-hidden group h-[90vh] flex flex-col"
+            >
+              <div className="flex items-start gap-6 mb-8 shrink-0">
+                <div className="w-16 h-16 bg-[var(--accent-cyan)]/10 rounded-2xl flex items-center justify-center border border-[var(--accent-cyan)]/20 shadow-inner">
+                  <BookOpen className="w-8 h-8 text-[var(--accent-cyan)]" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Case Study</h2>
+                  <p className="text-[var(--text-muted)] font-mono text-[10px] uppercase tracking-widest">{analysis?.case_study?.title || 'Detailed Breakdown'}</p>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-10">
+                    <div>
+                      <h3 className="flex items-center gap-3 text-xs font-black text-[var(--accent-blue)] uppercase tracking-widest mb-4">
+                        <TrendingUp className="w-4 h-4" /> Background & Context
+                      </h3>
+                      <p className="text-[var(--text-secondary)] text-lg leading-relaxed bg-[var(--bg-secondary)]/30 p-6 rounded-2xl border border-white/5">
+                        {analysis?.case_study?.background || 'Loading background...'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="flex items-center gap-3 text-xs font-black text-amber-500 uppercase tracking-widest mb-4">
+                        <Zap className="w-4 h-4" /> Attack Vector
+                      </h3>
+                      <p className="text-[var(--text-secondary)] text-lg leading-relaxed bg-amber-500/5 p-6 rounded-2xl border border-amber-500/10 italic">
+                        {analysis?.case_study?.attack_vector || 'Analyzing technical breakdown...'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="flex items-center gap-3 text-xs font-black text-emerald-500 uppercase tracking-widest mb-4">
+                        <Award className="w-4 h-4" /> Outcome & Impact
+                      </h3>
+                      <p className="text-[var(--text-secondary)] text-lg leading-relaxed bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/10">
+                        {analysis?.case_study?.outcome || 'Evaluating impact...'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-10">
+                    <div>
+                      <h3 className="flex items-center gap-3 text-xs font-black text-[var(--accent-cyan)] uppercase tracking-widest mb-6">
+                        <Clock className="w-4 h-4" /> Incident Flow
+                      </h3>
+                      <div className="space-y-0 pl-4 border-l-2 border-[var(--accent-cyan)]/20">
+                        {(analysis?.case_study?.incident_flow || []).map((step: string, i: number) => (
+                          <div key={i} className="relative pl-8 pb-8 last:pb-0">
+                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-[var(--bg-card)] border-2 border-[var(--accent-cyan)] shadow-[0_0_10px_rgba(34,211,238,0.3)]" />
+                            <div className="bg-[var(--bg-secondary)]/50 p-4 rounded-xl border border-white/5 hover:border-[var(--accent-cyan)]/30 transition-colors">
+                              <p className="text-[var(--text-secondary)] text-sm font-semibold">{step}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="bg-red-500/5 p-6 rounded-2xl border border-red-500/10">
+                        <h4 className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-4">Lessons Learned</h4>
+                        <ul className="space-y-3">
+                          {(analysis?.case_study?.lessons_learned || []).map((lesson: string, i: number) => (
+                            <li key={i} className="text-xs text-[var(--text-secondary)] flex gap-2">
+                              <span className="text-red-400">•</span> {lesson}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="bg-[var(--accent-blue)]/5 p-6 rounded-2xl border border-[var(--accent-blue)]/10">
+                        <h4 className="text-[10px] font-black text-[var(--accent-blue)] uppercase tracking-widest mb-4">Recommendations</h4>
+                        <ul className="space-y-3">
+                          {(analysis?.case_study?.recommendations || []).map((rec: string, i: number) => (
+                            <li key={i} className="text-xs text-[var(--text-secondary)] flex gap-2">
+                              <span className="text-[var(--accent-blue)]">•</span> {rec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </section>
+        </main>
+
 
       {/* Floating Dot Navigation */}
       <nav className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6 z-50">
