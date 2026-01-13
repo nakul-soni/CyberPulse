@@ -10,10 +10,7 @@ import {
   Activity, 
   Target, 
   Lightbulb,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Circle
+  CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -96,16 +93,16 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   }, [currentSection]);
 
   useEffect(() => {
-    let touchStartX = 0;
-    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
 
     const handleTouchStart = (e: TouchEvent) => {
-      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
+      touchEndY = e.changedTouches[0].screenY;
+      const diff = touchStartY - touchEndY;
       if (Math.abs(diff) > 50) {
         if (diff > 0) {
           goToNext();
@@ -122,6 +119,31 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
+  }, [currentSection]);
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > 30) {
+        if (e.deltaY > 0) {
+          goToNext();
+        } else {
+          goToPrev();
+        }
+      }
+    };
+
+    let wheelTimeout: NodeJS.Timeout | null = null;
+    const throttledWheel = (e: WheelEvent) => {
+      if (!wheelTimeout) {
+        handleWheel(e);
+        wheelTimeout = setTimeout(() => {
+          wheelTimeout = null;
+        }, 500);
+      }
+    };
+
+    window.addEventListener('wheel', throttledWheel, { passive: true });
+    return () => window.removeEventListener('wheel', throttledWheel);
   }, [currentSection]);
 
   const renderHeroSection = () => (
@@ -168,15 +190,14 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
         </div>
 
         <div className="flex justify-center mt-12">
-          <button
-            onClick={goToNext}
-            className="group flex flex-col items-center gap-3 text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors"
-          >
-            <span className="text-sm font-medium">Swipe to explore analysis</span>
-            <div className="w-12 h-12 rounded-full border-2 border-[var(--border-primary)] group-hover:border-[var(--accent-blue)] flex items-center justify-center transition-all group-hover:scale-110">
-              <ChevronRight className="w-5 h-5 animate-pulse" />
+          <div className="flex flex-col items-center gap-3 text-[var(--text-muted)]">
+            <span className="text-sm font-medium">Swipe up to explore analysis</span>
+            <div className="flex flex-col items-center animate-bounce">
+              <div className="w-6 h-10 rounded-full border-2 border-[var(--border-primary)] flex items-start justify-center p-1">
+                <div className="w-1.5 h-3 bg-[var(--accent-cyan)] rounded-full animate-pulse" />
+              </div>
             </div>
-          </button>
+          </div>
         </div>
       </div>
     </div>
@@ -185,12 +206,12 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   const renderOverviewSection = () => (
     <div 
       className={`
-        transition-all duration-500 ease-out
+        transition-all duration-500 ease-out w-full
         ${isVisible 
-          ? 'opacity-100 scale-100 translate-x-0' 
+          ? 'opacity-100 scale-100 translate-y-0' 
           : direction === 'next' 
-            ? 'opacity-0 scale-95 translate-x-12' 
-            : 'opacity-0 scale-95 -translate-x-12'}
+            ? 'opacity-0 scale-95 translate-y-12' 
+            : 'opacity-0 scale-95 -translate-y-12'}
       `}
     >
       <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-primary)] p-8 shadow-xl">
@@ -219,12 +240,12 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   const renderRootCauseSection = () => (
     <div 
       className={`
-        transition-all duration-500 ease-out
+        transition-all duration-500 ease-out w-full
         ${isVisible 
-          ? 'opacity-100 scale-100 translate-x-0' 
+          ? 'opacity-100 scale-100 translate-y-0' 
           : direction === 'next' 
-            ? 'opacity-0 scale-95 translate-x-12' 
-            : 'opacity-0 scale-95 -translate-x-12'}
+            ? 'opacity-0 scale-95 translate-y-12' 
+            : 'opacity-0 scale-95 -translate-y-12'}
       `}
     >
       <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 rounded-2xl border border-amber-500/20 p-8 shadow-xl">
@@ -247,12 +268,12 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   const renderMistakesSection = () => (
     <div 
       className={`
-        transition-all duration-500 ease-out
+        transition-all duration-500 ease-out w-full
         ${isVisible 
-          ? 'opacity-100 scale-100 translate-x-0' 
+          ? 'opacity-100 scale-100 translate-y-0' 
           : direction === 'next' 
-            ? 'opacity-0 scale-95 translate-x-12' 
-            : 'opacity-0 scale-95 -translate-x-12'}
+            ? 'opacity-0 scale-95 translate-y-12' 
+            : 'opacity-0 scale-95 -translate-y-12'}
       `}
     >
       <div className="bg-gradient-to-br from-red-500/10 to-rose-500/5 rounded-2xl border border-red-500/20 p-8 shadow-xl">
@@ -289,12 +310,12 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   const renderMitigationSection = () => (
     <div 
       className={`
-        transition-all duration-500 ease-out
+        transition-all duration-500 ease-out w-full
         ${isVisible 
-          ? 'opacity-100 scale-100 translate-x-0' 
+          ? 'opacity-100 scale-100 translate-y-0' 
           : direction === 'next' 
-            ? 'opacity-0 scale-95 translate-x-12' 
-            : 'opacity-0 scale-95 -translate-x-12'}
+            ? 'opacity-0 scale-95 translate-y-12' 
+            : 'opacity-0 scale-95 -translate-y-12'}
       `}
     >
       <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 rounded-2xl border border-emerald-500/20 p-8 shadow-xl">
@@ -358,7 +379,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="min-h-screen bg-[var(--bg-primary)] overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link 
@@ -369,67 +390,44 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
             Back to Dashboard
           </Link>
           
-          {currentSection >= 0 && (
-            <div className="flex items-center gap-2">
-              {sections.map((section, index) => (
-                <button
-                  key={section.id}
-                  onClick={() => goToSection(index)}
-                  className={`
-                    w-2.5 h-2.5 rounded-full transition-all duration-300
-                    ${currentSection === index 
-                      ? 'bg-[var(--accent-cyan)] scale-125' 
-                      : 'bg-[var(--border-primary)] hover:bg-[var(--text-muted)]'}
-                  `}
-                  aria-label={`Go to ${section.title}`}
-                />
-              ))}
-            </div>
-          )}
+          <div className="text-xs text-[var(--text-muted)] font-mono">
+            {currentSection === -1 ? 'INTRO' : `${currentSection + 1} / ${sections.length}`}
+          </div>
         </div>
 
-        <div className="min-h-[70vh] flex items-center">
+        <div className="min-h-[70vh] flex items-center justify-center">
           {renderCurrentSection()}
         </div>
 
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-[var(--border-primary)]">
-          <button
-            onClick={goToPrev}
-            disabled={currentSection === -1}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
-              ${currentSection === -1
-                ? 'text-[var(--text-muted)] cursor-not-allowed opacity-50'
-                : 'text-[var(--text-secondary)] hover:text-[var(--accent-cyan)] hover:bg-[var(--bg-card)]'}
-            `}
-          >
-            <ChevronLeft className="w-5 h-5" />
-            {currentSection === 0 ? 'Overview' : currentSection > 0 ? sections[currentSection - 1]?.title : 'Previous'}
-          </button>
-
-          <div className="text-center">
-            <p className="text-xs text-[var(--text-muted)] font-mono">
-              {currentSection === -1 ? 'INTRO' : `${currentSection + 1} / ${sections.length}`}
-            </p>
+        {currentSection >= 0 && (
+          <div className="fixed right-4 sm:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3 z-50">
+            {sections.map((section, index) => (
+              <button
+                key={section.id}
+                onClick={() => goToSection(index)}
+                className={`
+                  transition-all duration-300 group relative
+                  ${currentSection === index 
+                    ? 'w-3 h-8 bg-[var(--accent-cyan)] rounded-full' 
+                    : 'w-2 h-2 bg-[var(--border-primary)] hover:bg-[var(--text-muted)] rounded-full'}
+                `}
+                aria-label={`Go to ${section.title}`}
+              >
+                <span className={`
+                  absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap
+                  text-xs font-medium px-2 py-1 rounded bg-[var(--bg-card)] border border-[var(--border-primary)]
+                  opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none
+                  ${currentSection === index ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}
+                `}>
+                  {section.title}
+                </span>
+              </button>
+            ))}
           </div>
+        )}
 
-          <button
-            onClick={goToNext}
-            disabled={currentSection === sections.length - 1}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
-              ${currentSection === sections.length - 1
-                ? 'text-[var(--text-muted)] cursor-not-allowed opacity-50'
-                : 'text-[var(--text-secondary)] hover:text-[var(--accent-cyan)] hover:bg-[var(--bg-card)]'}
-            `}
-          >
-            {currentSection === -1 ? 'Start Analysis' : currentSection < sections.length - 1 ? sections[currentSection + 1]?.title : 'Next'}
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-
-        <p className="text-center text-xs text-[var(--text-muted)] mt-4">
-          Use arrow keys or swipe to navigate
+        <p className="text-center text-xs text-[var(--text-muted)] mt-8">
+          Scroll or swipe up/down to navigate
         </p>
       </div>
 
