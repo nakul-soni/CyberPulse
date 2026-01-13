@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, ChevronDown } from 'lucide-react';
 
 interface SearchAndFiltersProps {
   onSearch: (query: string) => void;
@@ -20,6 +20,7 @@ export function SearchAndFilters({ onSearch, onFilter, onReset }: SearchAndFilte
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({});
   const [appliedFilters, setAppliedFilters] = useState<FilterState>({});
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
@@ -29,7 +30,6 @@ export function SearchAndFilters({ onSearch, onFilter, onReset }: SearchAndFilte
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     const newFilters = { ...filters, [key]: value || undefined };
     setFilters(newFilters);
-    // Don't apply immediately - wait for Apply button
   };
 
   const handleApplyFilters = () => {
@@ -46,84 +46,105 @@ export function SearchAndFilters({ onSearch, onFilter, onReset }: SearchAndFilte
   };
 
   const hasActiveFilters = Object.values(appliedFilters).some(v => v) || searchQuery;
+  const filterCount = Object.values(appliedFilters).filter(v => v).length;
 
   return (
     <div className="mb-8 space-y-4">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+      <div 
+        className={`
+          relative transition-all duration-300
+          ${isFocused ? 'scale-[1.01]' : ''}
+        `}
+      >
+        <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${isFocused ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`} />
         <input
           type="text"
-          placeholder="Search by name, organization, attack type, malware name, or keywords..."
+          placeholder="Search threats by name, organization, attack type, or keywords..."
           value={searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-slate-900 placeholder-slate-400"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className={`
+            w-full pl-12 pr-12 py-3.5 
+            bg-[var(--bg-card)] border rounded-xl 
+            text-[var(--text-primary)] placeholder-[var(--text-muted)]
+            outline-none transition-all duration-200
+            ${isFocused 
+              ? 'border-[var(--accent-blue)] shadow-lg shadow-[var(--accent-blue)]/10' 
+              : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]'}
+          `}
         />
         {searchQuery && (
           <button
             onClick={() => handleSearch('')}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-md transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      {/* Filter Toggle */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+          className={`
+            flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200
+            ${showFilters 
+              ? 'bg-[var(--accent-blue)]/10 border-[var(--accent-blue)]/30 text-[var(--accent-cyan)]' 
+              : 'bg-[var(--bg-card)] border-[var(--border-primary)] text-[var(--text-secondary)] hover:border-[var(--text-muted)] hover:text-[var(--text-primary)]'}
+          `}
         >
           <Filter className="w-4 h-4" />
           Filters
-          {hasActiveFilters && (
-            <span className="ml-1 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full">
-              Active
+          {filterCount > 0 && (
+            <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-[var(--accent-blue)] text-white rounded-full">
+              {filterCount}
             </span>
           )}
+          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
         </button>
 
         {hasActiveFilters && (
           <button
             onClick={handleReset}
-            className="text-sm text-slate-600 hover:text-slate-900 font-medium"
+            className="flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--severity-high)] font-medium transition-colors"
           >
+            <X className="w-4 h-4" />
             Clear all
           </button>
         )}
       </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            {/* Severity Filter */}
+      <div className={`
+        overflow-hidden transition-all duration-300 ease-out
+        ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+      `}>
+        <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Severity
+              <label className="block text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] mb-2">
+                Severity Level
               </label>
               <select
                 value={filters.severity || ''}
                 onChange={(e) => handleFilterChange('severity', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-slate-900"
+                className="w-full px-3 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] outline-none focus:border-[var(--accent-blue)] transition-colors cursor-pointer"
               >
-                <option value="">All</option>
+                <option value="">All Severities</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option>
               </select>
             </div>
 
-            {/* Attack Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] mb-2">
                 Attack Type
               </label>
               <select
                 value={filters.attackType || ''}
                 onChange={(e) => handleFilterChange('attackType', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-slate-900"
+                className="w-full px-3 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] outline-none focus:border-[var(--accent-blue)] transition-colors cursor-pointer"
               >
                 <option value="">All Types</option>
                 <option value="Ransomware">Ransomware</option>
@@ -136,39 +157,35 @@ export function SearchAndFilters({ onSearch, onFilter, onReset }: SearchAndFilte
               </select>
             </div>
 
-            {/* Date Filter */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] mb-2">
                 Date
               </label>
               <input
                 type="date"
                 value={filters.date || ''}
                 onChange={(e) => handleFilterChange('date', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-slate-900 text-sm"
+                className="w-full px-3 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] outline-none focus:border-[var(--accent-blue)] transition-colors cursor-pointer"
               />
             </div>
           </div>
           
-          {/* Apply Filter Button */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border-primary)]">
             <button
-              onClick={() => {
-                setFilters({});
-              }}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              onClick={() => setFilters({})}
+              className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all"
             >
               Clear Filters
             </button>
             <button
               onClick={handleApplyFilters}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-lg hover:opacity-90 transition-opacity"
             >
               Apply Filters
             </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
