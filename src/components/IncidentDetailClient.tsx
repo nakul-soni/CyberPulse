@@ -55,18 +55,19 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     ? JSON.parse(incident.analysis) 
     : incident.analysis;
 
-  const analysis = rawAnalysis ? {
-    ...rawAnalysis,
-    case_study: {
-      title: rawAnalysis.case_study?.title || `Case Study: ${incident.title}`,
-      background: rawAnalysis.case_study?.background || 'Background information is being analyzed...',
-      attack_vector: rawAnalysis.case_study?.attack_vector || 'Attack vector analysis pending...',
-      incident_flow: rawAnalysis.case_study?.incident_flow || ['Timeline analysis in progress...'],
-      outcome: rawAnalysis.case_study?.outcome || 'Outcome assessment pending...',
-      lessons_learned: rawAnalysis.case_study?.lessons_learned || ['Analysis in progress...'],
-      recommendations: rawAnalysis.case_study?.recommendations || ['Recommendations being generated...'],
-    }
-  } : null;
+    const analysis = rawAnalysis ? {
+      ...rawAnalysis,
+      case_study: {
+        title: rawAnalysis.case_study?.title || `Case Study: ${incident.title}`,
+        background: rawAnalysis.case_study?.background || 'Analysis pending',
+        attack_vector: rawAnalysis.case_study?.attack_vector || 'Analysis pending',
+        incident_flow: rawAnalysis.case_study?.incident_flow || ['Analysis pending'],
+        outcome: rawAnalysis.case_study?.outcome || 'Analysis pending',
+        lessons_learned: rawAnalysis.case_study?.lessons_learned || ['Analysis pending'],
+        recommendations: rawAnalysis.case_study?.recommendations || ['Analysis pending'],
+      }
+    } : null;
+
 
     const sections = [
       { id: 'hero', title: 'Introduction' },
