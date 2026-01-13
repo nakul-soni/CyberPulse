@@ -172,41 +172,41 @@ interface IncidentDetailClientProps {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {/* HERO SECTION */}
-          <section className="h-full w-full snap-start snap-always flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-8 sm:p-6 relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.05),transparent_70%)]" />
             
             <motion.div 
               {...animationProps}
               className="max-w-4xl w-full text-center relative z-10"
             >
-              <div className="flex justify-center gap-2 mb-4 sm:mb-6">
-                <div className="scale-75 sm:scale-100">
+              <div className="flex justify-center gap-2 mb-6 sm:mb-6">
+                <div className="scale-90 sm:scale-100">
                   <SeverityBadge severity={incident.severity} />
                 </div>
-                <div className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] text-[8px] sm:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest shadow-sm flex items-center">
+                <div className="px-3 sm:px-3 py-1 sm:py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] text-[9px] sm:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest shadow-sm flex items-center">
                   {incident.attack_type || 'Unknown Threat'}
                 </div>
               </div>
               
-              <h1 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.1] mb-6 sm:mb-8 px-2">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.2] sm:leading-[1.1] mb-10 sm:mb-8 px-2">
                 {incident.title}
               </h1>
               
-              <div className="flex items-center justify-center gap-4 sm:gap-6 text-[10px] sm:text-xs text-[var(--text-muted)] flex-wrap mb-8 sm:mb-12 px-4">
-                <div className="flex items-center gap-1.5 group cursor-default">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-cyan)] group-hover:scale-150 transition-transform" />
+              <div className="flex items-center justify-center gap-6 sm:gap-6 text-xs sm:text-xs text-[var(--text-muted)] flex-wrap mb-12 sm:mb-12 px-4">
+                <div className="flex items-center gap-2 group cursor-default">
+                  <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)] group-hover:scale-150 transition-transform" />
                   <span className="font-bold text-[var(--text-secondary)]">{incident.source}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--border-primary)]" />
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[var(--border-primary)]" />
                   <span>{new Date(incident.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 </div>
                 <a 
                   href={incident.url} 
                   target="_blank" 
-                  className="flex items-center gap-1.5 text-[var(--accent-blue)] hover:text-[var(--accent-cyan)] transition-all hover:translate-y-[-1px]"
+                  className="flex items-center gap-2 text-[var(--accent-blue)] hover:text-[var(--accent-cyan)] transition-all hover:translate-y-[-1px]"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="w-4 h-4" />
                   <span className="font-bold underline decoration-2 underline-offset-4 decoration-[var(--accent-blue)]/30 group-hover:decoration-[var(--accent-cyan)] uppercase tracking-tighter">Report</span>
                 </a>
               </div>
@@ -214,15 +214,15 @@ interface IncidentDetailClientProps {
             <motion.div 
               animate={{ y: [0, 6, 0] }}
               transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-              className="inline-flex flex-col items-center gap-2.5 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+              className="inline-flex flex-col items-center gap-3.5 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
               onClick={() => scrollToSection(1)}
             >
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Swipe up to dive in</span>
-              <div className="w-5 h-8 rounded-full border-2 border-[var(--border-primary)] flex justify-center p-1">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Swipe up to dive in</span>
+              <div className="w-6 h-10 rounded-full border-2 border-[var(--border-primary)] flex justify-center p-1.5">
                 <motion.div 
                   animate={{ y: [0, 10, 0] }}
                   transition={{ repeat: Infinity, duration: 1.5 }}
-                  className="w-1 h-1.5 bg-[var(--accent-cyan)] rounded-full"
+                  className="w-1.5 h-2 bg-[var(--accent-cyan)] rounded-full"
                 />
               </div>
             </motion.div>
@@ -230,54 +230,54 @@ interface IncidentDetailClientProps {
         </section>
 
         {/* OVERVIEW SECTION */}
-        <section className="h-full w-full snap-start snap-always flex items-center justify-center p-4 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto">
+        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto">
           <motion.div 
             {...animationProps}
-            className="max-w-4xl w-full bg-[var(--bg-card)] rounded-2xl sm:rounded-3xl border border-[var(--border-primary)] p-6 sm:p-12 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] relative overflow-hidden group"
+            className="max-w-4xl w-full bg-[var(--bg-card)] rounded-3xl sm:rounded-3xl border border-[var(--border-primary)] p-8 sm:p-12 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] relative overflow-hidden group my-8 sm:my-0"
           >
-            <div className="absolute top-0 left-0 w-1 sm:w-1.5 h-full bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-cyan)] opacity-20" />
-            <div className="flex items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-cyan)]/20 rounded-xl sm:rounded-2xl flex items-center justify-center border border-[var(--accent-blue)]/20 shadow-inner group-hover:scale-110 transition-transform duration-500 shrink-0">
-                <Activity className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--accent-cyan)]" />
+            <div className="absolute top-0 left-0 w-1.5 sm:w-1.5 h-full bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-cyan)] opacity-20" />
+            <div className="flex items-start gap-5 sm:gap-6 mb-8 sm:mb-8">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-cyan)]/20 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-[var(--accent-blue)]/20 shadow-inner group-hover:scale-110 transition-transform duration-500 shrink-0">
+                <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-[var(--accent-cyan)]" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Incident Overview</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[8px] sm:text-[10px] uppercase tracking-widest">Executive Intelligence Summary</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Incident Overview</h2>
+                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Executive Intelligence Summary</p>
               </div>
             </div>
-            <p className="text-[var(--text-secondary)] leading-relaxed text-sm sm:text-xl font-medium mb-6 sm:mb-8">
+            <p className="text-[var(--text-secondary)] leading-relaxed text-base sm:text-xl font-medium mb-8 sm:mb-8">
               {analysis?.summary || 'Synthesizing data...'}
             </p>
             {analysis?.why_it_matters && (
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                className="p-4 sm:p-6 bg-gradient-to-r from-[var(--accent-blue)]/5 to-transparent border-l-4 border-[var(--accent-blue)] rounded-xl"
+                className="p-6 sm:p-6 bg-gradient-to-r from-[var(--accent-blue)]/5 to-transparent border-l-4 border-[var(--accent-blue)] rounded-2xl"
               >
-                <h4 className="text-[8px] sm:text-[9px] font-black text-[var(--accent-cyan)] mb-1.5 sm:mb-2 uppercase tracking-[0.2em]">Strategic Impact</h4>
-                <p className="text-[var(--text-secondary)] italic text-xs sm:text-base leading-relaxed font-serif">"{analysis.why_it_matters}"</p>
+                <h4 className="text-[9px] sm:text-[9px] font-black text-[var(--accent-cyan)] mb-2 sm:mb-2 uppercase tracking-[0.2em]">Strategic Impact</h4>
+                <p className="text-[var(--text-secondary)] italic text-sm sm:text-base leading-relaxed font-serif">"{analysis.why_it_matters}"</p>
               </motion.div>
             )}
           </motion.div>
         </section>
 
         {/* ROOT CAUSE SECTION */}
-        <section className="h-full w-full snap-start snap-always flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 overflow-y-auto">
           <motion.div 
             {...animationProps}
-            className="max-w-4xl w-full bg-gradient-to-br from-amber-500/5 to-orange-500/5 rounded-2xl sm:rounded-3xl border border-amber-500/20 p-6 sm:p-12 shadow-2xl relative group"
+            className="max-w-4xl w-full bg-gradient-to-br from-amber-500/5 to-orange-500/5 rounded-3xl sm:rounded-3xl border border-amber-500/20 p-8 sm:p-12 shadow-2xl relative group my-8 sm:my-0"
           >
-            <div className="flex items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-amber-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center border border-amber-500/20 shadow-inner group-hover:rotate-12 transition-transform duration-500 shrink-0">
-                <Target className="w-5 h-5 sm:w-7 sm:h-7 text-amber-500" />
+            <div className="flex items-start gap-5 sm:gap-6 mb-8 sm:mb-8">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-500/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-amber-500/20 shadow-inner group-hover:rotate-12 transition-transform duration-500 shrink-0">
+                <Target className="w-6 h-6 sm:w-7 sm:h-7 text-amber-500" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Root Cause</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[8px] sm:text-[10px] uppercase tracking-widest">Vulnerability Breakdown</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Root Cause</h2>
+                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Vulnerability Breakdown</p>
               </div>
             </div>
-            <div className="bg-[var(--bg-secondary)]/30 backdrop-blur-sm p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-white/5">
-              <p className="text-[var(--text-secondary)] leading-relaxed text-sm sm:text-xl font-medium">
+            <div className="bg-[var(--bg-secondary)]/30 backdrop-blur-sm p-6 sm:p-6 rounded-2xl sm:rounded-2xl border border-white/5">
+              <p className="text-[var(--text-secondary)] leading-relaxed text-base sm:text-xl font-medium">
                 {analysis?.root_cause || 'Identifying the gap...'}
               </p>
             </div>
@@ -285,33 +285,33 @@ interface IncidentDetailClientProps {
         </section>
 
         {/* KEY MISTAKES SECTION */}
-        <section className="h-full w-full snap-start snap-always flex items-center justify-center p-4 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto">
+        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto">
           <motion.div 
             {...animationProps}
-            className="max-w-4xl w-full bg-gradient-to-br from-red-500/5 to-rose-500/5 rounded-2xl sm:rounded-3xl border border-red-500/20 p-6 sm:p-12 shadow-2xl group"
+            className="max-w-4xl w-full bg-gradient-to-br from-red-500/5 to-rose-500/5 rounded-3xl sm:rounded-3xl border border-red-500/20 p-8 sm:p-12 shadow-2xl group my-8 sm:my-0"
           >
-            <div className="flex items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-red-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center border border-red-500/20 shadow-inner group-hover:scale-90 transition-transform duration-500 shrink-0">
-                <AlertTriangle className="w-5 h-5 sm:w-7 sm:h-7 text-red-500" />
+            <div className="flex items-start gap-5 sm:gap-6 mb-8 sm:mb-8">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-red-500/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-red-500/20 shadow-inner group-hover:scale-90 transition-transform duration-500 shrink-0">
+                <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 text-red-500" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Key Mistakes</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[8px] sm:text-[10px] uppercase tracking-widest">Critical Security Failures</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Key Mistakes</h2>
+                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Critical Security Failures</p>
               </div>
             </div>
-            <div className="grid gap-3 sm:gap-4">
+            <div className="grid gap-4 sm:gap-4">
               {(analysis?.mistakes || []).map((mistake: string, i: number) => (
                 <motion.div 
                   key={i}
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.15 + 0.3 }}
-                  className="flex items-center gap-3 sm:gap-5 p-3 sm:p-4 bg-[var(--bg-secondary)]/50 rounded-lg sm:rounded-xl border border-white/5 hover:border-red-500/30 transition-all group/item"
+                  className="flex items-center gap-4 sm:gap-5 p-4 sm:p-4 bg-[var(--bg-secondary)]/50 rounded-xl sm:rounded-xl border border-white/5 hover:border-red-500/30 transition-all group/item"
                 >
-                  <span className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-red-500/10 rounded-lg flex items-center justify-center text-red-400 font-black text-sm sm:text-base group-hover/item:bg-red-500/20 transition-colors">
+                  <span className="w-10 h-10 sm:w-10 sm:h-10 shrink-0 bg-red-500/10 rounded-lg flex items-center justify-center text-red-400 font-black text-sm sm:text-base group-hover/item:bg-red-500/20 transition-colors">
                     0{i + 1}
                   </span>
-                  <span className="text-[var(--text-secondary)] text-xs sm:text-base font-semibold group-hover/item:text-[var(--text-primary)] transition-colors line-clamp-2">{mistake}</span>
+                  <span className="text-[var(--text-secondary)] text-sm sm:text-base font-semibold group-hover/item:text-[var(--text-primary)] transition-colors line-clamp-3 sm:line-clamp-2">{mistake}</span>
                 </motion.div>
               ))}
             </div>
@@ -319,25 +319,25 @@ interface IncidentDetailClientProps {
         </section>
 
         {/* MITIGATION SECTION */}
-        <section className="h-full w-full snap-start snap-always flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 overflow-y-auto">
           <motion.div 
             {...animationProps}
-            className="max-w-5xl w-full bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-2xl sm:rounded-3xl border border-emerald-500/20 p-6 sm:p-12 shadow-2xl relative"
+            className="max-w-5xl w-full bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-3xl sm:rounded-3xl border border-emerald-500/20 p-8 sm:p-12 shadow-2xl relative my-8 sm:my-0"
           >
-            <div className="flex items-start gap-4 sm:gap-6 mb-8 sm:mb-10">
-              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-emerald-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-inner shrink-0">
-                <ShieldCheck className="w-5 h-5 sm:w-7 sm:h-7 text-emerald-500" />
+            <div className="flex items-start gap-5 sm:gap-6 mb-10 sm:mb-10">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-inner shrink-0">
+                <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Mitigation Strategy</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[8px] sm:text-[10px] uppercase tracking-widest">Hardening Recommendations</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Mitigation Strategy</h2>
+                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Hardening Recommendations</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-              <div className="space-y-3 sm:space-y-4">
-                <h3 className="font-black text-emerald-400 mb-2 sm:mb-4 flex items-center gap-2 text-[9px] sm:text-[11px] uppercase tracking-[0.2em]">
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Tactical Roadmap
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-8">
+              <div className="space-y-4 sm:space-y-4">
+                <h3 className="font-black text-emerald-400 mb-4 sm:mb-4 flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em]">
+                  <CheckCircle2 className="w-4 h-4 sm:w-4 sm:h-4" /> Tactical Roadmap
                 </h3>
                 {(analysis?.mitigation || []).map((step: string, i: number) => (
                   <motion.div 
@@ -345,27 +345,27 @@ interface IncidentDetailClientProps {
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 + 0.5 }}
-                    className="bg-[var(--bg-secondary)]/50 border border-white/5 p-3 sm:p-4 rounded-xl text-[var(--text-secondary)] flex gap-3 sm:gap-4 hover:bg-emerald-500/5 transition-colors"
+                    className="bg-[var(--bg-secondary)]/50 border border-white/5 p-5 sm:p-4 rounded-xl text-[var(--text-secondary)] flex gap-4 sm:gap-4 hover:bg-emerald-500/5 transition-colors"
                   >
-                    <span className="text-emerald-500/50 font-mono font-black mt-0.5 text-xs sm:text-sm">0{i+1}</span>
-                    <span className="text-xs sm:text-base font-medium leading-snug">{step}</span>
+                    <span className="text-emerald-500/50 font-mono font-black mt-0.5 text-sm sm:text-sm">0{i+1}</span>
+                    <span className="text-sm sm:text-base font-medium leading-snug">{step}</span>
                   </motion.div>
                 ))}
               </div>
               
-              <div className="space-y-4">
-                <h3 className="font-black text-[var(--accent-blue)] mb-2 sm:mb-4 flex items-center gap-2 text-[9px] sm:text-[11px] uppercase tracking-[0.2em]">
-                  <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Strategic Insight
+              <div className="space-y-6">
+                <h3 className="font-black text-[var(--accent-blue)] mb-4 sm:mb-4 flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em]">
+                  <Lightbulb className="w-4 h-4 sm:w-4 sm:h-4" /> Strategic Insight
                 </h3>
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 }}
-                    className="bg-gradient-to-br from-[var(--bg-secondary)] to-transparent border border-white/5 p-5 sm:p-8 rounded-2xl text-[var(--text-secondary)] leading-relaxed text-sm sm:text-lg italic shadow-inner relative mb-4 sm:mb-6"
+                    className="bg-gradient-to-br from-[var(--bg-secondary)] to-transparent border border-white/5 p-8 sm:p-8 rounded-2xl text-[var(--text-secondary)] leading-relaxed text-base sm:text-lg italic shadow-inner relative mb-8 sm:mb-6"
                   >
-                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 text-emerald-500/20 text-2xl sm:text-4xl font-serif">“</div>
+                    <div className="absolute top-3 left-3 sm:top-3 sm:left-3 text-emerald-500/20 text-3xl sm:text-4xl font-serif">“</div>
                     <div className="relative z-10">{analysis?.what_to_do_guide || 'Awaiting expert guidance...'}</div>
-                    <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 text-emerald-500/20 text-2xl sm:text-4xl font-serif">”</div>
+                    <div className="absolute bottom-3 right-3 sm:bottom-3 sm:right-3 text-emerald-500/20 text-3xl sm:text-4xl font-serif">”</div>
                   </motion.div>
 
                   {/* Generate Case Study Button */}
@@ -375,18 +375,18 @@ interface IncidentDetailClientProps {
                       whileTap={{ scale: 0.98 }}
                       onClick={handleGenerateCaseStudy}
                       disabled={isGenerating}
-                      className="w-full max-w-xs mx-auto p-3 sm:p-3.5 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-cyan)] rounded-xl text-white font-black uppercase tracking-[0.1em] shadow-lg flex items-center justify-center gap-2 sm:gap-3 group/btn relative overflow-hidden disabled:opacity-50 transition-all border border-white/10 text-[10px] sm:text-xs"
+                      className="w-full max-w-sm mx-auto p-4 sm:p-3.5 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-cyan)] rounded-2xl text-white font-black uppercase tracking-[0.1em] shadow-lg flex items-center justify-center gap-3 sm:gap-3 group/btn relative overflow-hidden disabled:opacity-50 transition-all border border-white/10 text-xs sm:text-xs"
                     >
                       {isGenerating ? (
                         <>
-                          <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                          <span>Generating...</span>
+                          <RefreshCw className="w-4 h-4 sm:w-4 sm:h-4 animate-spin" />
+                          <span>Generating Intelligence...</span>
                         </>
                       ) : (
                         <>
-                          <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:scale-110 transition-transform" />
-                          <span>Generate Case Study</span>
-                          <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover/btn:translate-y-1 transition-transform" />
+                          <BookOpen className="w-4 h-4 sm:w-4 sm:h-4 group-hover/btn:scale-110 transition-transform" />
+                          <span>Generate Full Case Study</span>
+                          <ChevronDown className="w-3 h-3 sm:w-3 sm:h-3 group-hover/btn:translate-y-1 transition-transform" />
                         </>
                       )}
                     </motion.button>
@@ -398,63 +398,63 @@ interface IncidentDetailClientProps {
 
         {/* CASE STUDY SECTION */}
         {caseStudyGenerated && (
-          <section className="h-full w-full snap-start snap-always flex items-center justify-center p-4 sm:p-6 bg-[var(--bg-secondary)]/10">
+          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10">
             <motion.div 
               {...animationProps}
-              className="max-w-6xl w-full bg-[var(--bg-card)] rounded-2xl sm:rounded-3xl border border-[var(--border-primary)] p-4 sm:p-10 shadow-2xl relative overflow-hidden group h-[85vh] sm:h-[90vh] flex flex-col"
+              className="max-w-6xl w-full bg-[var(--bg-card)] rounded-3xl sm:rounded-3xl border border-[var(--border-primary)] p-6 sm:p-10 shadow-2xl relative overflow-hidden group h-[90vh] sm:h-[90vh] flex flex-col my-4 sm:my-0"
             >
-              <div className="flex items-start gap-4 sm:gap-5 mb-4 sm:mb-6 shrink-0">
-                <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[var(--accent-cyan)]/10 rounded-xl sm:rounded-2xl flex items-center justify-center border border-[var(--accent-cyan)]/20 shadow-inner">
-                  <BookOpen className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--accent-cyan)]" />
+              <div className="flex items-start gap-5 sm:gap-5 mb-6 sm:mb-6 shrink-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[var(--accent-cyan)]/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-[var(--accent-cyan)]/20 shadow-inner">
+                  <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-[var(--accent-cyan)]" />
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] mb-0.5 tracking-tight">Case Study</h2>
-                  <p className="text-[var(--text-muted)] font-mono text-[8px] sm:text-[9px] uppercase tracking-widest line-clamp-1">{analysis?.case_study?.title || 'Detailed Breakdown'}</p>
+                  <h2 className="text-2xl sm:text-2xl font-black text-[var(--text-primary)] mb-0.5 tracking-tight">Case Study</h2>
+                  <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[9px] uppercase tracking-widest line-clamp-1">{analysis?.case_study?.title || 'Detailed Breakdown'}</p>
                 </div>
               </div>
 
               <div className="flex-1 overflow-y-auto pr-2 sm:pr-4 custom-scrollbar">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-                  <div className="space-y-6 sm:space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-8">
+                  <div className="space-y-8 sm:space-y-8">
                     <div>
-                      <h3 className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-[var(--accent-blue)] uppercase tracking-widest mb-2 sm:mb-3">
-                        <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Background & Context
+                      <h3 className="flex items-center gap-2 text-[10px] sm:text-[10px] font-black text-[var(--accent-blue)] uppercase tracking-widest mb-4 sm:mb-3">
+                        <TrendingUp className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" /> Background & Context
                       </h3>
-                      <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed bg-[var(--bg-secondary)]/30 p-4 sm:p-5 rounded-xl border border-white/5">
+                      <p className="text-[var(--text-secondary)] text-base sm:text-base leading-relaxed bg-[var(--bg-secondary)]/30 p-6 sm:p-5 rounded-2xl border border-white/5">
                         {analysis?.case_study?.background || 'Loading background...'}
                       </p>
                     </div>
 
                     <div>
-                      <h3 className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2 sm:mb-3">
-                        <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Attack Vector
+                      <h3 className="flex items-center gap-2 text-[10px] sm:text-[10px] font-black text-amber-500 uppercase tracking-widest mb-4 sm:mb-3">
+                        <Zap className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" /> Attack Vector
                       </h3>
-                      <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed bg-amber-500/5 p-4 sm:p-5 rounded-xl border border-amber-500/10 italic">
+                      <p className="text-[var(--text-secondary)] text-base sm:text-base leading-relaxed bg-amber-500/5 p-6 sm:p-5 rounded-2xl border border-amber-500/10 italic">
                         {analysis?.case_study?.attack_vector || 'Analyzing technical breakdown...'}
                       </p>
                     </div>
 
                     <div>
-                      <h3 className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 sm:mb-3">
-                        <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Outcome & Impact
+                      <h3 className="flex items-center gap-2 text-[10px] sm:text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-4 sm:mb-3">
+                        <Award className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" /> Outcome & Impact
                       </h3>
-                      <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed bg-emerald-500/5 p-4 sm:p-5 rounded-xl border border-emerald-500/10">
+                      <p className="text-[var(--text-secondary)] text-base sm:text-base leading-relaxed bg-emerald-500/5 p-6 sm:p-5 rounded-2xl border border-emerald-500/10">
                         {analysis?.case_study?.outcome || 'Evaluating impact...'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="space-y-6 sm:space-y-8">
+                  <div className="space-y-8 sm:space-y-8">
                     <div>
-                      <h3 className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-[var(--accent-cyan)] uppercase tracking-widest mb-3 sm:mb-4">
-                        <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Incident Flow
+                      <h3 className="flex items-center gap-2 text-[10px] sm:text-[10px] font-black text-[var(--accent-cyan)] uppercase tracking-widest mb-4 sm:mb-4">
+                        <Clock className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" /> Incident Flow
                       </h3>
-                      <div className="space-y-0 pl-2 sm:pl-3 border-l border-[var(--accent-cyan)]/20">
+                      <div className="space-y-0 pl-3 sm:pl-3 border-l border-[var(--accent-cyan)]/20">
                         {(analysis?.case_study?.incident_flow || []).map((step: string, i: number) => (
-                          <div key={i} className="relative pl-5 sm:pl-6 pb-4 sm:pb-6 last:pb-0">
-                            <div className="absolute left-[-5px] top-0 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[var(--bg-card)] border-2 border-[var(--accent-cyan)] shadow-[0_0_8px_rgba(34,211,238,0.3)]" />
-                            <div className="bg-[var(--bg-secondary)]/50 p-3 sm:p-3.5 rounded-lg border border-white/5 hover:border-[var(--accent-cyan)]/30 transition-colors">
-                              <p className="text-[var(--text-secondary)] text-[10px] sm:text-xs font-semibold">{step}</p>
+                          <div key={i} className="relative pl-6 sm:pl-6 pb-6 sm:pb-6 last:pb-0">
+                            <div className="absolute left-[-6px] top-0 w-2.5 h-2.5 sm:w-2.5 sm:h-2.5 rounded-full bg-[var(--bg-card)] border-2 border-[var(--accent-cyan)] shadow-[0_0_8px_rgba(34,211,238,0.3)]" />
+                            <div className="bg-[var(--bg-secondary)]/50 p-4 sm:p-3.5 rounded-xl border border-white/5 hover:border-[var(--accent-cyan)]/30 transition-colors">
+                              <p className="text-[var(--text-secondary)] text-xs sm:text-xs font-semibold">{step}</p>
                             </div>
                           </div>
                         ))}
@@ -462,21 +462,21 @@ interface IncidentDetailClientProps {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="bg-red-500/5 p-4 sm:p-5 rounded-xl border border-red-500/10">
-                        <h4 className="text-[8px] sm:text-[9px] font-black text-red-400 uppercase tracking-widest mb-2 sm:mb-3">Lessons Learned</h4>
-                        <ul className="space-y-1.5 sm:space-y-2">
+                      <div className="bg-red-500/5 p-6 sm:p-5 rounded-2xl border border-red-500/10">
+                        <h4 className="text-[9px] sm:text-[9px] font-black text-red-400 uppercase tracking-widest mb-3 sm:mb-3">Lessons Learned</h4>
+                        <ul className="space-y-2 sm:space-y-2">
                           {(analysis?.case_study?.lessons_learned || []).map((lesson: string, i: number) => (
-                            <li key={i} className="text-[10px] sm:text-[11px] text-[var(--text-secondary)] flex gap-1.5">
+                            <li key={i} className="text-xs sm:text-[11px] text-[var(--text-secondary)] flex gap-2">
                               <span className="text-red-400 font-bold">•</span> {lesson}
                             </li>
                           ))}
                         </ul>
                       </div>
-                      <div className="bg-[var(--accent-blue)]/5 p-4 sm:p-5 rounded-xl border border-[var(--accent-blue)]/10">
-                        <h4 className="text-[8px] sm:text-[9px] font-black text-[var(--accent-blue)] uppercase tracking-widest mb-2 sm:mb-3">Recommendations</h4>
-                        <ul className="space-y-1.5 sm:space-y-2">
+                      <div className="bg-[var(--accent-blue)]/5 p-6 sm:p-5 rounded-2xl border border-[var(--accent-blue)]/10">
+                        <h4 className="text-[9px] sm:text-[9px] font-black text-[var(--accent-blue)] uppercase tracking-widest mb-3 sm:mb-3">Recommendations</h4>
+                        <ul className="space-y-2 sm:space-y-2">
                           {(analysis?.case_study?.recommendations || []).map((rec: string, i: number) => (
-                            <li key={i} className="text-[10px] sm:text-[11px] text-[var(--text-secondary)] flex gap-1.5">
+                            <li key={i} className="text-xs sm:text-[11px] text-[var(--text-secondary)] flex gap-2">
                               <span className="text-[var(--accent-blue)] font-bold">•</span> {rec}
                             </li>
                           ))}
