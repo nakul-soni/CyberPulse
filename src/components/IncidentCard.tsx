@@ -50,10 +50,10 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
   };
 
   return (
-    <Link href={`/incident/${incident.id}`} className="block h-full">
+    <Link href={`/incident/${incident.id}`} className="block h-full active:scale-[0.97] transition-transform duration-150">
         <div 
           className={`
-            relative h-full p-6 sm:p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl 
+            relative h-full p-8 sm:p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-[2rem] sm:rounded-xl 
             transition-all duration-200 ease-out cursor-pointer group overflow-hidden
             ${isHovered 
               ? 'scale-[1.02] z-20 shadow-xl shadow-[var(--accent-blue)]/10 border-[var(--accent-blue)]/50' 
@@ -72,26 +72,26 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
           )}
           
           <div className="relative z-10">
-            <div className="flex items-start justify-between mb-4 sm:mb-2.5 gap-2">
-              <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-start justify-between mb-5 sm:mb-2.5 gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <SeverityBadge severity={incident.severity} />
                 {incident.attack_type && (
-                  <span className={`text-[10px] sm:text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${getAttackTypeStyle(incident.attack_type)}`}>
+                  <span className={`text-[11px] sm:text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-full border ${getAttackTypeStyle(incident.attack_type)}`}>
                     {incident.attack_type}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1 text-[var(--text-muted)] shrink-0">
-                <Calendar className="w-3 h-3 sm:w-2.5 sm:h-2.5" />
-                <span className="text-[10px] sm:text-[9px] font-mono uppercase tracking-tighter">{formattedDate}</span>
+              <div className="flex items-center gap-1.5 text-[var(--text-muted)] shrink-0">
+                <Calendar className="w-3.5 h-3.5 sm:w-2.5 sm:h-2.5" />
+                <span className="text-[11px] sm:text-[9px] font-mono uppercase tracking-tighter">{formattedDate}</span>
               </div>
             </div>
   
-            <h3 className={`text-lg sm:text-[15px] font-bold leading-tight mb-3 sm:mb-2 line-clamp-2 transition-colors duration-200 ${isHovered ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}>
+            <h3 className={`text-xl sm:text-[15px] font-black leading-tight mb-4 sm:mb-2 line-clamp-2 transition-colors duration-200 ${isHovered ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'}`}>
               {incident.title}
             </h3>
   
-            <p className="text-[var(--text-secondary)] text-sm sm:text-xs line-clamp-2 mb-4 sm:mb-3 leading-relaxed">
+            <p className="text-[var(--text-secondary)] text-base sm:text-xs line-clamp-2 mb-6 sm:mb-3 leading-relaxed opacity-80">
               {analysis?.summary || analysis?.why_it_matters || (
                 <span className="flex items-center gap-1.5 text-[var(--text-muted)]">
                   <span className="w-1.5 h-1.5 bg-[var(--accent-cyan)] rounded-full animate-pulse" />
@@ -100,21 +100,21 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
               )}
             </p>
   
-            <div className="pt-4 sm:pt-3 border-t border-[var(--border-primary)] flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Newspaper className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-[var(--text-muted)]" />
-                <span className="text-[11px] sm:text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-card-hover)] px-2 py-0.5 sm:px-1.5 sm:py-0.5 rounded uppercase tracking-tight">
+            <div className="pt-5 sm:pt-3 border-t border-[var(--border-primary)] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Newspaper className="w-4 h-4 sm:w-3 sm:h-3 text-[var(--text-muted)]" />
+                <span className="text-[12px] sm:text-[10px] font-black text-[var(--text-muted)] bg-[var(--bg-card-hover)] px-2.5 py-1 sm:px-1.5 sm:py-0.5 rounded-lg uppercase tracking-wider">
                   {incident.source}
                 </span>
               </div>
               <span 
                 className={`
-                  flex items-center gap-1 text-[11px] sm:text-[10px] font-black uppercase tracking-widest transition-all duration-200
+                  flex items-center gap-1 text-[12px] sm:text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-200
                   ${isHovered ? 'text-[var(--accent-cyan)] translate-x-0' : 'text-[var(--accent-blue)] sm:opacity-0 sm:-translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}
                 `}
               >
-                Details
-                <ArrowUpRight className="w-3 h-3 sm:w-2.5 sm:h-2.5" />
+                Read
+                <ArrowUpRight className="w-3.5 h-3.5 sm:w-2.5 sm:h-2.5" />
               </span>
             </div>
           </div>

@@ -171,230 +171,229 @@ interface IncidentDetailClientProps {
           className="flex-1 overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {/* HERO SECTION */}
-          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-8 sm:p-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.05),transparent_70%)]" />
-            
+            {/* HERO SECTION */}
+            <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-8 sm:p-6 relative overflow-y-auto no-scrollbar">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.05),transparent_70%)]" />
+              
+              <motion.div 
+                {...animationProps}
+                className="max-w-4xl w-full text-center relative z-10 py-20 sm:py-0"
+              >
+                <div className="flex justify-center gap-2 mb-8 sm:mb-6">
+                  <div className="scale-110 sm:scale-100">
+                    <SeverityBadge severity={incident.severity} />
+                  </div>
+                  <div className="px-4 py-1.5 sm:px-3 sm:py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] text-[10px] sm:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] shadow-sm flex items-center">
+                    {incident.attack_type || 'Unknown Threat'}
+                  </div>
+                </div>
+                
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] tracking-tight leading-[1.15] sm:leading-[1.1] mb-12 sm:mb-8 px-4">
+                  {incident.title}
+                </h1>
+                
+                <div className="flex items-center justify-center gap-6 text-[11px] sm:text-xs text-[var(--text-muted)] flex-wrap mb-16 sm:mb-12 px-6">
+                  <div className="flex items-center gap-2 group cursor-default">
+                    <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)]" />
+                    <span className="font-black text-[var(--text-secondary)] uppercase tracking-widest">{incident.source}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[var(--border-primary)]" />
+                    <span className="font-mono uppercase">{new Date(incident.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  </div>
+                  <a 
+                    href={incident.url} 
+                    target="_blank" 
+                    className="flex items-center gap-2 text-[var(--accent-blue)] font-black uppercase tracking-widest"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Source Report</span>
+                  </a>
+                </div>
+  
+              <motion.div 
+                animate={{ y: [0, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                className="inline-flex flex-col items-center gap-4 opacity-70 cursor-pointer"
+                onClick={() => scrollToSection(1)}
+              >
+                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-[var(--accent-cyan)] animate-pulse">Scroll to Start</span>
+                <div className="w-7 h-12 rounded-full border-2 border-[var(--accent-blue)]/30 flex justify-center p-2">
+                  <motion.div 
+                    animate={{ y: [0, 12, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                    className="w-2 h-2 bg-[var(--accent-cyan)] rounded-full shadow-[0_0_8px_var(--accent-cyan)]"
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+          </section>
+  
+          {/* OVERVIEW SECTION */}
+          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto no-scrollbar">
             <motion.div 
               {...animationProps}
-              className="max-w-4xl w-full text-center relative z-10"
+              className="max-w-4xl w-full bg-[var(--bg-card)] rounded-[2.5rem] sm:rounded-3xl border border-[var(--border-primary)] p-10 sm:p-12 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] relative overflow-hidden group my-12 sm:my-0"
             >
-              <div className="flex justify-center gap-2 mb-6 sm:mb-6">
-                <div className="scale-90 sm:scale-100">
-                  <SeverityBadge severity={incident.severity} />
+              <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-cyan)] opacity-30" />
+              <div className="flex items-start gap-6 mb-10 sm:mb-8">
+                <div className="w-14 h-14 sm:w-14 sm:h-14 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-cyan)]/20 rounded-2xl flex items-center justify-center border border-[var(--accent-blue)]/20 shadow-inner group-hover:scale-110 transition-transform duration-500 shrink-0">
+                  <Activity className="w-7 h-7 sm:w-7 sm:h-7 text-[var(--accent-cyan)]" />
                 </div>
-                <div className="px-3 sm:px-3 py-1 sm:py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] text-[9px] sm:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest shadow-sm flex items-center">
-                  {incident.attack_type || 'Unknown Threat'}
+                <div>
+                  <h2 className="text-3xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Summary</h2>
+                  <p className="text-[var(--text-muted)] font-mono text-[10px] uppercase tracking-[0.2em]">Intel Briefing</p>
                 </div>
               </div>
-              
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.2] sm:leading-[1.1] mb-10 sm:mb-8 px-2">
-                {incident.title}
-              </h1>
-              
-              <div className="flex items-center justify-center gap-6 sm:gap-6 text-xs sm:text-xs text-[var(--text-muted)] flex-wrap mb-12 sm:mb-12 px-4">
-                <div className="flex items-center gap-2 group cursor-default">
-                  <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)] group-hover:scale-150 transition-transform" />
-                  <span className="font-bold text-[var(--text-secondary)]">{incident.source}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[var(--border-primary)]" />
-                  <span>{new Date(incident.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-                <a 
-                  href={incident.url} 
-                  target="_blank" 
-                  className="flex items-center gap-2 text-[var(--accent-blue)] hover:text-[var(--accent-cyan)] transition-all hover:translate-y-[-1px]"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  <span className="font-bold underline decoration-2 underline-offset-4 decoration-[var(--accent-blue)]/30 group-hover:decoration-[var(--accent-cyan)] uppercase tracking-tighter">Report</span>
-                </a>
-              </div>
-
-            <motion.div 
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-              className="inline-flex flex-col items-center gap-3.5 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
-              onClick={() => scrollToSection(1)}
-            >
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Swipe up to dive in</span>
-              <div className="w-6 h-10 rounded-full border-2 border-[var(--border-primary)] flex justify-center p-1.5">
+              <p className="text-[var(--text-secondary)] leading-relaxed text-xl sm:text-xl font-medium mb-10 sm:mb-8">
+                {analysis?.summary || 'Synthesizing intelligence...'}
+              </p>
+              {analysis?.why_it_matters && (
                 <motion.div 
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                  className="w-1.5 h-2 bg-[var(--accent-cyan)] rounded-full"
-                />
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  className="p-8 sm:p-6 bg-gradient-to-r from-[var(--accent-blue)]/10 to-transparent border-l-4 border-[var(--accent-blue)] rounded-3xl"
+                >
+                  <h4 className="text-[10px] font-black text-[var(--accent-cyan)] mb-3 uppercase tracking-[0.3em]">Critical Impact</h4>
+                  <p className="text-[var(--text-secondary)] italic text-lg sm:text-base leading-relaxed font-serif">"{analysis.why_it_matters}"</p>
+                </motion.div>
+              )}
+            </motion.div>
+          </section>
+  
+          {/* ROOT CAUSE SECTION */}
+          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 overflow-y-auto no-scrollbar">
+            <motion.div 
+              {...animationProps}
+              className="max-w-4xl w-full bg-gradient-to-br from-amber-500/5 to-orange-500/5 rounded-[2.5rem] sm:rounded-3xl border border-amber-500/20 p-10 sm:p-12 shadow-2xl relative group my-12 sm:my-0"
+            >
+              <div className="flex items-start gap-6 mb-10 sm:mb-8">
+                <div className="w-14 h-14 sm:w-14 sm:h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-500/20 shadow-inner group-hover:rotate-12 transition-transform duration-500 shrink-0">
+                  <Target className="w-7 h-7 sm:w-7 sm:h-7 text-amber-500" />
+                </div>
+                <div>
+                  <h2 className="text-3xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Root Cause</h2>
+                  <p className="text-[var(--text-muted)] font-mono text-[10px] uppercase tracking-[0.2em]">Failure Analysis</p>
+                </div>
+              </div>
+              <div className="bg-[var(--bg-secondary)]/50 backdrop-blur-sm p-8 sm:p-6 rounded-3xl border border-white/5">
+                <p className="text-[var(--text-secondary)] leading-relaxed text-xl sm:text-xl font-medium">
+                  {analysis?.root_cause || 'Analyzing core vectors...'}
+                </p>
               </div>
             </motion.div>
-          </motion.div>
-        </section>
-
-        {/* OVERVIEW SECTION */}
-        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto">
-          <motion.div 
-            {...animationProps}
-            className="max-w-4xl w-full bg-[var(--bg-card)] rounded-3xl sm:rounded-3xl border border-[var(--border-primary)] p-8 sm:p-12 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] relative overflow-hidden group my-8 sm:my-0"
-          >
-            <div className="absolute top-0 left-0 w-1.5 sm:w-1.5 h-full bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-cyan)] opacity-20" />
-            <div className="flex items-start gap-5 sm:gap-6 mb-8 sm:mb-8">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-cyan)]/20 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-[var(--accent-blue)]/20 shadow-inner group-hover:scale-110 transition-transform duration-500 shrink-0">
-                <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-[var(--accent-cyan)]" />
+          </section>
+  
+          {/* KEY MISTAKES SECTION */}
+          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto no-scrollbar">
+            <motion.div 
+              {...animationProps}
+              className="max-w-4xl w-full bg-gradient-to-br from-red-500/5 to-rose-500/5 rounded-[2.5rem] sm:rounded-3xl border border-red-500/20 p-10 sm:p-12 shadow-2xl group my-12 sm:my-0"
+            >
+              <div className="flex items-start gap-6 mb-10 sm:mb-8">
+                <div className="w-14 h-14 sm:w-14 sm:h-14 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20 shadow-inner group-hover:scale-90 transition-transform duration-500 shrink-0">
+                  <AlertTriangle className="w-7 h-7 sm:w-7 sm:h-7 text-red-500" />
+                </div>
+                <div>
+                  <h2 className="text-3xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Mistakes</h2>
+                  <p className="text-[var(--text-muted)] font-mono text-[10px] uppercase tracking-[0.2em]">Security Lapses</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Incident Overview</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Executive Intelligence Summary</p>
-              </div>
-            </div>
-            <p className="text-[var(--text-secondary)] leading-relaxed text-base sm:text-xl font-medium mb-8 sm:mb-8">
-              {analysis?.summary || 'Synthesizing data...'}
-            </p>
-            {analysis?.why_it_matters && (
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                className="p-6 sm:p-6 bg-gradient-to-r from-[var(--accent-blue)]/5 to-transparent border-l-4 border-[var(--accent-blue)] rounded-2xl"
-              >
-                <h4 className="text-[9px] sm:text-[9px] font-black text-[var(--accent-cyan)] mb-2 sm:mb-2 uppercase tracking-[0.2em]">Strategic Impact</h4>
-                <p className="text-[var(--text-secondary)] italic text-sm sm:text-base leading-relaxed font-serif">"{analysis.why_it_matters}"</p>
-              </motion.div>
-            )}
-          </motion.div>
-        </section>
-
-        {/* ROOT CAUSE SECTION */}
-        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 overflow-y-auto">
-          <motion.div 
-            {...animationProps}
-            className="max-w-4xl w-full bg-gradient-to-br from-amber-500/5 to-orange-500/5 rounded-3xl sm:rounded-3xl border border-amber-500/20 p-8 sm:p-12 shadow-2xl relative group my-8 sm:my-0"
-          >
-            <div className="flex items-start gap-5 sm:gap-6 mb-8 sm:mb-8">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-500/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-amber-500/20 shadow-inner group-hover:rotate-12 transition-transform duration-500 shrink-0">
-                <Target className="w-6 h-6 sm:w-7 sm:h-7 text-amber-500" />
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Root Cause</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Vulnerability Breakdown</p>
-              </div>
-            </div>
-            <div className="bg-[var(--bg-secondary)]/30 backdrop-blur-sm p-6 sm:p-6 rounded-2xl sm:rounded-2xl border border-white/5">
-              <p className="text-[var(--text-secondary)] leading-relaxed text-base sm:text-xl font-medium">
-                {analysis?.root_cause || 'Identifying the gap...'}
-              </p>
-            </div>
-          </motion.div>
-        </section>
-
-        {/* KEY MISTAKES SECTION */}
-        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 bg-[var(--bg-secondary)]/10 overflow-y-auto">
-          <motion.div 
-            {...animationProps}
-            className="max-w-4xl w-full bg-gradient-to-br from-red-500/5 to-rose-500/5 rounded-3xl sm:rounded-3xl border border-red-500/20 p-8 sm:p-12 shadow-2xl group my-8 sm:my-0"
-          >
-            <div className="flex items-start gap-5 sm:gap-6 mb-8 sm:mb-8">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-red-500/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-red-500/20 shadow-inner group-hover:scale-90 transition-transform duration-500 shrink-0">
-                <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 text-red-500" />
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Key Mistakes</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Critical Security Failures</p>
-              </div>
-            </div>
-            <div className="grid gap-4 sm:gap-4">
-              {(analysis?.mistakes || []).map((mistake: string, i: number) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.15 + 0.3 }}
-                  className="flex items-center gap-4 sm:gap-5 p-4 sm:p-4 bg-[var(--bg-secondary)]/50 rounded-xl sm:rounded-xl border border-white/5 hover:border-red-500/30 transition-all group/item"
-                >
-                  <span className="w-10 h-10 sm:w-10 sm:h-10 shrink-0 bg-red-500/10 rounded-lg flex items-center justify-center text-red-400 font-black text-sm sm:text-base group-hover/item:bg-red-500/20 transition-colors">
-                    0{i + 1}
-                  </span>
-                  <span className="text-[var(--text-secondary)] text-sm sm:text-base font-semibold group-hover/item:text-[var(--text-primary)] transition-colors line-clamp-3 sm:line-clamp-2">{mistake}</span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* MITIGATION SECTION */}
-        <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 overflow-y-auto">
-          <motion.div 
-            {...animationProps}
-            className="max-w-5xl w-full bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-3xl sm:rounded-3xl border border-emerald-500/20 p-8 sm:p-12 shadow-2xl relative my-8 sm:my-0"
-          >
-            <div className="flex items-start gap-5 sm:gap-6 mb-10 sm:mb-10">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500/10 rounded-2xl sm:rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-inner shrink-0">
-                <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500" />
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Mitigation Strategy</h2>
-                <p className="text-[var(--text-muted)] font-mono text-[9px] sm:text-[10px] uppercase tracking-widest">Hardening Recommendations</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-8">
               <div className="space-y-4 sm:space-y-4">
-                <h3 className="font-black text-emerald-400 mb-4 sm:mb-4 flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em]">
-                  <CheckCircle2 className="w-4 h-4 sm:w-4 sm:h-4" /> Tactical Roadmap
-                </h3>
-                {(analysis?.mitigation || []).map((step: string, i: number) => (
+                {(analysis?.mistakes || []).map((mistake: string, i: number) => (
                   <motion.div 
-                    key={i} 
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 + 0.5 }}
-                    className="bg-[var(--bg-secondary)]/50 border border-white/5 p-5 sm:p-4 rounded-xl text-[var(--text-secondary)] flex gap-4 sm:gap-4 hover:bg-emerald-500/5 transition-colors"
+                    key={i}
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.15 + 0.3 }}
+                    className="flex items-center gap-5 p-6 sm:p-4 bg-[var(--bg-secondary)]/70 rounded-2xl border border-white/5 hover:border-red-500/40 transition-all group/item"
                   >
-                    <span className="text-emerald-500/50 font-mono font-black mt-0.5 text-sm sm:text-sm">0{i+1}</span>
-                    <span className="text-sm sm:text-base font-medium leading-snug">{step}</span>
+                    <span className="w-12 h-12 sm:w-10 sm:h-10 shrink-0 bg-red-500/10 rounded-xl flex items-center justify-center text-red-400 font-black text-lg sm:text-base">
+                      {i + 1}
+                    </span>
+                    <span className="text-[var(--text-secondary)] text-base sm:text-base font-bold group-hover/item:text-[var(--text-primary)] transition-colors leading-tight">{mistake}</span>
                   </motion.div>
                 ))}
               </div>
-              
-              <div className="space-y-6">
-                <h3 className="font-black text-[var(--accent-blue)] mb-4 sm:mb-4 flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em]">
-                  <Lightbulb className="w-4 h-4 sm:w-4 sm:h-4" /> Strategic Insight
-                </h3>
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8 }}
-                    className="bg-gradient-to-br from-[var(--bg-secondary)] to-transparent border border-white/5 p-8 sm:p-8 rounded-2xl text-[var(--text-secondary)] leading-relaxed text-base sm:text-lg italic shadow-inner relative mb-8 sm:mb-6"
-                  >
-                    <div className="absolute top-3 left-3 sm:top-3 sm:left-3 text-emerald-500/20 text-3xl sm:text-4xl font-serif">“</div>
-                    <div className="relative z-10">{analysis?.what_to_do_guide || 'Awaiting expert guidance...'}</div>
-                    <div className="absolute bottom-3 right-3 sm:bottom-3 sm:right-3 text-emerald-500/20 text-3xl sm:text-4xl font-serif">”</div>
-                  </motion.div>
-
-                  {/* Generate Case Study Button */}
-                  {!caseStudyGenerated && (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleGenerateCaseStudy}
-                      disabled={isGenerating}
-                      className="w-full max-w-sm mx-auto p-4 sm:p-3.5 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-cyan)] rounded-2xl text-white font-black uppercase tracking-[0.1em] shadow-lg flex items-center justify-center gap-3 sm:gap-3 group/btn relative overflow-hidden disabled:opacity-50 transition-all border border-white/10 text-xs sm:text-xs"
-                    >
-                      {isGenerating ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 sm:w-4 sm:h-4 animate-spin" />
-                          <span>Generating Intelligence...</span>
-                        </>
-                      ) : (
-                        <>
-                          <BookOpen className="w-4 h-4 sm:w-4 sm:h-4 group-hover/btn:scale-110 transition-transform" />
-                          <span>Generate Full Case Study</span>
-                          <ChevronDown className="w-3 h-3 sm:w-3 sm:h-3 group-hover/btn:translate-y-1 transition-transform" />
-                        </>
-                      )}
-                    </motion.button>
-                  )}
+            </motion.div>
+          </section>
+  
+          {/* MITIGATION SECTION */}
+          <section className="min-h-full w-full snap-start snap-always flex items-center justify-center p-6 sm:p-6 overflow-y-auto no-scrollbar">
+            <motion.div 
+              {...animationProps}
+              className="max-w-5xl w-full bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-[2.5rem] sm:rounded-3xl border border-emerald-500/20 p-10 sm:p-12 shadow-2xl relative my-12 sm:my-0"
+            >
+              <div className="flex items-start gap-6 mb-12 sm:mb-10">
+                <div className="w-14 h-14 sm:w-14 sm:h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-inner shrink-0">
+                  <ShieldCheck className="w-7 h-7 sm:w-7 sm:h-7 text-emerald-500" />
+                </div>
+                <div>
+                  <h2 className="text-3xl sm:text-3xl font-black text-[var(--text-primary)] mb-1 tracking-tight">Mitigation</h2>
+                  <p className="text-[var(--text-muted)] font-mono text-[10px] uppercase tracking-[0.2em]">Strategic Roadmap</p>
                 </div>
               </div>
-          </motion.div>
-        </section>
+  
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-8">
+                <div className="space-y-5">
+                  <h3 className="font-black text-emerald-400 mb-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.3em]">
+                    <CheckCircle2 className="w-5 h-5" /> Tactical Steps
+                  </h3>
+                  {(analysis?.mitigation || []).map((step: string, i: number) => (
+                    <motion.div 
+                      key={i} 
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 + 0.5 }}
+                      className="bg-[var(--bg-secondary)]/70 border border-white/5 p-6 sm:p-4 rounded-2xl text-[var(--text-secondary)] flex gap-5 hover:bg-emerald-500/10 transition-colors"
+                    >
+                      <span className="text-emerald-500 font-mono font-black text-lg">0{i+1}</span>
+                      <span className="text-base sm:text-base font-bold leading-tight">{step}</span>
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <div className="space-y-8">
+                  <h3 className="font-black text-[var(--accent-blue)] mb-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.3em]">
+                    <Lightbulb className="w-5 h-5" /> Guide
+                  </h3>
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8 }}
+                      className="bg-gradient-to-br from-[var(--bg-secondary)] to-transparent border border-white/5 p-10 sm:p-8 rounded-[2rem] text-[var(--text-secondary)] leading-relaxed text-xl sm:text-lg italic shadow-inner relative"
+                    >
+                      <div className="absolute top-4 left-4 text-emerald-500/20 text-5xl font-serif">“</div>
+                      <div className="relative z-10 font-medium">{analysis?.what_to_do_guide || 'Awaiting guidance...'}</div>
+                      <div className="absolute bottom-4 right-4 text-emerald-500/20 text-5xl font-serif">”</div>
+                    </motion.div>
+  
+                    {!caseStudyGenerated && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleGenerateCaseStudy}
+                        disabled={isGenerating}
+                        className="w-full p-6 sm:p-3.5 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-[1.5rem] text-white font-black uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-4 group/btn relative overflow-hidden disabled:opacity-50 transition-all border border-white/10 text-sm"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <RefreshCw className="w-5 h-5 animate-spin" />
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <BookOpen className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                            <span>Unlock Case Study</span>
+                            <ChevronDown className="w-4 h-4 group-hover/btn:translate-y-1 transition-transform" />
+                          </>
+                        )}
+                      </motion.button>
+                    )}
+                  </div>
+                </div>
+            </motion.div>
+          </section>
 
         {/* CASE STUDY SECTION */}
         {caseStudyGenerated && (
