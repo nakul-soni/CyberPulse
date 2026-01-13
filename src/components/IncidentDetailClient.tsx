@@ -61,12 +61,12 @@ interface IncidentDetailClientProps {
       ...rawAnalysis,
       case_study: {
         title: rawAnalysis.case_study?.title || `Case Study: ${incident.title}`,
-        background: rawAnalysis.case_study?.background || 'Analysis pending',
-        attack_vector: rawAnalysis.case_study?.attack_vector || 'Analysis pending',
-        incident_flow: rawAnalysis.case_study?.incident_flow || ['Analysis pending'],
-        outcome: rawAnalysis.case_study?.outcome || 'Analysis pending',
-        lessons_learned: rawAnalysis.case_study?.lessons_learned || ['Analysis pending'],
-        recommendations: rawAnalysis.case_study?.recommendations || ['Analysis pending'],
+        background: rawAnalysis.case_study?.background || 'Background information pending',
+        attack_vector: rawAnalysis.case_study?.attack_vector || rawAnalysis.case_study?.attackVector || 'Technical analysis pending',
+        incident_flow: rawAnalysis.case_study?.incident_flow || rawAnalysis.case_study?.incidentFlow || ['Incident flow analysis pending'],
+        outcome: rawAnalysis.case_study?.outcome || 'Outcome analysis pending',
+        lessons_learned: rawAnalysis.case_study?.lessons_learned || rawAnalysis.case_study?.lessonsLearned || ['Lessons learned analysis pending'],
+        recommendations: rawAnalysis.case_study?.recommendations || rawAnalysis.case_study?.recommendation || ['Prevention recommendations pending'],
       }
     } : null;
 

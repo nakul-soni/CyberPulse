@@ -31,21 +31,21 @@ export class CaseStudyAgent {
       // Support variations in field names
       const raw = rawCaseStudy || {};
       
-      const caseStudy: CaseStudy = {
-        title: raw.title || `Case Study: ${incidentTitle}`,
-        background: raw.background || incidentDescription || 'Background information pending',
-        attack_vector: raw.attack_vector || raw.attackVector || 'Technical analysis pending',
-        incident_flow: Array.isArray(raw.incident_flow || raw.incidentFlow) 
-          ? (raw.incident_flow || raw.incidentFlow) 
-          : ['Incident flow analysis pending'],
-        outcome: raw.outcome || 'Outcome analysis pending',
-        lessons_learned: Array.isArray(raw.lessons_learned || raw.lessonsLearned)
-          ? (raw.lessons_learned || raw.lessonsLearned)
-          : ['Lessons learned analysis pending'],
-        recommendations: Array.isArray(raw.recommendations)
-          ? raw.recommendations
-          : ['Prevention recommendations pending'],
-      };
+        const caseStudy: CaseStudy = {
+          title: raw.title || `Case Study: ${incidentTitle}`,
+          background: raw.background || incidentDescription || 'Background information pending',
+          attack_vector: raw.attack_vector || raw.attackVector || 'Technical analysis pending',
+          incident_flow: Array.isArray(raw.incident_flow || raw.incidentFlow) 
+            ? (raw.incident_flow || raw.incidentFlow) 
+            : ['Incident flow analysis pending'],
+          outcome: raw.outcome || 'Outcome analysis pending',
+          lessons_learned: Array.isArray(raw.lessons_learned || raw.lessonsLearned)
+            ? (raw.lessons_learned || raw.lessonsLearned)
+            : ['Lessons learned analysis pending'],
+          recommendations: Array.isArray(raw.recommendations || raw.recommendation)
+            ? (raw.recommendations || raw.recommendation)
+            : ['Prevention recommendations pending'],
+        };
 
       // Ensure minimum content
       if (caseStudy.incident_flow.length < 2) {
