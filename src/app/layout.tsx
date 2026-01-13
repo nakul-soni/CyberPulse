@@ -18,24 +18,24 @@ export default function RootLayout({
       <body className="bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased">
         <div className="min-h-screen flex flex-col bg-grid-pattern">
             <header className="sticky top-0 z-50 bg-[var(--bg-secondary)]/90 backdrop-blur-xl border-b border-[var(--border-primary)]">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-8 h-8 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-lg flex items-center justify-center overflow-hidden">
-                    <Shield className="w-4 h-4 text-white relative z-10" />
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-12 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 sm:gap-2">
+                  <div className="relative w-8 h-8 sm:w-7 sm:h-7 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                    <Shield className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-white relative z-10" />
                     <div className="absolute inset-0 cyber-scan" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-bold tracking-tight text-[var(--text-primary)] leading-none mb-0.5">CyberPulse</span>
-                    <span className="text-[9px] font-mono uppercase tracking-widest text-[var(--accent-cyan)] leading-none">Intelligence Platform</span>
+                    <span className="text-base sm:text-sm font-bold tracking-tight text-[var(--text-primary)] leading-none mb-0.5">CyberPulse</span>
+                    <span className="text-[9px] sm:hidden font-mono uppercase tracking-widest text-[var(--accent-cyan)] leading-none">Intelligence Platform</span>
                   </div>
                 </div>
-                <nav className="flex items-center gap-2 sm:gap-4">
+                <nav className="flex items-center gap-2 sm:gap-1.5">
                   <a 
                     href="/" 
-                    className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)]/50 hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] rounded-lg transition-all duration-200"
+                    className="flex items-center gap-2 px-2.5 sm:px-2 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)]/50 hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] rounded-lg transition-all duration-200"
                   >
-                    <Shield className="w-4 h-4 sm:hidden" />
-                    <span className="hidden sm:inline">Dashboard</span>
+                    <Shield className="w-4 h-4" />
+                    <span className="hidden sm:hidden">Dashboard</span>
                   </a>
                   <RefreshButton />
                 </nav>

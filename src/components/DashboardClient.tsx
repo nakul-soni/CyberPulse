@@ -152,36 +152,36 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   }, {} as Record<string, number>);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-10 sm:py-6">
-      <div className="mb-10 sm:mb-6 opacity-0 animate-fade-in-up stagger-1">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2 sm:mb-1.5">
-              <span className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-widest bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
-                Live Feed
+    <div className="max-w-7xl mx-auto px-6 sm:px-4 lg:px-8 py-10 sm:py-6">
+      <div className="mb-14 sm:mb-6 opacity-0 animate-fade-in-up stagger-1">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 sm:gap-4">
+          <div className="text-center sm:text-left">
+            <div className="flex justify-center sm:justify-start items-center gap-2 mb-4 sm:mb-1.5">
+              <span className="px-2 py-0.5 text-[10px] sm:text-[9px] font-mono uppercase tracking-[0.2em] bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
+                Live Intelligence Feed
               </span>
             </div>
-            <h1 className="text-3xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight mb-3 sm:mb-2 leading-tight">
-              Threat Intelligence Dashboard
+            <h1 className="text-4xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight mb-4 sm:mb-2 leading-tight">
+              Threat Intelligence <br className="sm:hidden" /> Dashboard
             </h1>
-            <p className="text-[var(--text-secondary)] max-w-2xl text-sm sm:text-sm leading-relaxed">
-              Real-time cyber threat intelligence powered by AI. Monitoring global feeds with actionable analysis.
+            <p className="text-[var(--text-secondary)] max-w-2xl text-base sm:text-sm leading-relaxed mx-auto sm:mx-0">
+              Real-time cyber threat monitoring powered by advanced AI. Track global incidents with structured technical analysis.
             </p>
           </div>
           
-          <div className="flex items-center gap-4 p-4 sm:p-3 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl sm:rounded-lg">
-            <div className="relative">
-              <div className="w-10 h-10 sm:w-9 sm:h-9 bg-[var(--severity-low)]/10 rounded-lg flex items-center justify-center">
-                <Server className="w-4 h-4 sm:w-4 sm:h-4 text-[var(--severity-low)]" />
+          <div className="flex items-center gap-4 p-5 sm:p-3 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-lg shadow-xl shadow-black/20">
+            <div className="relative shrink-0">
+              <div className="w-12 h-12 sm:w-9 sm:h-9 bg-[var(--severity-low)]/10 rounded-xl flex items-center justify-center">
+                <Server className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--severity-low)]" />
               </div>
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-2.5 sm:h-2.5 bg-[var(--severity-low)] rounded-full animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 sm:w-2.5 sm:h-2.5 bg-[var(--severity-low)] rounded-full animate-pulse border-2 border-[var(--bg-card)]" />
             </div>
             <div>
-              <p className="text-[9px] sm:text-[9px] font-mono uppercase tracking-wider text-[var(--text-muted)]">System Status</p>
-              <p className="text-xs sm:text-xs font-medium text-[var(--text-primary)]">
-                AI Engine: <span className="text-[var(--severity-low)]">Online</span>
+              <p className="text-[10px] sm:text-[9px] font-mono uppercase tracking-widest text-[var(--text-muted)] mb-0.5">Engine Status</p>
+              <p className="text-sm sm:text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
+                AI Pipeline: <span className="text-[var(--severity-low)]">Online</span>
                 {isPolling && (
-                  <span className="ml-2 sm:ml-1.5 text-[10px] sm:text-[10px] text-[var(--accent-cyan)]">(Processing...)</span>
+                  <span className="text-[10px] text-[var(--accent-cyan)] animate-pulse">(Processing...)</span>
                 )}
               </p>
             </div>
@@ -189,34 +189,36 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-3 mb-10 sm:mb-6 opacity-0 animate-fade-in-up stagger-2">
-        <div className="p-5 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl">
-          <div className="flex items-center gap-2 mb-2 sm:mb-1.5">
-            <Activity className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[var(--accent-blue)]" />
-            <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">Total Threats</span>
+      <div className="mb-12 sm:mb-6 opacity-0 animate-fade-in-up stagger-2">
+        <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto pb-4 sm:pb-0 no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 snap-x">
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <Activity className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--accent-blue)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Total</span>
+            </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--text-primary)]">{totalResults}</p>
           </div>
-          <p className="text-2xl sm:text-xl font-bold text-[var(--text-primary)]">{totalResults}</p>
-        </div>
-        <div className="p-5 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl">
-          <div className="flex items-center gap-2 mb-2 sm:mb-1.5">
-            <AlertTriangle className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[var(--severity-high)]" />
-            <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">High Risk</span>
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <AlertTriangle className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--severity-high)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">High</span>
+            </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--severity-high)]">{severityCounts['High'] || 0}</p>
           </div>
-          <p className="text-2xl sm:text-xl font-bold text-[var(--severity-high)]">{severityCounts['High'] || 0}</p>
-        </div>
-        <div className="p-5 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl">
-          <div className="flex items-center gap-2 mb-2 sm:mb-1.5">
-            <TrendingUp className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[var(--severity-medium)]" />
-            <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">Medium Risk</span>
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <TrendingUp className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--severity-medium)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Med</span>
+            </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--severity-medium)]">{severityCounts['Medium'] || 0}</p>
           </div>
-          <p className="text-2xl sm:text-xl font-bold text-[var(--severity-medium)]">{severityCounts['Medium'] || 0}</p>
-        </div>
-        <div className="p-5 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl">
-          <div className="flex items-center gap-2 mb-2 sm:mb-1.5">
-            <Zap className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[var(--severity-low)]" />
-            <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">Low Risk</span>
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <Zap className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--severity-low)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Low</span>
+            </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--severity-low)]">{severityCounts['Low'] || 0}</p>
           </div>
-          <p className="text-2xl sm:text-xl font-bold text-[var(--severity-low)]">{severityCounts['Low'] || 0}</p>
         </div>
       </div>
 
