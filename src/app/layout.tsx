@@ -29,15 +29,16 @@ export default function RootLayout({
                     <span className="text-[9px] font-mono uppercase tracking-widest text-[var(--accent-cyan)] leading-none">Intelligence Platform</span>
                   </div>
                 </div>
-              <nav className="flex items-center gap-4">
-                <a 
-                  href="/" 
-                  className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)]/50 hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] rounded-lg transition-all duration-200"
-                >
-                  Dashboard
-                </a>
-                <RefreshButton />
-              </nav>
+                <nav className="flex items-center gap-2 sm:gap-4">
+                  <a 
+                    href="/" 
+                    className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-card)]/50 hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] rounded-lg transition-all duration-200"
+                  >
+                    <Shield className="w-4 h-4 sm:hidden" />
+                    <span className="hidden sm:inline">Dashboard</span>
+                  </a>
+                  <RefreshButton />
+                </nav>
             </div>
           </header>
           <main className="flex-grow">
