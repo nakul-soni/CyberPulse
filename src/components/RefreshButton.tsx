@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RefreshCw, Check, AlertCircle } from "lucide-react";
 
 export default function RefreshButton() {
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -18,32 +19,44 @@ export default function RefreshButton() {
     }
   };
 
-  const label =
-    status === "loading"
-      ? "Refreshing..."
-      : status === "done"
-      ? "Refreshed!"
-      : status === "error"
-      ? "Retry?"
-      : "Refresh News";
-
   return (
     <button
       onClick={handleRefresh}
-      className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-        status === "loading"
-          ? "bg-blue-100 text-blue-700 cursor-wait"
+      className={`
+        flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border
+        ${status === "loading"
+          ? "bg-[var(--accent-blue)]/10 border-[var(--accent-blue)]/30 text-[var(--accent-cyan)] cursor-wait"
           : status === "error"
-          ? "bg-red-100 text-red-700 hover:bg-red-200"
+          ? "bg-[var(--severity-high)]/10 border-[var(--severity-high)]/30 text-[var(--severity-high)] hover:bg-[var(--severity-high)]/20"
           : status === "done"
-          ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-          : "bg-blue-50 text-blue-700 hover:bg-blue-100"
-      }`}
+          ? "bg-[var(--severity-low)]/10 border-[var(--severity-low)]/30 text-[var(--severity-low)]"
+          : "bg-[var(--bg-card)] border-[var(--border-primary)] text-[var(--text-secondary)] hover:border-[var(--accent-blue)]/50 hover:text-[var(--accent-cyan)] hover:bg-[var(--accent-blue)]/5"
+        }
+      `}
       disabled={status === "loading"}
       aria-busy={status === "loading"}
     >
-      {label}
+      {status === "loading" ? (
+        <>
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          <span>Refreshing...</span>
+        </>
+      ) : status === "done" ? (
+        <>
+          <Check className="w-4 h-4" />
+          <span>Updated!</span>
+        </>
+      ) : status === "error" ? (
+        <>
+          <AlertCircle className="w-4 h-4" />
+          <span>Retry</span>
+        </>
+      ) : (
+        <>
+          <RefreshCw className="w-4 h-4" />
+          <span className="hidden sm:inline">Refresh</span>
+        </>
+      )}
     </button>
   );
 }
-

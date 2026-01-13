@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { IncidentCard } from './IncidentCard';
 import { SearchAndFilters } from './SearchAndFilters';
-import { Shield, Zap, Info } from 'lucide-react';
+import { Shield, Zap, Info, Activity, AlertTriangle, TrendingUp, Server } from 'lucide-react';
 
 interface Incident {
   id: string;
@@ -27,19 +27,20 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>({});
   const [totalResults, setTotalResults] = useState<number>(initialIncidents.length);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch incidents with current search and filters
   const fetchIncidents = useCallback(async (search?: string, filterState?: FilterState) => {
     const query = search !== undefined ? search : searchQuery;
     const filter = filterState !== undefined ? filterState : filters;
+    setIsLoading(true);
     try {
       const params = new URLSearchParams({
         page: '1',
         limit: '50',
       });
 
-      // Only apply todayOnly if no date filter is set
       if (!filter.date) {
         params.set('todayOnly', 'true');
       }
@@ -70,12 +71,13 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
       }
     } catch (error) {
       console.error('Error fetching incidents:', error);
+    } finally {
+      setIsLoading(false);
     }
     return [];
   }, [searchQuery, filters]);
 
   useEffect(() => {
-    // Check if we need to poll (any incidents still processing)
     const needsPolling = incidents.some((incident) => {
       const analysis = typeof incident.analysis === 'string' 
         ? JSON.parse(incident.analysis) 
@@ -94,17 +96,14 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
 
     setIsPolling(true);
 
-    // Clear any existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    // Poll every 5 seconds for updates (with current search/filters applied)
     intervalRef.current = setInterval(async () => {
       const updated = await fetchIncidents(searchQuery, filters);
       
       if (updated) {
-        // Check if all incidents now have analysis
         const allAnalyzed = updated.every((incident: Incident) => {
           const analysis = typeof incident.analysis === 'string' 
             ? JSON.parse(incident.analysis) 
@@ -120,7 +119,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
           }
         }
       }
-    }, 5000); // Poll every 5 seconds
+    }, 5000);
 
     return () => {
       if (intervalRef.current) {
@@ -146,70 +145,157 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
     fetchIncidents('', {});
   };
 
+  const severityCounts = incidents.reduce((acc, inc) => {
+    const sev = inc.severity || 'Low';
+    acc[sev] = (acc[sev] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">Intelligence Dashboard</h1>
-          <p className="text-slate-500 max-w-2xl">
-            Real-time cyber threat intelligence powered by AI. We monitor global news feeds and provide actionable analysis for every incident.
-          </p>
-        </div>
-        <div className="flex items-center gap-4 bg-blue-50 border border-blue-100 p-4 rounded-xl">
-          <Zap className="text-blue-600 w-5 h-5" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8 opacity-0 animate-fade-in-up stagger-1">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div>
-            <p className="text-xs font-bold text-blue-900 uppercase tracking-wider">System Status</p>
-            <p className="text-sm text-blue-700">
-              AI Analysis Engine: <span className="font-semibold text-blue-900">Online</span>
-              {isPolling && (
-                <span className="ml-2 text-xs text-blue-600">(Updating...)</span>
-              )}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
+                Live Feed
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] tracking-tight mb-3">
+              Threat Intelligence Dashboard
+            </h1>
+            <p className="text-[var(--text-secondary)] max-w-2xl text-sm sm:text-base">
+              Real-time cyber threat intelligence powered by AI. Monitoring global feeds with actionable analysis.
             </p>
+          </div>
+          
+          <div className="flex items-center gap-3 p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+            <div className="relative">
+              <div className="w-10 h-10 bg-[var(--severity-low)]/10 rounded-lg flex items-center justify-center">
+                <Server className="w-5 h-5 text-[var(--severity-low)]" />
+              </div>
+              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[var(--severity-low)] rounded-full animate-pulse" />
+            </div>
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)]">System Status</p>
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                AI Engine: <span className="text-[var(--severity-low)]">Online</span>
+                {isPolling && (
+                  <span className="ml-2 text-xs text-[var(--accent-cyan)]">(Processing...)</span>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <SearchAndFilters
-        onSearch={handleSearch}
-        onFilter={handleFilter}
-        onReset={handleReset}
-      />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 opacity-0 animate-fade-in-up stagger-2">
+        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <Activity className="w-4 h-4 text-[var(--accent-blue)]" />
+            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">Total</span>
+          </div>
+          <p className="text-2xl font-bold text-[var(--text-primary)]">{totalResults}</p>
+        </div>
+        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle className="w-4 h-4 text-[var(--severity-high)]" />
+            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">High</span>
+          </div>
+          <p className="text-2xl font-bold text-[var(--severity-high)]">{severityCounts['High'] || 0}</p>
+        </div>
+        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-[var(--severity-medium)]" />
+            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">Medium</span>
+          </div>
+          <p className="text-2xl font-bold text-[var(--severity-medium)]">{severityCounts['Medium'] || 0}</p>
+        </div>
+        <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-4 h-4 text-[var(--severity-low)]" />
+            <span className="text-xs font-mono text-[var(--text-muted)] uppercase">Low</span>
+          </div>
+          <p className="text-2xl font-bold text-[var(--severity-low)]">{severityCounts['Low'] || 0}</p>
+        </div>
+      </div>
 
-      {/* Results Count */}
+      <div className="opacity-0 animate-fade-in-up stagger-3">
+        <SearchAndFilters
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onReset={handleReset}
+        />
+      </div>
+
       {(searchQuery || Object.values(filters).some(v => v)) && (
-        <div className="mb-6 text-sm text-slate-600">
-          Found <span className="font-semibold text-slate-900">{totalResults}</span> incident{totalResults !== 1 ? 's' : ''}
-          {searchQuery && ` matching "${searchQuery}"`}
+        <div className="mb-6 text-sm text-[var(--text-secondary)] opacity-0 animate-fade-in-up">
+          Found <span className="font-semibold text-[var(--text-primary)]">{totalResults}</span> incident{totalResults !== 1 ? 's' : ''}
+          {searchQuery && <span className="text-[var(--accent-cyan)]"> matching "{searchQuery}"</span>}
         </div>
       )}
 
-      {incidents && incidents.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {incidents.map((incident) => (
-            <IncidentCard key={incident.id} incident={incident} />
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="p-5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl animate-pulse">
+              <div className="flex gap-2 mb-4">
+                <div className="h-5 w-16 bg-[var(--bg-card-hover)] rounded-full" />
+                <div className="h-5 w-20 bg-[var(--bg-card-hover)] rounded" />
+              </div>
+              <div className="h-6 w-3/4 bg-[var(--bg-card-hover)] rounded mb-3" />
+              <div className="h-4 w-full bg-[var(--bg-card-hover)] rounded mb-2" />
+              <div className="h-4 w-2/3 bg-[var(--bg-card-hover)] rounded mb-4" />
+              <div className="flex justify-between pt-4 border-t border-[var(--border-primary)]">
+                <div className="h-5 w-24 bg-[var(--bg-card-hover)] rounded" />
+                <div className="h-5 w-20 bg-[var(--bg-card-hover)] rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : incidents && incidents.length > 0 ? (
+        <div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          onMouseLeave={() => setHoveredId(null)}
+        >
+          {incidents.map((incident, index) => (
+            <div
+              key={incident.id}
+              className={`opacity-0 animate-fade-in-up stagger-${Math.min(index % 6 + 1, 6)}`}
+              onMouseEnter={() => setHoveredId(incident.id)}
+            >
+              <IncidentCard 
+                incident={incident} 
+                isHovered={hoveredId === incident.id}
+                isOtherHovered={hoveredId !== null && hoveredId !== incident.id}
+              />
+            </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-white border border-slate-200 rounded-2xl border-dashed">
-          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-slate-400" />
+        <div className="text-center py-20 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl border-dashed opacity-0 animate-fade-in-up">
+          <div className="w-16 h-16 bg-[var(--bg-card-hover)] rounded-full flex items-center justify-center mx-auto mb-4">
+            <Shield className="w-8 h-8 text-[var(--text-muted)]" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900">No incidents found</h3>
-          <p className="text-slate-500 mb-6">Start by refreshing the news feed to fetch the latest intelligence.</p>
-          <a href="/api/ingest" className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">No incidents found</h3>
+          <p className="text-[var(--text-secondary)] mb-6">Start by refreshing the news feed to fetch the latest intelligence.</p>
+          <a 
+            href="/api/ingest" 
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
+          >
+            <Zap className="w-4 h-4" />
             Refresh Now
           </a>
         </div>
       )}
 
-      <div className="mt-16 p-6 bg-slate-900 rounded-2xl text-white flex items-start gap-5">
-        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
-          <Info className="w-6 h-6 text-blue-400" />
+      <div className="mt-12 p-6 bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-2xl flex items-start gap-5 opacity-0 animate-fade-in-up">
+        <div className="w-12 h-12 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-purple)]/20 rounded-xl flex items-center justify-center shrink-0">
+          <Info className="w-6 h-6 text-[var(--accent-cyan)]" />
         </div>
         <div>
-          <h4 className="font-bold text-lg mb-1">About CyberPulse AI</h4>
-          <p className="text-slate-400 text-sm leading-relaxed">
+          <h4 className="font-bold text-lg mb-2 text-[var(--text-primary)]">About CyberPulse AI</h4>
+          <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
             CyberPulse uses advanced LLMs to process raw technical data into structured intelligence. Our models classify attack types, determine severity, and generate step-by-step mitigation guides tailored for both technical and non-technical stakeholders.
           </p>
         </div>
