@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:worker": "tsc --project tsconfig.worker.json",
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "node scripts/migrate.js",
     "ingest": "tsx scripts/ingest.js",
     "worker": "tsx scripts/worker.js",
+    "worker:prod": "node scripts/worker.js",
     "reanalyze": "tsx scripts/reanalyze-all.js"
   },
   "dependencies": {
