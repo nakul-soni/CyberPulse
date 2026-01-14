@@ -9,7 +9,9 @@
  * Run: tsx scripts/worker.js
  */
 
+// Load environment variables from .env.local (local dev) or use Render's env vars (production)
 require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env' });
 const cron = require('node-cron');
 
 // Load cron schedule from env (default: every 6 hours)
