@@ -13,7 +13,6 @@ export async function GET() {
         itemsNew: stats.itemsNew,
         itemsDuplicate: stats.itemsDuplicate,
         itemsFailed: stats.itemsFailed,
-        itemsAnalyzed: stats.itemsAnalyzed,
       },
       message: 'Ingestion completed successfully',
     });
