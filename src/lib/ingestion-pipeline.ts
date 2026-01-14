@@ -7,13 +7,13 @@
  * 3. (AI analysis handled by background worker, not here)
  */
 
-import { NewsIngestionAgent, RSSFeedItem } from '@/agents/news-ingestion-agent';
-import { DeduplicationAgent } from '@/agents/deduplication-agent';
+import { NewsIngestionAgent, RSSFeedItem } from '../agents/news-ingestion-agent';
+import { DeduplicationAgent } from '../agents/deduplication-agent';
 import {
   insertIncident,
   createIngestionLog,
   updateIngestionLog,
-} from '@/lib/db';
+} from './db';
 
 export interface IngestionStats {
   itemsFetched: number;

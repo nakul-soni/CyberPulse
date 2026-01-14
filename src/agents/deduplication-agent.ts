@@ -8,7 +8,7 @@
  */
 
 import CryptoJS from 'crypto-js';
-import { incidentExistsByHash, incidentExistsByUrl } from '@/lib/db';
+import { incidentExistsByHash, incidentExistsByUrl } from '../lib/db';
 
 export interface DeduplicationResult {
   isDuplicate: boolean;
