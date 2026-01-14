@@ -78,8 +78,8 @@ export class AIAnalysisAgent {
         return null;
       }
 
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content;
+        const data = await response.json() as { choices: Array<{ message: { content: string } }> };
+        const content = data.choices[0]?.message?.content;
       
       if (!content) {
         console.error('No content in AI response');
