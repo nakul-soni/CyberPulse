@@ -42,7 +42,7 @@ setInterval(async () => {
 
 async function runIngestion() {
   try {
-    const module = await import('../src/lib/ingestion-pipeline.ts');
+    const module = await import('../dist/lib/ingestion-pipeline.js');
     const IngestionPipeline =
       module.IngestionPipeline || module.default?.IngestionPipeline || module.default;
     const pipeline = new IngestionPipeline();
@@ -66,14 +66,14 @@ async function runAnalysisBatch() {
   }
 
   try {
-    const dbModule = await import('../src/lib/db.ts');
+    const dbModule = await import('../dist/lib/db.js');
     const query = dbModule.query || dbModule.default?.query || dbModule.default;
     const updateIncidentAnalysis =
       dbModule.updateIncidentAnalysis || dbModule.default?.updateIncidentAnalysis;
 
-    const aiModule = await import('../src/agents/ai-analysis-agent.ts');
-    const riskModule = await import('../src/agents/risk-severity-agent.ts');
-    const caseStudyModule = await import('../src/agents/case-study-agent.ts');
+    const aiModule = await import('../dist/agents/ai-analysis-agent.js');
+    const riskModule = await import('../dist/agents/risk-severity-agent.js');
+    const caseStudyModule = await import('../dist/agents/case-study-agent.js');
 
     const AIAnalysisAgent =
       aiModule.AIAnalysisAgent || aiModule.default?.AIAnalysisAgent || aiModule.default;
