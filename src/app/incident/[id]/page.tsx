@@ -11,5 +11,12 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
     notFound();
   }
 
-  return <IncidentDetailClient incident={incident} />;
+  const serializedIncident = {
+    ...incident,
+    published_at: incident.published_at instanceof Date 
+      ? incident.published_at.toISOString() 
+      : incident.published_at,
+  };
+
+  return <IncidentDetailClient incident={serializedIncident} />;
 }
