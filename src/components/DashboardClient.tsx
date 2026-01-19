@@ -34,6 +34,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchIncidents = useCallback(async (search?: string, filterState?: FilterState, resetPage = true) => {
     const query = search !== undefined ? search : searchQuery;
@@ -48,12 +49,10 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         limit: '200',
       });
 
-      if (!query && !filter.date && !filter.severity && !filter.attackType) {
-        params.set('todayOnly', 'true');
-      }
-
       if (query) {
         params.set('query', query);
+      } else if (!filter.date && !filter.severity && !filter.attackType) {
+        params.set('todayOnly', 'true');
       }
 
       if (filter.severity) {
@@ -152,7 +151,12 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    fetchIncidents(query, filters);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchIncidents(query, filters);
+    }, 300);
   };
 
   const handleFilter = (filterState: FilterState) => {
