@@ -31,6 +31,7 @@ export interface AIAnalysis {
 
 export class AIAnalysisAgent {
   private apiKey: string;
+  private models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'gemma2-9b-it'];
 
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || '';
@@ -40,7 +41,7 @@ export class AIAnalysisAgent {
   }
 
   /**
-   * Analyze an incident using AI
+   * Analyze an incident using AI with fallback models
    */
   async analyzeIncident(
     title: string,
@@ -48,52 +49,60 @@ export class AIAnalysisAgent {
   ): Promise<AIAnalysis | null> {
     const prompt = this.buildPrompt(title, description);
     
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: 'llama-3.1-8b-instant',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a senior cybersecurity analyst. Your goal is to convert complex cyber news into actionable intelligence. Always respond with valid JSON only, no preamble or explanation.',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          response_format: { type: 'json_object' },
-          temperature: 0.1,
-        }),
-      });
+    for (const model of this.models) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a senior cybersecurity analyst. Your goal is to convert complex cyber news into actionable intelligence. Always respond with valid JSON only, no preamble or explanation.',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.1,
+          }),
+        });
 
-      if (!response.ok) {
-        const error = await response.text();
-        console.error('AI API error:', error);
-        return null;
-      }
+        if (!response.ok) {
+          const error = await response.text();
+          if (error.includes('rate_limit_exceeded')) {
+            console.log(`Rate limit hit for ${model}, trying fallback...`);
+            continue;
+          }
+          console.error('AI API error:', error);
+          continue;
+        }
 
         const data = await response.json() as { choices: Array<{ message: { content: string } }> };
         const content = data.choices[0]?.message?.content;
-      
-      if (!content) {
-        console.error('No content in AI response');
-        return null;
-      }
+        
+        if (!content) {
+          console.error('No content in AI response');
+          continue;
+        }
 
-      const analysis = JSON.parse(content) as AIAnalysis;
-      
-      // Validate and normalize the response
-      return this.validateAndNormalize(analysis);
-    } catch (error: any) {
-      console.error('AI Analysis failed:', error.message);
-      return null;
+        const analysis = JSON.parse(content) as AIAnalysis;
+        console.log(`✅ Analysis completed using ${model}`);
+        return this.validateAndNormalize(analysis);
+      } catch (error: any) {
+        console.error(`AI Analysis failed with ${model}:`, error.message);
+        continue;
+      }
     }
+    
+    console.error('All AI models exhausted');
+    return null;
   }
 
   /**
