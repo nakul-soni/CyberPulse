@@ -9,7 +9,7 @@ export default async function DashboardPage() {
   let error: Error | null = null;
 
   try {
-    const result = await getIncidents({ page: 1, limit: 50, todayOnly: true });
+    const result = await getIncidents({ page: 1, limit: 200, todayOnly: true });
     incidents = result.incidents;
   } catch (err: any) {
     error = err;

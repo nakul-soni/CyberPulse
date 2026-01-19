@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { IncidentCard } from './IncidentCard';
 import { SearchAndFilters } from './SearchAndFilters';
-import { Shield, Zap, Info, Activity, AlertTriangle, TrendingUp, Server } from 'lucide-react';
+import { Shield, Zap, Info, Activity, AlertTriangle, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Incident {
   id: string;
@@ -21,24 +21,31 @@ interface FilterState {
   date?: string;
 }
 
+const ITEMS_PER_PAGE = 9;
+
 export function DashboardClient({ initialIncidents }: { initialIncidents: Incident[] }) {
-  const [incidents, setIncidents] = useState<Incident[]>(initialIncidents);
+  const [incidents, setIncidents] = useState<Incident[]>(initialIncidents.slice(0, ITEMS_PER_PAGE));
+  const [allIncidents, setAllIncidents] = useState<Incident[]>(initialIncidents);
   const [isPolling, setIsPolling] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>({});
   const [totalResults, setTotalResults] = useState<number>(initialIncidents.length);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchIncidents = useCallback(async (search?: string, filterState?: FilterState) => {
+  const fetchIncidents = useCallback(async (search?: string, filterState?: FilterState, resetPage = true) => {
     const query = search !== undefined ? search : searchQuery;
     const filter = filterState !== undefined ? filterState : filters;
     setIsLoading(true);
+    if (resetPage) {
+      setCurrentPage(1);
+    }
     try {
       const params = new URLSearchParams({
         page: '1',
-        limit: '50',
+        limit: '200',
       });
 
       if (!query && !filter.date && !filter.severity && !filter.attackType) {
@@ -65,7 +72,8 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
       const data = await response.json();
       
       if (data.data) {
-        setIncidents(data.data);
+        setAllIncidents(data.data);
+        setIncidents(data.data.slice(0, ITEMS_PER_PAGE));
         setTotalResults(data.pagination?.total || data.data.length);
         return data.data;
       }
@@ -78,7 +86,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   }, [searchQuery, filters]);
 
   useEffect(() => {
-    const needsPolling = incidents.some((incident) => {
+    const needsPolling = allIncidents.some((incident) => {
       const analysis = typeof incident.analysis === 'string' 
         ? JSON.parse(incident.analysis) 
         : incident.analysis;
@@ -101,7 +109,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
     }
 
     intervalRef.current = setInterval(async () => {
-      const updated = await fetchIncidents(searchQuery, filters);
+      const updated = await fetchIncidents(searchQuery, filters, false);
       
       if (updated) {
         const allAnalyzed = updated.every((incident: Incident) => {
@@ -127,7 +135,20 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         intervalRef.current = null;
       }
     };
-  }, [incidents, searchQuery, filters, fetchIncidents]);
+  }, [allIncidents, searchQuery, filters, fetchIncidents]);
+
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    setIncidents(allIncidents.slice(startIndex, endIndex));
+  }, [currentPage, allIncidents]);
+
+  const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -237,26 +258,86 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
             </div>
           ))}
         </div>
-      ) : incidents && incidents.length > 0 ? (
-        <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4"
-          onMouseLeave={() => setHoveredId(null)}
-        >
-          {incidents.map((incident, index) => (
-            <div
-              key={incident.id}
-              className={`opacity-0 animate-fade-in-up stagger-${Math.min(index % 6 + 1, 6)}`}
-              onMouseEnter={() => setHoveredId(incident.id)}
+        ) : incidents && incidents.length > 0 ? (
+          <>
+            <div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4"
+              onMouseLeave={() => setHoveredId(null)}
             >
-              <IncidentCard 
-                incident={incident} 
-                isHovered={hoveredId === incident.id}
-                isOtherHovered={hoveredId !== null && hoveredId !== incident.id}
-              />
+              {incidents.map((incident, index) => (
+                <div
+                  key={incident.id}
+                  className={`opacity-0 animate-fade-in-up stagger-${Math.min(index % 6 + 1, 6)}`}
+                  onMouseEnter={() => setHoveredId(incident.id)}
+                >
+                  <IncidentCard 
+                    incident={incident} 
+                    isHovered={hoveredId === incident.id}
+                    isOtherHovered={hoveredId !== null && hoveredId !== incident.id}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : (
+
+            {totalPages > 1 && (
+              <div className="mt-10 flex items-center justify-center gap-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--bg-card)]"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => {
+                      if (totalPages <= 7) return true;
+                      if (page === 1 || page === totalPages) return true;
+                      if (page >= currentPage - 1 && page <= currentPage + 1) return true;
+                      return false;
+                    })
+                    .map((page, index, arr) => {
+                      const showEllipsisBefore = index > 0 && arr[index - 1] !== page - 1;
+                      return (
+                        <div key={page} className="flex items-center">
+                          {showEllipsisBefore && (
+                            <span className="px-2 text-[var(--text-muted)]">...</span>
+                          )}
+                          <button
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all ${
+                              currentPage === page
+                                ? 'bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white'
+                                : 'bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--bg-card)]"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <p className="mt-4 text-center text-sm text-[var(--text-muted)]">
+                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, totalResults)} of {totalResults} incidents
+              </p>
+            )}
+          </>
+        ) : (
         <div className="text-center py-20 sm:py-16 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl border-dashed opacity-0 animate-fade-in-up">
           <div className="w-16 h-16 sm:w-14 sm:h-14 bg-[var(--bg-card-hover)] rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-3">
             <Shield className="w-8 h-8 sm:w-7 sm:h-7 text-[var(--text-muted)]" />
