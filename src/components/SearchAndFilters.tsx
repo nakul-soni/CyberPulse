@@ -59,26 +59,32 @@ export function SearchAndFilters({ onSearch, onFilter, onReset }: SearchAndFilte
         `}
       >
         <div className="relative flex items-center gap-3">
-          <div className="relative flex-1 group">
-            <Search className={`absolute left-5 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${isFocused ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`} />
-              <input
-                type="text"
-                placeholder="Search threats..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                className={`
-                  w-full pl-12 pr-12 py-4 sm:py-3.5 
-                  bg-[var(--bg-card)] border rounded-2xl sm:rounded-xl 
-                  text-base text-[var(--text-primary)] placeholder-[var(--text-muted)]
-                  outline-none transition-all duration-200
-                  ${isFocused 
-                    ? 'border-[var(--accent-blue)] shadow-lg shadow-[var(--accent-blue)]/10' 
-                    : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]'}
-                `}
-              />
+            <div className="relative flex-1 group">
+              <Search className={`absolute left-5 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${isFocused ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`} />
+                <input
+                  type="text"
+                  placeholder="Search any attack or case (e.g. Stuxnet, WannaCry)..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  className={`
+                    w-full pl-12 pr-32 py-4 sm:py-3.5 
+                    bg-[var(--bg-card)] border rounded-2xl sm:rounded-xl 
+                    text-base text-[var(--text-primary)] placeholder-[var(--text-muted)]
+                    outline-none transition-all duration-200
+                    ${isFocused 
+                      ? 'border-[var(--accent-blue)] shadow-lg shadow-[var(--accent-blue)]/10' 
+                      : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]'}
+                  `}
+                />
+              <div className="absolute right-12 top-1/2 transform -translate-y-1/2 hidden sm:flex items-center gap-2">
+                <span className="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
+                  Global Search
+                </span>
+              </div>
             {searchQuery && (
+
               <button
                 onClick={() => handleSearch('')}
                 className="absolute right-5 top-1/2 transform -translate-y-1/2 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-md transition-colors"

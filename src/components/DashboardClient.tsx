@@ -259,9 +259,18 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
       </div>
 
       {(searchQuery || Object.values(filters).some(v => v)) && (
-        <div className="mb-8 sm:mb-6 text-sm text-[var(--text-secondary)] opacity-0 animate-fade-in-up">
-          Found <span className="font-semibold text-[var(--text-primary)]">{totalResults}</span> incident{totalResults !== 1 ? 's' : ''}
-          {searchQuery && <span className="text-[var(--accent-cyan)]"> matching "{searchQuery}"</span>}
+        <div className="mb-8 sm:mb-6 text-sm text-[var(--text-secondary)] opacity-0 animate-fade-in-up flex items-center gap-3">
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin" />
+              <span>Searching global intelligence databases for <span className="text-[var(--accent-cyan)] font-bold">"{searchQuery}"</span>...</span>
+            </div>
+          ) : (
+            <>
+              Found <span className="font-semibold text-[var(--text-primary)]">{totalResults}</span> incident{totalResults !== 1 ? 's' : ''}
+              {searchQuery && <span className="text-[var(--accent-cyan)]"> matching "{searchQuery}"</span>}
+            </>
+          )}
         </div>
       )}
 
