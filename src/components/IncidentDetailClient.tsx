@@ -52,16 +52,37 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     const getAnalysis = () => {
       if (!rawAnalysis) return null;
 
-      // Check if it's the new format
-      if (rawAnalysis.snapshot) {
-        return rawAnalysis;
-      }
-
       const ensureArray = (val: any) => {
         if (Array.isArray(val)) return val;
-        if (typeof val === 'string' && val.trim()) return [val];
+        if (typeof val === 'string' && val.trim()) {
+          if (val.includes(' → ')) return val.split(' → ').map(s => s.trim());
+          if (val.includes('→')) return val.split('→').map(s => s.trim());
+          return [val];
+        }
         return [];
       };
+
+      // Check if it's the new format
+      if (rawAnalysis.snapshot) {
+        return {
+          ...rawAnalysis,
+          facts: ensureArray(rawAnalysis.facts),
+          root_cause: ensureArray(rawAnalysis.root_cause),
+          attack_path: ensureArray(rawAnalysis.attack_path),
+          relevance: ensureArray(rawAnalysis.relevance),
+          mistakes: ensureArray(rawAnalysis.mistakes).map((m: any) => 
+            typeof m === 'string' ? { title: 'Issue identified', explanation: m } : m
+          ),
+          actions: {
+            user: ensureArray(rawAnalysis.actions?.user),
+            organization: ensureArray(rawAnalysis.actions?.organization)
+          },
+          ongoing_risk: {
+            current_risk: rawAnalysis.ongoing_risk?.current_risk || 'Unknown',
+            what_to_watch: ensureArray(rawAnalysis.ongoing_risk?.what_to_watch)
+          }
+        };
+      }
 
       // Map old format to new format for display
       return {
