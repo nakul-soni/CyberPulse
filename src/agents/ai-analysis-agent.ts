@@ -24,7 +24,7 @@ export interface AIAnalysis {
     trust: string;
   };
   root_cause: string[];
-  attack_path: string; // Launch -> ... -> Impact
+  attack_path: string[]; // List of steps: ["Compromised VPN", "Lateral Movement", "Data Exfiltration"]
   mistakes: {
     title: string;
     explanation: string;
@@ -145,7 +145,7 @@ The response MUST be a valid JSON object matching this exact structure:
     "trust": "Reputational impact"
   },
   "root_cause": ["Root cause 1", "Root cause 2", "Root cause 3"],
-  "attack_path": "Launch → Weak Control → Exploitable Condition → Impact",
+  "attack_path": ["Step 1: Infiltration method", "Step 2: Action inside network", "Step 3: Goal achieved", "Step 4: Consequence"],
   "mistakes": [
     { "title": "Mistake Title", "explanation": "1-line explanation" }
   ],
@@ -207,7 +207,7 @@ CONSTRAINTS:
         trust: analysis.impact?.trust || 'Minimal'
       },
       root_cause: Array.isArray(analysis.root_cause) ? analysis.root_cause.slice(0, 3) : ['Unknown'],
-      attack_path: analysis.attack_path || 'Unknown',
+      attack_path: Array.isArray(analysis.attack_path) ? analysis.attack_path : (typeof analysis.attack_path === 'string' ? analysis.attack_path.split('→').map((s: string) => s.trim()) : ['Infiltration', 'Exploitation', 'Impact']),
       mistakes: Array.isArray(analysis.mistakes) ? analysis.mistakes : [],
       actions: {
         user: Array.isArray(analysis.actions?.user) ? analysis.actions.user : [],
