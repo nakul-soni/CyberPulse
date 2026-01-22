@@ -35,6 +35,8 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   const [currentPage, setCurrentPage] = useState(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingCountRef = useRef(0);
+  const MAX_POLLING_ATTEMPTS = 10;
 
   const fetchIncidents = useCallback(async (search?: string, filterState?: FilterState, resetPage = true) => {
     const query = search !== undefined ? search : searchQuery;
@@ -71,8 +73,16 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
       const data = await response.json();
       
       if (data.data) {
-        setAllIncidents(data.data);
-        setIncidents(data.data.slice(0, ITEMS_PER_PAGE));
+        const newDataStr = JSON.stringify(data.data);
+        setAllIncidents(prev => {
+          if (JSON.stringify(prev) === newDataStr) return prev;
+          return data.data;
+        });
+        setIncidents(prev => {
+          const sliced = data.data.slice(0, ITEMS_PER_PAGE);
+          if (JSON.stringify(prev) === JSON.stringify(sliced)) return prev;
+          return sliced;
+        });
         setTotalResults(data.pagination?.total || data.data.length);
         return data.data;
       }
@@ -108,9 +118,20 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
     }
 
     intervalRef.current = setInterval(async () => {
+      if (pollingCountRef.current >= MAX_POLLING_ATTEMPTS) {
+        console.log('Max polling attempts reached. Stopping polling.');
+        setIsPolling(false);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        return;
+      }
+
+      pollingCountRef.current += 1;
       const updated = await fetchIncidents(searchQuery, filters, false);
       
-      if (updated) {
+      if (updated && updated.length > 0) {
         const allAnalyzed = updated.every((incident: Incident) => {
           const analysis = typeof incident.analysis === 'string' 
             ? JSON.parse(incident.analysis) 
@@ -126,7 +147,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
           }
         }
       }
-    }, 5000);
+    }, 15000);
 
     return () => {
       if (intervalRef.current) {
