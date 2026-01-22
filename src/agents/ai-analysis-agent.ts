@@ -2,31 +2,44 @@
  * AI Analysis Agent
  * 
  * Responsibilities:
- * - Generate structured AI analysis for incidents
- * - Classify attack types
- * - Determine severity levels
- * - Generate mitigation steps
+ * - Generate structured AI intelligence for incidents
+ * - Follow strict Cyber Intelligence Analyst + UX Information Architect guidelines
  */
 
 export interface AIAnalysis {
-  summary: string;
-  attack_type: string;
-  severity: 'Low' | 'Medium' | 'High';
-  root_cause: string;
-  mistakes: string[];
-  mitigation: string[];
-  what_to_do_guide: string;
-  why_it_matters: string;
-  risk_score: number;
-  case_study: {
+  snapshot: {
     title: string;
-    background: string;
-    attack_vector: string;
-    incident_flow: string[];
-    outcome: string;
-    lessons_learned: string[];
-    recommendations: string[];
+    date: string;
+    affected: string;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    status: 'Ongoing' | 'Contained' | 'Investigating' | 'Resolved';
   };
+  facts: string[];
+  relevance: string[]; // List of categories: Individual users, Enterprises, Developers, Healthcare, Finance, Government
+  impact: {
+    data: string;
+    operations: string;
+    legal: string;
+    trust: string;
+  };
+  root_cause: string[];
+  attack_path: string; // Launch -> ... -> Impact
+  mistakes: {
+    title: string;
+    explanation: string;
+  }[];
+  actions: {
+    user: string[];
+    organization: string[];
+  };
+  ongoing_risk: {
+    current_risk: string;
+    what_to_watch: string[];
+  };
+  // Legacy fields for DB compatibility if needed, but we'll focus on the new ones
+  summary: string; 
+  attack_type: string;
+  severity: 'Low' | 'Medium' | 'High'; 
 }
 
 export class AIAnalysisAgent {
@@ -40,9 +53,6 @@ export class AIAnalysisAgent {
     }
   }
 
-  /**
-   * Analyze an incident using AI with fallback models
-   */
   async analyzeIncident(
     title: string,
     description: string
@@ -62,7 +72,13 @@ export class AIAnalysisAgent {
             messages: [
               {
                 role: 'system',
-                content: 'You are a senior cybersecurity analyst. Your goal is to convert complex cyber news into actionable intelligence. Always respond with valid JSON only, no preamble or explanation.',
+                content: `You are an expert Cyber Intelligence Analyst. Your goal is to produce factual, action-oriented intelligence summaries.
+NON-NEGOTIABLE PRINCIPLES:
+- Facts before interpretation: No opinions or generic concern statements.
+- Signal over noise: Remove buzzwords, fluff, and marketing language.
+- Zero ambiguity: Use clear metadata.
+- No generic AI phrasing: Avoid "raises concerns", "robust security", "exercise caution", "enhanced protection".
+Always respond with valid JSON only.`,
               },
               {
                 role: 'user',
@@ -76,10 +92,7 @@ export class AIAnalysisAgent {
 
         if (!response.ok) {
           const error = await response.text();
-          if (error.includes('rate_limit_exceeded')) {
-            console.log(`Rate limit hit for ${model}, trying fallback...`);
-            continue;
-          }
+          if (error.includes('rate_limit_exceeded')) continue;
           console.error('AI API error:', error);
           continue;
         }
@@ -87,115 +100,117 @@ export class AIAnalysisAgent {
         const data = await response.json() as { choices: Array<{ message: { content: string } }> };
         const content = data.choices[0]?.message?.content;
         
-        if (!content) {
-          console.error('No content in AI response');
-          continue;
-        }
+        if (!content) continue;
 
         const analysis = JSON.parse(content) as AIAnalysis;
-        console.log(`✅ Analysis completed using ${model}`);
-        return this.validateAndNormalize(analysis);
+        return this.validateAndNormalize(analysis, title);
       } catch (error: any) {
         console.error(`AI Analysis failed with ${model}:`, error.message);
         continue;
       }
     }
     
-    console.error('All AI models exhausted');
     return null;
   }
 
-  /**
-   * Build the analysis prompt
-   */
   private buildPrompt(title: string, description: string): string {
     return `
-Analyze the following cybersecurity incident and provide a structured JSON response.
+Convert this cyber news article into a clear, factual, action-oriented intelligence summary.
 
 Incident Title: ${title}
-Incident Description: ${description || 'No description available'}
+Article Content: ${description || 'No description available'}
 
 The response MUST be a valid JSON object matching this exact structure:
 {
-  "summary": "A plain-English, easy-to-understand summary (2-3 sentences). Avoid jargon.",
-  "attack_type": "Classification (e.g., ransomware, data breach, zero-day, phishing, DDoS, malware, APT, etc.)",
-  "severity": "Low | Medium | High",
-  "root_cause": "Brief explanation of what went wrong and how the attack succeeded",
-  "mistakes": ["Mistake 1", "Mistake 2", "Mistake 3"],
-  "mitigation": ["Step 1: Actionable mitigation step", "Step 2: Another step", "Step 3: Final step"],
-  "what_to_do_guide": "A practical guide for the user if they were affected or want to prevent this type of attack",
-  "why_it_matters": "One clear sentence explaining the significance of this incident",
-  "risk_score": 75,
-  "case_study": {
-    "title": "A catchy, descriptive title for this case study",
-    "background": "Context about the victim organization/environment and why they were targeted",
-    "attack_vector": "Technical breakdown of the specific attack methods, tools, and vulnerabilities exploited",
-    "incident_flow": ["Event 1: What happened first", "Event 2: What happened next", "Event 3: Final event"],
-    "outcome": "Final result - what happened to the victim, data lost, systems affected, etc.",
-    "lessons_learned": ["Lesson 1", "Lesson 2", "Lesson 3"],
-    "recommendations": ["Prevention step 1", "Prevention step 2", "Prevention step 3"]
+  "snapshot": {
+    "title": "🛑 INCIDENT TITLE (uppercase)",
+    "date": "YYYY-MM-DD",
+    "affected": "Clear list of entities affected",
+    "severity": "LOW | MEDIUM | HIGH | CRITICAL",
+    "status": "Ongoing | Contained | Investigating | Resolved"
+  },
+  "facts": ["Fact 1", "Fact 2", "Fact 3", "Fact 4"],
+  "relevance": ["Individual users", "Enterprises", "Developers", "Healthcare / Finance / Government (only if applicable)"],
+  "impact": {
+    "data": "Description of data impact (confirmed/potential)",
+    "operations": "Description of operational downtime/disruption",
+    "legal": "Legal/compliance impact",
+    "trust": "Reputational impact"
+  },
+  "root_cause": ["Root cause 1", "Root cause 2", "Root cause 3"],
+  "attack_path": "Launch → Weak Control → Exploitable Condition → Impact",
+  "mistakes": [
+    { "title": "Mistake Title", "explanation": "1-line explanation" }
+  ],
+  "actions": {
+    "user": ["Action 1", "Action 2"],
+    "organization": ["Action 1", "Action 2"]
+  },
+  "ongoing_risk": {
+    "current_risk": "Exploitation ongoing / limited / unknown",
+    "what_to_watch": ["Watch item 1", "Watch item 2"]
   }
 }
 
-Constraints:
-- Severity must be exactly one of: Low, Medium, High
-- risk_score must be an integer between 0 and 100
-- All arrays must have at least 2 items
-- No raw LLM preamble or postamble - JSON only
-- Explanations must be clear and actionable
-- Assume the user is technical but not a SOC expert
+SEVERITY RULES:
+- LOW: No sensitive data, no exploitation
+- MEDIUM: Limited exposure or mitigated quickly
+- HIGH: Sensitive data or real exploitation
+- CRITICAL: Mass exploitation, severe impact
+
+CONSTRAINTS:
+- 2-4 facts max.
+- 3 root causes max.
+- No analysis, advice, or adjectives in Snapshot.
+- Pure incident metadata in Snapshot.
+- Use concise bullets everywhere else.
+- No generic AI phrasing.
 `;
   }
 
-  /**
-   * Validate and normalize AI response
-   */
-  private validateAndNormalize(analysis: any): AIAnalysis {
-    // Ensure severity is valid
-    const severity = ['Low', 'Medium', 'High'].includes(analysis.severity)
-      ? analysis.severity
-      : 'Medium';
+  private validateAndNormalize(analysis: any, originalTitle: string): AIAnalysis {
+    // Ensure all fields exist with fallbacks
+    const snapshot = analysis.snapshot || {};
+    const normalizedSnapshot = {
+      title: snapshot.title || `🛑 ${originalTitle.toUpperCase()}`,
+      date: snapshot.date || new Date().toISOString().split('T')[0],
+      affected: snapshot.affected || 'Unknown',
+      severity: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].includes(snapshot.severity) ? snapshot.severity : 'MEDIUM',
+      status: ['Ongoing', 'Contained', 'Investigating', 'Resolved'].includes(snapshot.status) ? snapshot.status : 'Investigating'
+    };
 
-    // Ensure risk_score is valid
-    const riskScore = typeof analysis.risk_score === 'number'
-      ? Math.max(0, Math.min(100, analysis.risk_score))
-      : 50;
-
-    // Ensure arrays exist
-    const mistakes = Array.isArray(analysis.mistakes) ? analysis.mistakes : [];
-    const mitigation = Array.isArray(analysis.mitigation) ? analysis.mitigation : [];
-    
-    // Support variations in case study field names (camelCase vs snake_case)
-    const rawCS = analysis.case_study || {};
-    const incidentFlow = Array.isArray(rawCS.incident_flow || rawCS.incidentFlow)
-      ? (rawCS.incident_flow || rawCS.incidentFlow)
-      : [];
-    const lessonsLearned = Array.isArray(rawCS.lessons_learned || rawCS.lessonsLearned)
-      ? (rawCS.lessons_learned || rawCS.lessonsLearned)
-      : [];
-    const recommendations = Array.isArray(rawCS.recommendations || rawCS.recommendation)
-      ? (rawCS.recommendations || rawCS.recommendation)
-      : [];
+    // Legacy support for DB
+    const legacySeverityMap: Record<string, 'Low' | 'Medium' | 'High'> = {
+      'LOW': 'Low',
+      'MEDIUM': 'Medium',
+      'HIGH': 'High',
+      'CRITICAL': 'High'
+    };
 
     return {
-      summary: analysis.summary || 'Analysis pending',
-      attack_type: analysis.attack_type || 'Unclassified',
-      severity,
-      root_cause: analysis.root_cause || 'Analysis pending',
-      mistakes: mistakes.length > 0 ? mistakes : ['Analysis pending'],
-      mitigation: mitigation.length > 0 ? mitigation : ['Analysis pending'],
-      what_to_do_guide: analysis.what_to_do_guide || 'Analysis pending',
-      why_it_matters: analysis.why_it_matters || 'Analysis pending',
-      risk_score: riskScore,
-      case_study: {
-        title: rawCS.title || 'Case Study',
-        background: rawCS.background || 'Analysis pending',
-        attack_vector: rawCS.attack_vector || rawCS.attackVector || analysis.attack_vector || 'Analysis pending',
-        incident_flow: incidentFlow.length > 0 ? incidentFlow : ['Analysis pending'],
-        outcome: rawCS.outcome || 'Analysis pending',
-        lessons_learned: lessonsLearned.length > 0 ? lessonsLearned : ['Analysis pending'],
-        recommendations: recommendations.length > 0 ? recommendations : ['Analysis pending'],
+      snapshot: normalizedSnapshot,
+      facts: Array.isArray(analysis.facts) ? analysis.facts.slice(0, 4) : ['No facts available'],
+      relevance: Array.isArray(analysis.relevance) ? analysis.relevance : ['Enterprises'],
+      impact: {
+        data: analysis.impact?.data || 'Unknown',
+        operations: analysis.impact?.operations || 'None reported',
+        legal: analysis.impact?.legal || 'None reported',
+        trust: analysis.impact?.trust || 'Minimal'
       },
+      root_cause: Array.isArray(analysis.root_cause) ? analysis.root_cause.slice(0, 3) : ['Unknown'],
+      attack_path: analysis.attack_path || 'Unknown',
+      mistakes: Array.isArray(analysis.mistakes) ? analysis.mistakes : [],
+      actions: {
+        user: Array.isArray(analysis.actions?.user) ? analysis.actions.user : [],
+        organization: Array.isArray(analysis.actions?.organization) ? analysis.actions.organization : []
+      },
+      ongoing_risk: {
+        current_risk: analysis.ongoing_risk?.current_risk || 'Unknown',
+        what_to_watch: Array.isArray(analysis.ongoing_risk?.what_to_watch) ? analysis.ongoing_risk.what_to_watch : []
+      },
+      summary: Array.isArray(analysis.facts) ? analysis.facts.join(' ') : 'No summary available',
+      attack_type: normalizedSnapshot.affected,
+      severity: legacySeverityMap[normalizedSnapshot.severity] || 'Medium'
     };
   }
 }
