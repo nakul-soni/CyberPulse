@@ -40,6 +40,8 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
   } catch (error: any) {
     console.error('Error in IncidentDetailPage:', error);
     
+    const isQuotaExceeded = error.message?.includes('GROQ_CREDITS_EXHAUSTED');
+    
     return (
       <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl p-8 text-center space-y-6 shadow-2xl">
@@ -47,19 +49,20 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
             <AlertTriangle className="w-8 h-8 text-red-500" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-bold text-[var(--text-primary)]">Intelligence Retrieval Failed</h1>
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">
+              {isQuotaExceeded ? 'AI Intelligence Quota Exceeded' : 'Intelligence Retrieval Failed'}
+            </h1>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-              We encountered a secure connection timeout while fetching this intelligence briefing. This usually happens when the database is under high load.
+              {isQuotaExceeded 
+                ? 'Your Groq API key has run out of credits or reached its limit. Please update your API key in the configuration or wait for the quota to reset.'
+                : 'We encountered a secure connection timeout while fetching this intelligence briefing. This usually happens when the database is under high load.'}
             </p>
           </div>
           <div className="pt-4 flex flex-col gap-3">
             <button 
-              onClick={() => {}} // This is a server component, but we can't add interactivity here easily without making it a client component. 
-              // However, the user can just refresh the page.
               className="w-full py-3 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
-              // In reality, since this is a server component, the "Refresh" would be a link to the same page
             >
-              <a href={`/incident/${params.id}`}>Try Again</a>
+              <a href={`/incident/${params.id}`}>{isQuotaExceeded ? 'Check Again' : 'Try Again'}</a>
             </button>
             <Link 
               href="/"

@@ -93,6 +93,10 @@ Always respond with valid JSON only.`,
         if (!response.ok) {
           const error = await response.text();
           if (error.includes('rate_limit_exceeded')) continue;
+          if (error.includes('insufficient_balance') || error.includes('credits_over') || error.includes('limit_exceeded')) {
+            console.error('Groq Credit/Limit error:', error);
+            throw new Error('GROQ_CREDITS_EXHAUSTED');
+          }
           console.error('AI API error:', error);
           continue;
         }

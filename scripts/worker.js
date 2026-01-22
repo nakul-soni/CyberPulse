@@ -87,7 +87,7 @@ async function runAnalysisBatch() {
          )
        )
        ORDER BY (published_at::date = CURRENT_DATE) DESC, published_at DESC
-       LIMIT 3`
+         LIMIT 2`
     );
 
     const incidents = result.rows || [];
@@ -111,11 +111,16 @@ async function runAnalysisBatch() {
         const msg = err?.message || String(err);
         console.error(`   ❌ Analysis failed for ${incident.id}:`, msg);
 
-        if (msg.includes('rate_limit_exceeded')) {
-          console.warn('   ⚠️ Rate limit hit. Pausing analysis for 5 minutes.');
-          analysisBlockedUntil = Date.now() + 5 * 60 * 1000;
-          break;
-        }
+          if (msg.includes('rate_limit_exceeded')) {
+            console.warn('   ⚠️ Rate limit hit. Pausing analysis for 5 minutes.');
+            analysisBlockedUntil = Date.now() + 5 * 60 * 1000;
+            break;
+          }
+          if (msg.includes('GROQ_CREDITS_EXHAUSTED')) {
+            console.warn('   🛑 GROQ CREDITS EXHAUSTED. Pausing analysis for 1 hour.');
+            analysisBlockedUntil = Date.now() + 60 * 60 * 1000;
+            break;
+          }
       }
     }
   } catch (error) {
