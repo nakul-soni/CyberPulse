@@ -14,6 +14,7 @@ export interface AIAnalysis {
     severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
     status: 'Ongoing' | 'Contained' | 'Investigating' | 'Resolved';
   };
+  executive_summary: string; // High-impact, narrative summary of "What Happened"
   facts: string[];
   relevance: string[]; // List of categories: Individual users, Enterprises, Developers, Healthcare, Finance, Government
   impact: {
@@ -134,6 +135,7 @@ The response MUST be a valid JSON object matching this exact structure:
     "severity": "LOW | MEDIUM | HIGH | CRITICAL",
     "status": "Ongoing | Contained | Investigating | Resolved"
   },
+  "executive_summary": "A single high-impact paragraph (max 3 sentences) that tells perfectly what actually happened in the best way to understand quickly in one go. Focus on the core event, the vector (if known), and the immediate consequence.",
   "facts": ["Fact 1", "Fact 2", "Fact 3", "Fact 4"],
   "relevance": ["Individual users", "Enterprises", "Developers", "Healthcare / Finance / Government (only if applicable)"],
   "impact": {
@@ -195,6 +197,7 @@ CONSTRAINTS:
 
     return {
       snapshot: normalizedSnapshot,
+      executive_summary: analysis.executive_summary || (Array.isArray(analysis.facts) ? analysis.facts.join(' ') : 'No summary available'),
       facts: Array.isArray(analysis.facts) ? analysis.facts.slice(0, 4) : ['No facts available'],
       relevance: Array.isArray(analysis.relevance) ? analysis.relevance : ['Enterprises'],
       impact: {

@@ -66,6 +66,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
           severity: rawAnalysis.severity?.toUpperCase() || 'MEDIUM',
           status: 'Resolved'
         },
+        executive_summary: rawAnalysis.summary || 'Summary unavailable',
         facts: ensureArray(rawAnalysis.summary || 'Summary unavailable'),
         relevance: ['Enterprises'],
         impact: {
@@ -99,7 +100,8 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     );
   }
 
-  const { snapshot, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk } = analysis;
+    const { snapshot, executive_summary, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk } = analysis;
+
 
   const severityColors: Record<string, string> = {
     'LOW': 'text-blue-400',
@@ -181,7 +183,15 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
           <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-cyan)] flex items-center gap-2">
             <History className="w-4 h-4" /> What Actually Happened
           </h2>
-          <div className="bg-[var(--bg-secondary)]/30 border border-white/5 rounded-2xl p-6 sm:p-8">
+          <div className="bg-[var(--bg-secondary)]/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-8">
+            {executive_summary && (
+              <div className="relative">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--accent-cyan)]/30 rounded-full" />
+                <p className="text-lg sm:text-xl font-medium text-[var(--text-primary)] leading-relaxed italic opacity-90">
+                  "{executive_summary}"
+                </p>
+              </div>
+            )}
             <ul className="space-y-4">
               {facts.map((fact: string, i: number) => (
                 <li key={i} className="flex gap-4 items-start">

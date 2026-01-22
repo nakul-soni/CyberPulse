@@ -69,11 +69,11 @@ async function runAnalysisBatch() {
     const query = dbModule.query || dbModule.default?.query || dbModule.default;
     
     const analysisModule = await import('../src/lib/analysis.js').catch(() => import('../src/lib/analysis.ts'));
-    const performAnalysis = analysisModule.performAnalysis;
-    const isAnalysisMissing = analysisModule.isAnalysisMissing;
+    const performAnalysis = analysisModule.performAnalysis || analysisModule.default?.performAnalysis;
+    const isAnalysisMissing = analysisModule.isAnalysisMissing || analysisModule.default?.isAnalysisMissing;
 
     // Select incidents missing analysis
-    // Fixed query to include new format check
+    // Fixed query to include new format check (executive_summary)
     const result = await query(
       `SELECT id, title, description, content, analysis
        FROM incidents
@@ -82,8 +82,7 @@ async function runAnalysisBatch() {
          OR analysis::text = 'null'
          OR analysis::text = '{}'
          OR (
-           (analysis->>'snapshot') IS NULL 
-           AND (analysis->>'summary') IS NULL
+           (analysis->>'executive_summary') IS NULL 
          )
        )
        ORDER BY (published_at::date = CURRENT_DATE) DESC, published_at DESC
