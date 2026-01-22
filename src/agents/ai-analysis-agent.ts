@@ -130,6 +130,7 @@ The response MUST be a valid JSON object matching this exact structure:
     "title": "🛑 INCIDENT TITLE (uppercase)",
     "date": "YYYY-MM-DD",
     "affected": "Clear list of entities affected",
+    "attack_type": "Ransomware | APT | Phishing | Supply Chain | etc.",
     "severity": "LOW | MEDIUM | HIGH | CRITICAL",
     "status": "Ongoing | Contained | Investigating | Resolved"
   },
@@ -156,11 +157,11 @@ The response MUST be a valid JSON object matching this exact structure:
   }
 }
 
-SEVERITY RULES:
-- LOW: No sensitive data, no exploitation
-- MEDIUM: Limited exposure or mitigated quickly
-- HIGH: Sensitive data or real exploitation
-- CRITICAL: Mass exploitation, severe impact
+  SEVERITY RULES:
+  - LOW: Informational news, patches released with no known exploitation, minor service disruptions, or theoretical vulnerabilities.
+  - MEDIUM: Confirmed exploitation with limited scope, exposure of non-sensitive metadata, or localized impact.
+  - HIGH: Confirmed data breach of sensitive PII/credentials, active ransomware, or exploitation of critical systems.
+  - CRITICAL: Massive global impact, mass exploitation of zero-days in core infrastructure, or life-safety threats.
 
 CONSTRAINTS:
 - 2-4 facts max.
@@ -179,6 +180,7 @@ CONSTRAINTS:
       title: snapshot.title || `🛑 ${originalTitle.toUpperCase()}`,
       date: snapshot.date || new Date().toISOString().split('T')[0],
       affected: snapshot.affected || 'Unknown',
+      attack_type: snapshot.attack_type || 'Unknown',
       severity: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].includes(snapshot.severity) ? snapshot.severity : 'MEDIUM',
       status: ['Ongoing', 'Contained', 'Investigating', 'Resolved'].includes(snapshot.status) ? snapshot.status : 'Investigating'
     };
@@ -213,7 +215,7 @@ CONSTRAINTS:
         what_to_watch: Array.isArray(analysis.ongoing_risk?.what_to_watch) ? analysis.ongoing_risk.what_to_watch : []
       },
       summary: Array.isArray(analysis.facts) ? analysis.facts.join(' ') : 'No summary available',
-      attack_type: normalizedSnapshot.affected,
+      attack_type: normalizedSnapshot.attack_type,
       severity: legacySeverityMap[normalizedSnapshot.severity] || 'Medium'
     };
   }
