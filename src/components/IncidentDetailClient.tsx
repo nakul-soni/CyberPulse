@@ -2,29 +2,23 @@
 
 import { motion } from 'framer-motion';
 import { 
-    ArrowLeft, 
-    ExternalLink, 
-    AlertTriangle,
-    Calendar,
-    Target,
-    ShieldAlert,
-    Activity,
-    User,
-    Building2,
-    Code2,
-    Stethoscope,
-    Landmark,
-    ShieldCheck,
-    Zap,
-    History,
-    AlertCircle,
-    ChevronRight,
-    Search,
-    Lock,
-    Unlock,
-    Database,
-    Globe
-  } from 'lucide-react';
+  ArrowLeft, 
+  ExternalLink, 
+  AlertTriangle,
+  Calendar,
+  Target,
+  ShieldAlert,
+  Activity,
+  User,
+  Building2,
+  Code2,
+  Stethoscope,
+  Landmark,
+  ShieldCheck,
+  Zap,
+  History,
+  AlertCircle
+} from 'lucide-react';
 import Link from 'next/link';
 import ReanalyzeButton from '@/components/ReanalyzeButton';
 
@@ -52,37 +46,16 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     const getAnalysis = () => {
       if (!rawAnalysis) return null;
 
-      const ensureArray = (val: any) => {
-        if (Array.isArray(val)) return val;
-        if (typeof val === 'string' && val.trim()) {
-          if (val.includes(' → ')) return val.split(' → ').map(s => s.trim());
-          if (val.includes('→')) return val.split('→').map(s => s.trim());
-          return [val];
-        }
-        return [];
-      };
-
       // Check if it's the new format
       if (rawAnalysis.snapshot) {
-        return {
-          ...rawAnalysis,
-          facts: ensureArray(rawAnalysis.facts),
-          root_cause: ensureArray(rawAnalysis.root_cause),
-          attack_path: ensureArray(rawAnalysis.attack_path),
-          relevance: ensureArray(rawAnalysis.relevance),
-          mistakes: ensureArray(rawAnalysis.mistakes).map((m: any) => 
-            typeof m === 'string' ? { title: 'Issue identified', explanation: m } : m
-          ),
-          actions: {
-            user: ensureArray(rawAnalysis.actions?.user),
-            organization: ensureArray(rawAnalysis.actions?.organization)
-          },
-          ongoing_risk: {
-            current_risk: rawAnalysis.ongoing_risk?.current_risk || 'Unknown',
-            what_to_watch: ensureArray(rawAnalysis.ongoing_risk?.what_to_watch)
-          }
-        };
+        return rawAnalysis;
       }
+
+      const ensureArray = (val: any) => {
+        if (Array.isArray(val)) return val;
+        if (typeof val === 'string' && val.trim()) return [val];
+        return [];
+      };
 
       // Map old format to new format for display
       return {
@@ -93,7 +66,6 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
           severity: rawAnalysis.severity?.toUpperCase() || 'MEDIUM',
           status: 'Resolved'
         },
-        executive_summary: rawAnalysis.summary || 'Summary unavailable',
         facts: ensureArray(rawAnalysis.summary || 'Summary unavailable'),
         relevance: ['Enterprises'],
         impact: {
@@ -103,7 +75,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
           trust: 'Minimal'
         },
         root_cause: ensureArray(rawAnalysis.root_cause || 'Unknown'),
-        attack_path: ['Initial Access', 'Technical Exploitation', 'Business Impact'],
+        attack_path: 'Launch → Weak Control → Impact',
         mistakes: ensureArray(rawAnalysis.mistakes).map((m: string) => ({ title: 'Issue identified', explanation: m })),
         actions: {
           user: [],
@@ -127,8 +99,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     );
   }
 
-    const { snapshot, executive_summary, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk } = analysis;
-
+  const { snapshot, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk } = analysis;
 
   const severityColors: Record<string, string> = {
     'LOW': 'text-blue-400',
@@ -210,15 +181,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
           <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-cyan)] flex items-center gap-2">
             <History className="w-4 h-4" /> What Actually Happened
           </h2>
-          <div className="bg-[var(--bg-secondary)]/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-8">
-            {executive_summary && (
-              <div className="relative">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--accent-cyan)]/30 rounded-full" />
-                <p className="text-lg sm:text-xl font-medium text-[var(--text-primary)] leading-relaxed italic opacity-90">
-                  "{executive_summary}"
-                </p>
-              </div>
-            )}
+          <div className="bg-[var(--bg-secondary)]/30 border border-white/5 rounded-2xl p-6 sm:p-8">
             <ul className="space-y-4">
               {facts.map((fact: string, i: number) => (
                 <li key={i} className="flex gap-4 items-start">
@@ -290,59 +253,14 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
         </section>
 
         {/* 6️⃣ RISK / ATTACK PATH (VISUAL THINKING) */}
-        <section className="space-y-6">
+        <section className="space-y-4">
           <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-blue)] flex items-center gap-2">
             <Activity className="w-4 h-4" /> Risk / Attack Path
           </h2>
-          
-          <div className="relative">
-            {/* Desktop Horizontal Path */}
-            <div className="hidden lg:flex items-start justify-between gap-4 relative">
-              {/* Connecting Line */}
-              <div className="absolute top-[22px] left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--accent-blue)]/50 via-[var(--accent-cyan)]/50 to-red-500/50 -z-10" />
-              
-              {attack_path.map((step: string, i: number) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-4 text-center group">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--bg-card)] border-2 border-[var(--border-primary)] flex items-center justify-center group-hover:border-[var(--accent-cyan)] transition-all shadow-xl relative z-10 bg-black">
-                    {i === 0 && <Search className="w-5 h-5 text-[var(--accent-blue)]" />}
-                    {i > 0 && i < attack_path.length - 1 && <Unlock className="w-5 h-5 text-[var(--accent-cyan)]" />}
-                    {i === attack_path.length - 1 && <AlertTriangle className="w-5 h-5 text-red-500" />}
-                    
-                    <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] flex items-center justify-center text-[10px] font-bold">
-                      {i + 1}
-                    </div>
-                  </div>
-                  <p className="text-xs font-mono font-bold text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors px-2">
-                    {step}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Mobile/Tablet Vertical Path */}
-            <div className="lg:hidden space-y-4 relative">
-              {/* Vertical Connecting Line */}
-              <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[var(--accent-blue)]/50 via-[var(--accent-cyan)]/50 to-red-500/50 -z-10" />
-              
-              {attack_path.map((step: string, i: number) => (
-                <div key={i} className="flex items-center gap-6 group">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--bg-card)] border-2 border-[var(--border-primary)] flex items-center justify-center group-hover:border-[var(--accent-cyan)] transition-all shadow-xl relative z-10 bg-black shrink-0">
-                    {i === 0 && <Search className="w-5 h-5 text-[var(--accent-blue)]" />}
-                    {i > 0 && i < attack_path.length - 1 && <Unlock className="w-5 h-5 text-[var(--accent-cyan)]" />}
-                    {i === attack_path.length - 1 && <AlertTriangle className="w-5 h-5 text-red-500" />}
-                    
-                    <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] flex items-center justify-center text-[10px] font-bold">
-                      {i + 1}
-                    </div>
-                  </div>
-                  <div className="bg-[var(--bg-card)]/50 border border-[var(--border-primary)] p-4 rounded-xl flex-1 group-hover:border-[var(--accent-cyan)]/30 transition-all">
-                    <p className="text-xs font-mono font-bold text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
-                      {step}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="bg-black/40 border border-white/5 rounded-2xl p-8 flex items-center justify-center">
+            <p className="text-base sm:text-lg font-mono text-[var(--accent-cyan)] tracking-wider text-center">
+              {attack_path}
+            </p>
           </div>
         </section>
 

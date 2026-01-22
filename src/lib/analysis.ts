@@ -60,7 +60,7 @@ export function isAnalysisMissing(analysis: any): boolean {
   }
   
   // New format check
-  if (analysis.snapshot && analysis.executive_summary && analysis.facts && analysis.facts.length > 0) {
+  if (analysis.snapshot && analysis.facts && analysis.facts.length > 0) {
     return false;
   }
   

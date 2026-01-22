@@ -14,7 +14,6 @@ export interface AIAnalysis {
     severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
     status: 'Ongoing' | 'Contained' | 'Investigating' | 'Resolved';
   };
-  executive_summary: string; // High-impact, narrative summary of "What Happened"
   facts: string[];
   relevance: string[]; // List of categories: Individual users, Enterprises, Developers, Healthcare, Finance, Government
   impact: {
@@ -24,7 +23,7 @@ export interface AIAnalysis {
     trust: string;
   };
   root_cause: string[];
-  attack_path: string[]; // List of steps: ["Compromised VPN", "Lateral Movement", "Data Exfiltration"]
+  attack_path: string; // Launch -> ... -> Impact
   mistakes: {
     title: string;
     explanation: string;
@@ -135,7 +134,6 @@ The response MUST be a valid JSON object matching this exact structure:
     "severity": "LOW | MEDIUM | HIGH | CRITICAL",
     "status": "Ongoing | Contained | Investigating | Resolved"
   },
-  "executive_summary": "A single high-impact paragraph (max 3 sentences) that tells perfectly what actually happened in the best way to understand quickly in one go. Focus on the core event, the vector (if known), and the immediate consequence.",
   "facts": ["Fact 1", "Fact 2", "Fact 3", "Fact 4"],
   "relevance": ["Individual users", "Enterprises", "Developers", "Healthcare / Finance / Government (only if applicable)"],
   "impact": {
@@ -145,7 +143,7 @@ The response MUST be a valid JSON object matching this exact structure:
     "trust": "Reputational impact"
   },
   "root_cause": ["Root cause 1", "Root cause 2", "Root cause 3"],
-  "attack_path": ["Step 1: Infiltration method", "Step 2: Action inside network", "Step 3: Goal achieved", "Step 4: Consequence"],
+  "attack_path": "Launch → Weak Control → Exploitable Condition → Impact",
   "mistakes": [
     { "title": "Mistake Title", "explanation": "1-line explanation" }
   ],
@@ -197,7 +195,6 @@ CONSTRAINTS:
 
     return {
       snapshot: normalizedSnapshot,
-      executive_summary: analysis.executive_summary || (Array.isArray(analysis.facts) ? analysis.facts.join(' ') : 'No summary available'),
       facts: Array.isArray(analysis.facts) ? analysis.facts.slice(0, 4) : ['No facts available'],
       relevance: Array.isArray(analysis.relevance) ? analysis.relevance : ['Enterprises'],
       impact: {
@@ -207,7 +204,7 @@ CONSTRAINTS:
         trust: analysis.impact?.trust || 'Minimal'
       },
       root_cause: Array.isArray(analysis.root_cause) ? analysis.root_cause.slice(0, 3) : ['Unknown'],
-      attack_path: Array.isArray(analysis.attack_path) ? analysis.attack_path : (typeof analysis.attack_path === 'string' ? analysis.attack_path.split('→').map((s: string) => s.trim()) : ['Infiltration', 'Exploitation', 'Impact']),
+      attack_path: analysis.attack_path || 'Unknown',
       mistakes: Array.isArray(analysis.mistakes) ? analysis.mistakes : [],
       actions: {
         user: Array.isArray(analysis.actions?.user) ? analysis.actions.user : [],
