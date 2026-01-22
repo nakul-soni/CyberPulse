@@ -42,45 +42,51 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     ? JSON.parse(incident.analysis) 
     : incident.analysis;
 
-  // Helper to normalize old/new analysis formats
-  const getAnalysis = () => {
-    if (!rawAnalysis) return null;
+    // Helper to normalize old/new analysis formats
+    const getAnalysis = () => {
+      if (!rawAnalysis) return null;
 
-    // Check if it's the new format
-    if (rawAnalysis.snapshot) {
-      return rawAnalysis;
-    }
-
-    // Map old format to new format for display
-    return {
-      snapshot: {
-        title: `🛑 ${incident.title.toUpperCase()}`,
-        date: new Date(incident.published_at).toISOString().split('T')[0],
-        affected: rawAnalysis.attack_type || 'Unknown',
-        severity: rawAnalysis.severity?.toUpperCase() || 'MEDIUM',
-        status: 'Resolved'
-      },
-      facts: [rawAnalysis.summary || 'Summary unavailable'],
-      relevance: ['Enterprises'],
-      impact: {
-        data: rawAnalysis.why_it_matters || 'Unknown',
-        operations: 'None reported',
-        legal: 'None reported',
-        trust: 'Minimal'
-      },
-      root_cause: [rawAnalysis.root_cause || 'Unknown'],
-      attack_path: 'Launch → Weak Control → Impact',
-      mistakes: (rawAnalysis.mistakes || []).map((m: string) => ({ title: 'Issue identified', explanation: m })),
-      actions: {
-        user: [],
-        organization: rawAnalysis.mitigation || []
-      },
-      ongoing_risk: {
-        current_risk: 'Unknown',
-        what_to_watch: []
+      // Check if it's the new format
+      if (rawAnalysis.snapshot) {
+        return rawAnalysis;
       }
+
+      const ensureArray = (val: any) => {
+        if (Array.isArray(val)) return val;
+        if (typeof val === 'string' && val.trim()) return [val];
+        return [];
+      };
+
+      // Map old format to new format for display
+      return {
+        snapshot: {
+          title: `🛑 ${incident.title.toUpperCase()}`,
+          date: new Date(incident.published_at).toISOString().split('T')[0],
+          affected: rawAnalysis.attack_type || 'Unknown',
+          severity: rawAnalysis.severity?.toUpperCase() || 'MEDIUM',
+          status: 'Resolved'
+        },
+        facts: ensureArray(rawAnalysis.summary || 'Summary unavailable'),
+        relevance: ['Enterprises'],
+        impact: {
+          data: rawAnalysis.why_it_matters || rawAnalysis.impact || 'Unknown',
+          operations: 'None reported',
+          legal: 'None reported',
+          trust: 'Minimal'
+        },
+        root_cause: ensureArray(rawAnalysis.root_cause || 'Unknown'),
+        attack_path: 'Launch → Weak Control → Impact',
+        mistakes: ensureArray(rawAnalysis.mistakes).map((m: string) => ({ title: 'Issue identified', explanation: m })),
+        actions: {
+          user: [],
+          organization: ensureArray(rawAnalysis.mitigation)
+        },
+        ongoing_risk: {
+          current_risk: 'Unknown',
+          what_to_watch: []
+        }
+      };
     };
-  };
 
   const analysis = getAnalysis();
 
