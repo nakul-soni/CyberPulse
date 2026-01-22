@@ -11,8 +11,8 @@ export default async function DashboardPage() {
   try {
     // 1. Check for background ingestion
     const lastLog = await getLastIngestionLog();
-    const THREE_HOURS = 3 * 60 * 60 * 1000;
-    const isOverdue = !lastLog || (Date.now() - new Date(lastLog.completed_at!).getTime() > THREE_HOURS);
+    const ONE_HOUR = 1 * 60 * 60 * 1000;
+    const isOverdue = !lastLog || (Date.now() - new Date(lastLog.completed_at!).getTime() > ONE_HOUR);
     
     // Only trigger if overdue AND not already running
     if (isOverdue && !(await isIngestionRunning())) {
