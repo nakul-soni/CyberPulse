@@ -103,13 +103,13 @@ export async function getIncidents(options: {
   let paramIndex = 1;
 
   if (options.severity) {
-    whereClauses.push(`severity = $${paramIndex++}`);
+    whereClauses.push(`severity ILIKE $${paramIndex++}`);
     params.push(options.severity);
   }
 
   if (options.attackType) {
-    whereClauses.push(`attack_type = $${paramIndex++}`);
-    params.push(options.attackType);
+    whereClauses.push(`attack_type ILIKE $${paramIndex++}`);
+    params.push(`%${options.attackType}%`);
   }
 
   if (options.search) {
