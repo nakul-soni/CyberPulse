@@ -9,22 +9,6 @@ export default async function DashboardPage() {
   let error: Error | null = null;
 
   try {
-    // 1. Check for background ingestion
-    const lastLog = await getLastIngestionLog();
-    const ONE_HOUR = 1 * 60 * 60 * 1000;
-    const isOverdue = !lastLog || (Date.now() - new Date(lastLog.completed_at!).getTime() > ONE_HOUR);
-    
-    // Only trigger if overdue AND not already running
-    if (isOverdue && !(await isIngestionRunning())) {
-      // Trigger background worker (ingestion + analysis) without awaiting it
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      fetch(`${baseUrl}/api/worker`, {
-        headers: {
-          'Authorization': `Bearer ${process.env.CRON_SECRET}`
-        }
-      }).catch(err => console.error('Background worker failed to trigger:', err));
-    }
-
     // 2. Fetch incidents for display
     const result = await getIncidents({ page: 1, limit: 200, todayOnly: true });
     incidents = result.incidents;
