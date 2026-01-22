@@ -1,5 +1,5 @@
 import { DashboardClient } from '@/components/DashboardClient';
-import { getIncidents, getLastIngestionLog, isIngestionRunning } from '@/lib/db';
+import { getIncidents } from '@/lib/db';
 import { AlertTriangle } from 'lucide-react';
 
 export const revalidate = 0;
@@ -9,7 +9,6 @@ export default async function DashboardPage() {
   let error: Error | null = null;
 
   try {
-    // 2. Fetch incidents for display
     const result = await getIncidents({ page: 1, limit: 200, todayOnly: true });
     incidents = result.incidents;
   } catch (err: any) {

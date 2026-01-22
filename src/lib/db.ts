@@ -311,20 +311,4 @@ export async function updateIngestionLog(
   return result.rows[0];
 }
 
-// Get the last ingestion log
-export async function getLastIngestionLog(): Promise<IngestionLog | null> {
-  const result = await query<IngestionLog>(
-    'SELECT * FROM ingestion_logs WHERE status = \'completed\' ORDER BY completed_at DESC LIMIT 1'
-  );
-  return result.rows[0] || null;
-}
-
-// Check if an ingestion is currently running
-export async function isIngestionRunning(): Promise<boolean> {
-  const result = await query(
-    'SELECT EXISTS(SELECT 1 FROM ingestion_logs WHERE status = \'running\' AND started_at > NOW() - INTERVAL \'10 minutes\') as exists'
-  );
-  return result.rows[0].exists;
-}
-
 export { pool };
