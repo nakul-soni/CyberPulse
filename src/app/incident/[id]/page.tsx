@@ -3,15 +3,30 @@ import { getIncidentById } from '@/lib/db';
 import { IncidentDetailClient } from '@/components/IncidentDetailClient';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { performAnalysis, isAnalysisMissing } from '@/lib/analysis';
 
 export const revalidate = 0;
 
 export default async function IncidentDetailPage({ params }: { params: { id: string } }) {
   try {
-    const incident = await getIncidentById(params.id);
+    let incident = await getIncidentById(params.id);
 
     if (!incident) {
       notFound();
+    }
+
+    // On-demand analysis if missing
+    if (isAnalysisMissing(incident.analysis)) {
+      try {
+        console.log(`[On-Demand Analysis] Starting for incident ${params.id}`);
+        const analyzedIncident = await performAnalysis(incident);
+        if (analyzedIncident) {
+          incident = analyzedIncident;
+        }
+      } catch (analysisError) {
+        console.error(`[On-Demand Analysis] Failed for incident ${params.id}:`, analysisError);
+        // We continue anyway, the client will show the "pending" state or partial data
+      }
     }
 
     const serializedIncident = {

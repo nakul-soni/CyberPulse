@@ -4,12 +4,10 @@
  * Runs scheduled ingestion jobs using node-cron
  * Configure cron schedule in .env (default: every 6 hours)
  * 
- * Note: This requires tsx or ts-node to run TypeScript files
- * Install: npm install -g tsx
- * Run: tsx scripts/worker.js
+ * Note: This requires tsx to run TypeScript files
+ * Run: bun run worker (or tsx scripts/worker.js)
  */
 
-// Load environment variables from .env.local (local dev) or use Render's env vars (production)
 require('dotenv').config({ path: '.env.local' });
 require('dotenv').config({ path: '.env' });
 const cron = require('node-cron');
@@ -20,7 +18,6 @@ const CRON_SCHEDULE = process.env.INGESTION_CRON_SCHEDULE || '0 */6 * * *';
 console.log('🚀 CyberPulse Background Worker Starting...');
 console.log(`📅 Scheduled ingestion: ${CRON_SCHEDULE}`);
 
-// Simple in-memory backoff for AI analysis when rate limits hit
 let analysisBlockedUntil = 0;
 
 // Run ingestion immediately on startup (optional)
@@ -44,7 +41,8 @@ setInterval(async () => {
 
 async function runIngestion() {
   try {
-    const module = await import('../dist/lib/ingestion-pipeline.js');
+    // Import from src instead of dist for tsx support
+    const module = await import('../src/lib/ingestion-pipeline.js').catch(() => import('../src/lib/ingestion-pipeline.ts'));
     const IngestionPipeline =
       module.IngestionPipeline || module.default?.IngestionPipeline || module.default;
     const pipeline = new IngestionPipeline();
@@ -61,46 +59,32 @@ async function runIngestion() {
 }
 
 async function runAnalysisBatch() {
-  // Back off if we recently hit Groq rate limits
   const now = Date.now();
   if (analysisBlockedUntil && now < analysisBlockedUntil) {
     return;
   }
 
   try {
-    const dbModule = await import('../dist/lib/db.js');
+    const dbModule = await import('../src/lib/db.js').catch(() => import('../src/lib/db.ts'));
     const query = dbModule.query || dbModule.default?.query || dbModule.default;
-    const updateIncidentAnalysis =
-      dbModule.updateIncidentAnalysis || dbModule.default?.updateIncidentAnalysis;
+    
+    const analysisModule = await import('../src/lib/analysis.js').catch(() => import('../src/lib/analysis.ts'));
+    const performAnalysis = analysisModule.performAnalysis;
+    const isAnalysisMissing = analysisModule.isAnalysisMissing;
 
-    const aiModule = await import('../dist/agents/ai-analysis-agent.js');
-    const riskModule = await import('../dist/agents/risk-severity-agent.js');
-    const caseStudyModule = await import('../dist/agents/case-study-agent.js');
-
-    const AIAnalysisAgent =
-      aiModule.AIAnalysisAgent || aiModule.default?.AIAnalysisAgent || aiModule.default;
-    const RiskSeverityAgent =
-      riskModule.RiskSeverityAgent || riskModule.default?.RiskSeverityAgent || riskModule.default;
-    const CaseStudyAgent =
-      caseStudyModule.CaseStudyAgent || caseStudyModule.default?.CaseStudyAgent || caseStudyModule.default;
-
-    const aiAgent = new AIAnalysisAgent();
-    const riskAgent = new RiskSeverityAgent();
-    const caseStudyAgent = new CaseStudyAgent();
-
-    // Select a small batch of incidents needing analysis,
-    // prioritizing today's incidents first.
-    // We *only* look at analysis content, not status, so we also
-    // repair older incidents that were marked analyzed without a summary.
+    // Select incidents missing analysis
+    // Fixed query to include new format check
     const result = await query(
-      `SELECT id, title, description, content
+      `SELECT id, title, description, content, analysis
        FROM incidents
        WHERE (
          analysis IS NULL
          OR analysis::text = 'null'
          OR analysis::text = '{}'
-         OR (analysis->>'summary') IS NULL
-         OR (analysis->>'summary') = ''
+         OR (
+           (analysis->>'snapshot') IS NULL 
+           AND (analysis->>'summary') IS NULL
+         )
        )
        ORDER BY (published_at::date = CURRENT_DATE) DESC, published_at DESC
        LIMIT 3`
@@ -114,39 +98,14 @@ async function runAnalysisBatch() {
     console.log(`\n🧠 Analysis batch: processing ${incidents.length} incident(s)...`);
 
     for (const incident of incidents) {
+      // Double check if analysis is missing using the utility
+      if (!isAnalysisMissing(incident.analysis)) {
+        continue;
+      }
+
       try {
-        // Mark as analyzing
-        await query(
-          `UPDATE incidents
-           SET status = 'analyzing'
-           WHERE id = $1`,
-          [incident.id]
-        );
-
-        const text = incident.description || incident.content || '';
-        const ai = await aiAgent.analyzeIncident(incident.title, text);
-
-        if (!ai) {
-          throw new Error('AI analysis returned null');
-        }
-
-        const caseStudy = caseStudyAgent.enhanceCaseStudy(
-          ai.case_study,
-          incident.title,
-          text
-        );
-        const risk = riskAgent.assessRisk(ai);
-
-        await updateIncidentAnalysis(incident.id, {
-          analysis: { ...ai, case_study: caseStudy },
-          severity: risk.severity,
-          attack_type: ai.attack_type,
-          risk_score: risk.risk_score,
-        });
-
+        await performAnalysis(incident);
         console.log(`   ✅ Analyzed incident: ${incident.id}`);
-
-        // Small delay between calls
         await new Promise((resolve) => setTimeout(resolve, 1500));
       } catch (err) {
         const msg = err?.message || String(err);
@@ -157,14 +116,6 @@ async function runAnalysisBatch() {
           analysisBlockedUntil = Date.now() + 5 * 60 * 1000;
           break;
         }
-
-        // Mark as failed; future batches can retry
-        await query(
-          `UPDATE incidents
-           SET status = 'failed'
-           WHERE id = $1`,
-          [incident.id]
-        );
       }
     }
   } catch (error) {
@@ -172,7 +123,6 @@ async function runAnalysisBatch() {
   }
 }
 
-// Keep process alive
 console.log('✅ Worker is running. Press Ctrl+C to stop.');
 process.on('SIGINT', () => {
   console.log('\n👋 Shutting down worker...');

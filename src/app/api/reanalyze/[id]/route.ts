@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { AIAnalysisAgent } from "@/agents/ai-analysis-agent";
-import { CaseStudyAgent } from "@/agents/case-study-agent";
-import { RiskSeverityAgent } from "@/agents/risk-severity-agent";
-import { getIncidentById, updateIncidentAnalysis } from "@/lib/db";
+import { getIncidentById } from "@/lib/db";
+import { performAnalysis } from "@/lib/analysis";
 
 export const dynamic = "force-dynamic";
 
@@ -21,36 +19,18 @@ export async function POST(
       );
     }
 
-    // Prefer description, fall back to content
-    const content = incident.description || incident.content || "";
-
-    const aiAgent = new AIAnalysisAgent();
-    const csAgent = new CaseStudyAgent();
-    const riskAgent = new RiskSeverityAgent();
-
-    const ai = await aiAgent.analyzeIncident(incident.title, content);
-    if (!ai) {
-      return NextResponse.json(
-        { error: "AI analysis unavailable (rate limit or API error)" },
-        { status: 429 }
-      );
+    try {
+      await performAnalysis(incident);
+      return NextResponse.json({ success: true });
+    } catch (analysisError: any) {
+      if (analysisError.message?.includes('rate_limit_exceeded')) {
+        return NextResponse.json(
+          { error: "AI analysis unavailable (rate limit)" },
+          { status: 429 }
+        );
+      }
+      throw analysisError;
     }
-
-    const caseStudy = csAgent.enhanceCaseStudy(
-      ai.case_study,
-      incident.title,
-      content
-    );
-    const risk = riskAgent.assessRisk(ai);
-
-    await updateIncidentAnalysis(id, {
-      analysis: { ...ai, case_study: caseStudy },
-      severity: risk.severity,
-      attack_type: ai.attack_type,
-      risk_score: risk.risk_score,
-    });
-
-    return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Reanalyze error:", error);
     return NextResponse.json(
@@ -59,4 +39,3 @@ export async function POST(
       );
   }
 }
-
