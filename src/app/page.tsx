@@ -16,13 +16,13 @@ export default async function DashboardPage() {
     
     // Only trigger if overdue AND not already running
     if (isOverdue && !(await isIngestionRunning())) {
-      // Trigger background ingestion without awaiting it
+      // Trigger background worker (ingestion + analysis) without awaiting it
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      fetch(`${baseUrl}/api/ingest`, {
+      fetch(`${baseUrl}/api/worker`, {
         headers: {
           'Authorization': `Bearer ${process.env.CRON_SECRET}`
         }
-      }).catch(err => console.error('Background ingestion failed to trigger:', err));
+      }).catch(err => console.error('Background worker failed to trigger:', err));
     }
 
     // 2. Fetch incidents for display
