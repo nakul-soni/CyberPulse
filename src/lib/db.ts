@@ -4,10 +4,13 @@ import { Pool, QueryResult, QueryResultRow } from 'pg';
 const poolConfig = process.env.DATABASE_URL
     ? {
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-        max: 10, // Reduced max connections to avoid overwhelming the slow link
+        ssl: { 
+          rejectUnauthorized: false, // Required for Render/Supabase self-signed certs
+        },
+        max: 5, // Keep connection count low to prevent termination by server
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 30000, // Increased timeout to 30s
+        connectionTimeoutMillis: 30000,
+        keepAlive: true,
       }
 
   : {
