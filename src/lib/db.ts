@@ -2,13 +2,14 @@ import { Pool, QueryResult, QueryResultRow } from 'pg';
 
 // PostgreSQL connection pool - supports DATABASE_URL or individual vars
 const poolConfig = process.env.DATABASE_URL
-  ? {
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      max: 20,
-      idleTimeoutMillis: 60000,
-      connectionTimeoutMillis: 15000,
-    }
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+        max: 10, // Reduced max connections to avoid overwhelming the slow link
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 30000, // Increased timeout to 30s
+      }
+
   : {
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432'),
@@ -65,23 +66,42 @@ export interface IngestionLog {
   error_message?: string;
 }
 
-// Query helper
+// Query helper with retry logic
 export async function query<T extends QueryResultRow = any>(
   text: string,
-  params?: any[]
+  params?: any[],
+  retries = 3
 ): Promise<QueryResult<T>> {
   const start = Date.now();
-  try {
-    const res = await pool.query<T>(text, params);
-    const duration = Date.now() - start;
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Executed query', { text, duration, rows: res.rowCount });
+  let lastError: any;
+
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const res = await pool.query<T>(text, params);
+      const duration = Date.now() - start;
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Executed query (Attempt ${attempt + 1})`, { text, duration, rows: res.rowCount });
+      }
+      return res;
+    } catch (error: any) {
+      lastError = error;
+      const isTransient = error.message.includes('terminated') || 
+                         error.message.includes('timeout') || 
+                         error.code === 'ENOTFOUND' ||
+                         error.code === 'ECONNRESET';
+      
+      if (!isTransient || attempt === retries - 1) {
+        break;
+      }
+      
+      const delay = Math.pow(2, attempt) * 1000;
+      console.warn(`Database query failed (Attempt ${attempt + 1}/${retries}). Retrying in ${delay}ms...`, error.message);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-    return res;
-  } catch (error) {
-    console.error('Database query error:', error);
-    throw error;
   }
+
+  console.error('Database query final failure:', lastError);
+  throw lastError;
 }
 
 // Get all incidents with pagination
