@@ -69,8 +69,8 @@ async function runAnalysisBatch() {
     const query = dbModule.query || dbModule.default?.query || dbModule.default;
     
     const analysisModule = await import('../src/lib/analysis.js').catch(() => import('../src/lib/analysis.ts'));
-    const performAnalysis = analysisModule.performAnalysis;
-    const isAnalysisMissing = analysisModule.isAnalysisMissing;
+    const performAnalysis = analysisModule.performAnalysis || analysisModule.default?.performAnalysis;
+    const isAnalysisMissing = analysisModule.isAnalysisMissing || analysisModule.default?.isAnalysisMissing;
 
     // Select incidents missing analysis
     // Fixed query to include new format check
