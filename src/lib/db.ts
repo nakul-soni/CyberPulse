@@ -5,12 +5,14 @@ const poolConfig = process.env.DATABASE_URL
     ? {
         connectionString: process.env.DATABASE_URL,
         ssl: { 
-          rejectUnauthorized: false, // Required for Render/Supabase self-signed certs
+          rejectUnauthorized: false,
         },
-        max: 5, // Keep connection count low to prevent termination by server
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 30000,
+        max: 2, // Even lower to stay safe
+        idleTimeoutMillis: 1000,
+        connectionTimeoutMillis: 10000,
+        maxUses: 50,
         keepAlive: true,
+        keepAliveInitialDelayMillis: 10000,
       }
 
   : {
@@ -19,20 +21,17 @@ const poolConfig = process.env.DATABASE_URL
       database: process.env.DB_NAME || 'cyberpulse',
       user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
-      max: 20,
+      max: 10,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
+      connectionTimeoutMillis: 5000,
     };
 
 const pool = new Pool(poolConfig);
 
-// Test connection on startup
-pool.on('connect', () => {
-  console.log('✅ PostgreSQL connected');
-});
-
-pool.on('error', (err) => {
-  console.error('❌ PostgreSQL connection error:', err);
+// Improved error handling for the pool
+pool.on('error', (err, client) => {
+  console.error('❌ PostgreSQL Pool error:', err.message);
+  // Optional: you could try to end the client here, but Pool usually handles it
 });
 
 export interface Incident {
@@ -78,30 +77,44 @@ export async function query<T extends QueryResultRow = any>(
   const start = Date.now();
   let lastError: any;
 
-  for (let attempt = 0; attempt < retries; attempt++) {
-    try {
-      const res = await pool.query<T>(text, params);
-      const duration = Date.now() - start;
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Executed query (Attempt ${attempt + 1})`, { text, duration, rows: res.rowCount });
+    for (let attempt = 0; attempt < retries; attempt++) {
+      let client;
+      try {
+        // Acquisition attempt
+        client = await pool.connect();
+        const res = await client.query<T>(text, params);
+        const duration = Date.now() - start;
+        
+        if (process.env.NODE_ENV === 'development' && duration > 1000) {
+          console.log(`🐢 Slow query (Attempt ${attempt + 1}): ${duration}ms`);
+        }
+        
+        return res;
+      } catch (error: any) {
+        lastError = error;
+        const isTransient = error.message.includes('terminated') || 
+                           error.message.includes('timeout') || 
+                           error.code === 'ENOTFOUND' ||
+                           error.code === 'ECONNRESET' ||
+                           error.code === '57P01'; // admin_shutdown
+        
+        if (!isTransient || attempt === retries - 1) {
+          break;
+        }
+        
+        const delay = Math.pow(2, attempt) * 1000;
+        console.warn(`⚠️ DB query retry ${attempt + 1}/${retries} in ${delay}ms: ${error.message}`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } finally {
+        if (client) {
+          if (lastError) {
+            client.release(true); // Discard broken client
+          } else {
+            client.release(); // Return healthy client to pool
+          }
+        }
       }
-      return res;
-    } catch (error: any) {
-      lastError = error;
-      const isTransient = error.message.includes('terminated') || 
-                         error.message.includes('timeout') || 
-                         error.code === 'ENOTFOUND' ||
-                         error.code === 'ECONNRESET';
-      
-      if (!isTransient || attempt === retries - 1) {
-        break;
-      }
-      
-      const delay = Math.pow(2, attempt) * 1000;
-      console.warn(`Database query failed (Attempt ${attempt + 1}/${retries}). Retrying in ${delay}ms...`, error.message);
-      await new Promise(resolve => setTimeout(resolve, delay));
     }
-  }
 
   console.error('Database query final failure:', lastError);
   throw lastError;
