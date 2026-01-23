@@ -99,7 +99,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
     );
   }
 
-  const { snapshot, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk } = analysis;
+  const { snapshot, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk, executive_summary } = analysis;
 
   const severityColors: Record<string, string> = {
     'LOW': 'text-blue-400',
@@ -175,6 +175,20 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
             </div>
           </div>
         </section>
+
+        {/* 1.5️⃣ EXECUTIVE SUMMARY (QUICK BREAKDOWN) */}
+        {executive_summary && (
+          <section className="space-y-4">
+            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-purple)] flex items-center gap-2">
+              <Zap className="w-4 h-4" /> Executive Briefing
+            </h2>
+            <div className="bg-gradient-to-r from-[var(--accent-purple)]/10 to-transparent border-l-4 border-[var(--accent-purple)] p-6 rounded-r-2xl">
+              <p className="text-lg font-bold text-[var(--text-primary)] leading-relaxed italic">
+                "{executive_summary}"
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* 2️⃣ WHAT ACTUALLY HAPPENED (FACTS ONLY) */}
         <section className="space-y-4">
