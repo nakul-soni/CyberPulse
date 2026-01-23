@@ -155,6 +155,15 @@ export async function getIncidents(options: {
     params
   );
 
+  // Mark returned incidents as viewed to prioritize them for analysis
+  if (result.rows.length > 0) {
+    const ids = result.rows.map(r => r.id);
+    query(
+      `UPDATE incidents SET last_viewed_at = NOW() WHERE id = ANY($1)`,
+      [ids]
+    ).catch(err => console.error('Error updating last_viewed_at:', err));
+  }
+
   return {
     incidents: result.rows,
     total,
@@ -167,6 +176,14 @@ export async function getIncidentById(id: string): Promise<Incident | null> {
     'SELECT * FROM incidents WHERE id = $1',
     [id]
   );
+  
+  if (result.rows[0]) {
+    query(
+      'UPDATE incidents SET last_viewed_at = NOW() WHERE id = $1',
+      [id]
+    ).catch(err => console.error('Error updating last_viewed_at:', err));
+  }
+  
   return result.rows[0] || null;
 }
 

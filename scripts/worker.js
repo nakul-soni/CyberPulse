@@ -72,23 +72,24 @@ async function runAnalysisBatch() {
     const performAnalysis = analysisModule.performAnalysis || analysisModule.default?.performAnalysis;
     const isAnalysisMissing = analysisModule.isAnalysisMissing || analysisModule.default?.isAnalysisMissing;
 
-    // Select incidents missing analysis
-    // Fixed query to include new format check
-    const result = await query(
-      `SELECT id, title, description, content, analysis
-       FROM incidents
-       WHERE (
-         analysis IS NULL
-         OR analysis::text = 'null'
-         OR analysis::text = '{}'
-         OR (
-           (analysis->>'snapshot') IS NULL 
-           AND (analysis->>'summary') IS NULL
+      // Select incidents missing analysis that have been recently viewed (last 5 minutes)
+      // This ensures we only analyze what's on display to save API costs
+      const result = await query(
+        `SELECT id, title, description, content, analysis
+         FROM incidents
+         WHERE (
+           analysis IS NULL
+           OR analysis::text = 'null'
+           OR analysis::text = '{}'
+           OR (
+             (analysis->>'snapshot') IS NULL 
+             AND (analysis->>'summary') IS NULL
+           )
          )
-       )
-       ORDER BY (published_at::date = CURRENT_DATE) DESC, published_at DESC
-         LIMIT 2`
-    );
+         AND last_viewed_at >= NOW() - INTERVAL '5 minutes'
+         ORDER BY last_viewed_at DESC
+         LIMIT 3`
+      );
 
     const incidents = result.rows || [];
     if (incidents.length === 0) {
