@@ -20,7 +20,12 @@ export async function POST(
     }
 
     try {
-      await performAnalysis(incident);
+      await performAnalysis({
+        id: incident.id,
+        title: incident.title,
+        description: incident.description ?? undefined,
+        content: incident.content ?? undefined
+      });
       return NextResponse.json({ success: true });
     } catch (analysisError: any) {
       if (analysisError.message?.includes('rate_limit_exceeded')) {
