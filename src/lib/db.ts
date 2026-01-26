@@ -7,11 +7,9 @@ const poolConfig = process.env.DATABASE_URL
         ssl: { 
           rejectUnauthorized: false, // Required for Render/Supabase self-signed certs
         },
-        max: 2, // Minimum connections for Render Free tier stability
-        idleTimeoutMillis: 10000,
-        connectionTimeoutMillis: 60000, // 60s to handle slow network
-        keepAlive: true,
-        statement_timeout: 90000, // 90s for complex queries during analysis
+        max: 10,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
         application_name: 'cyberpulse_app'
       }
 
@@ -30,16 +28,11 @@ const pool = new Pool(poolConfig);
 
 // Test connection on startup
 pool.on('connect', (client) => {
-  client.query('SET statement_timeout = 90000').catch(() => {});
+  client.query('SET statement_timeout = 30000').catch(() => {});
 });
 
 pool.on('error', (err) => {
-  // If we get a "terminated" error at the pool level, it's often a transient network issue
-  if (err.message.includes('terminated') || err.message.includes('Connection terminated')) {
-    console.warn('⚠️ PostgreSQL Pool: Connection was terminated by server. This is common on Render Free tier.');
-  } else {
-    console.error('❌ PostgreSQL Pool Error:', err.message);
-  }
+  console.error('❌ PostgreSQL Pool Error:', err.message);
 });
 
 export interface Incident {
@@ -77,11 +70,11 @@ export interface IngestionLog {
   error_message?: string;
 }
 
-// Query helper with enhanced retry logic for "Connection terminated unexpectedly"
+// Query helper with basic retry logic
 export async function query<T extends QueryResultRow = any>(
   text: string,
   params?: any[],
-  retries = 5 // Increased retries
+  retries = 3
 ): Promise<QueryResult<T>> {
   const start = Date.now();
   let lastError: any;
@@ -104,8 +97,7 @@ export async function query<T extends QueryResultRow = any>(
         break;
       }
       
-      // Longer backoff for Render
-      const delay = Math.pow(2, attempt) * 2000 + Math.random() * 1000;
+      const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
       console.warn(`Database query failed (Attempt ${attempt + 1}/${retries}). Retrying in ${Math.round(delay)}ms... ${error.message}`);
       
       await new Promise(resolve => setTimeout(resolve, delay));

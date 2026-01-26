@@ -18,8 +18,6 @@ const CRON_SCHEDULE = process.env.INGESTION_CRON_SCHEDULE || '0 */6 * * *';
 console.log('🚀 CyberPulse Background Worker Starting...');
 console.log(`📅 Scheduled ingestion: ${CRON_SCHEDULE}`);
 
-let analysisBlockedUntil = 0;
-
 // Run ingestion immediately on startup (optional)
 const RUN_ON_STARTUP = process.env.RUN_INGESTION_ON_STARTUP === 'true';
 
@@ -59,11 +57,6 @@ async function runIngestion() {
 }
 
 async function runAnalysisBatch() {
-  const now = Date.now();
-  if (analysisBlockedUntil && now < analysisBlockedUntil) {
-    return;
-  }
-
   try {
     const dbModule = await import('../src/lib/db.js').catch(() => import('../src/lib/db.ts'));
     const query = dbModule.query || dbModule.default?.query || dbModule.default;
@@ -72,8 +65,7 @@ async function runAnalysisBatch() {
     const performAnalysis = analysisModule.performAnalysis || analysisModule.default?.performAnalysis;
     const isAnalysisMissing = analysisModule.isAnalysisMissing || analysisModule.default?.isAnalysisMissing;
 
-      // Select incidents missing analysis that have been recently viewed (last 5 minutes)
-      // This ensures we only analyze what's on display to save API costs
+      // Select incidents missing analysis
       const result = await query(
         `SELECT id, title, description, content, analysis
          FROM incidents
@@ -86,8 +78,7 @@ async function runAnalysisBatch() {
              AND (analysis->>'summary') IS NULL
            )
          )
-         AND last_viewed_at >= NOW() - INTERVAL '5 minutes'
-         ORDER BY last_viewed_at DESC
+         ORDER BY published_at DESC
          LIMIT 3`
       );
 
@@ -107,21 +98,8 @@ async function runAnalysisBatch() {
       try {
         await performAnalysis(incident);
         console.log(`   ✅ Analyzed incident: ${incident.id}`);
-        await new Promise((resolve) => setTimeout(resolve, 1500));
       } catch (err) {
-        const msg = err?.message || String(err);
-        console.error(`   ❌ Analysis failed for ${incident.id}:`, msg);
-
-          if (msg.includes('rate_limit_exceeded')) {
-            console.warn('   ⚠️ Rate limit hit. Pausing analysis for 5 minutes.');
-            analysisBlockedUntil = Date.now() + 5 * 60 * 1000;
-            break;
-          }
-          if (msg.includes('GROQ_CREDITS_EXHAUSTED')) {
-            console.warn('   🛑 GROQ CREDITS EXHAUSTED. Pausing analysis for 1 hour.');
-            analysisBlockedUntil = Date.now() + 60 * 60 * 1000;
-            break;
-          }
+        console.error(`   ❌ Analysis failed for ${incident.id}:`, err?.message || String(err));
       }
     }
   } catch (error) {
