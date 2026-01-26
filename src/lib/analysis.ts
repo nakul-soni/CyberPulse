@@ -3,8 +3,8 @@ import { CaseStudyAgent } from '@/agents/case-study-agent';
 import { RiskSeverityAgent } from '@/agents/risk-severity-agent';
 import { updateIncidentAnalysis, query } from '@/lib/db';
 
-export async function performAnalysis(incident: { id: string; title: string; description?: string; content?: string }) {
-  const content = incident.description || incident.content || "";
+export async function performAnalysis(incident: { id: string; title: string; description?: string | null; content?: string | null }) {
+  const content = (incident.description || incident.content || "") as string;
   
   const aiAgent = new AIAnalysisAgent();
   const csAgent = new CaseStudyAgent();
@@ -24,7 +24,7 @@ export async function performAnalysis(incident: { id: string; title: string; des
     }
 
     const caseStudy = csAgent.enhanceCaseStudy(
-      ai.case_study,
+      ai,
       incident.title,
       content
     );
