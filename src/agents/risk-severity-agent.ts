@@ -25,7 +25,7 @@ export class RiskSeverityAgent {
       publishedAt?: Date;
     }): RiskAssessment {
       // Start with a lower base score to allow for better distribution
-      let riskScore = analysis.risk_score || 25;
+      let riskScore = 25;
       const factors: string[] = [];
 
       // Adjust based on attack type
