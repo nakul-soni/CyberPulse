@@ -73,13 +73,12 @@ export class AIAnalysisAgent {
             messages: [
               {
                 role: 'system',
-                content: `You are an expert Cyber Intelligence Analyst. Your goal is to produce factual, action-oriented intelligence summaries that are so clear a user can understand the entire scenario within 60 seconds.
+                content: `You are an expert Cyber Intelligence Analyst. Your goal is to produce factual, action-oriented intelligence summaries.
 NON-NEGOTIABLE PRINCIPLES:
 - Facts before interpretation: No opinions or generic concern statements.
 - Signal over noise: Remove buzzwords, fluff, and marketing language.
 - Zero ambiguity: Use clear metadata.
 - No generic AI phrasing: Avoid "raises concerns", "robust security", "exercise caution", "enhanced protection".
-- Headline First: Provide a punchy 2-3 line executive summary that captures the "What, Who, and How" perfectly.
 Always respond with valid JSON only.`,
               },
               {
@@ -128,7 +127,7 @@ Article Content: ${description || 'No description available'}
 
 The response MUST be a valid JSON object matching this exact structure:
 {
-  "executive_summary": "2-3 lines Headline or Incident Summary that explains the complete scenario perfectly. It should be punchy and clear enough for a user to understand what happened within 60 seconds.",
+  "executive_summary": "A 2-3 line headline or summary that explains the complete scenario perfectly. It must be so clear that a user understands exactly what happened within a minute.",
   "snapshot": {
     "title": "🛑 INCIDENT TITLE (uppercase)",
     "date": "YYYY-MM-DD",
@@ -167,6 +166,7 @@ The response MUST be a valid JSON object matching this exact structure:
   - CRITICAL: Massive global impact, mass exploitation of zero-days in core infrastructure, or life-safety threats.
 
 CONSTRAINTS:
+- executive_summary must be 2-3 lines max, high-impact, and crystal clear.
 - 2-4 facts max.
 - 3 root causes max.
 - No analysis, advice, or adjectives in Snapshot.
@@ -198,7 +198,6 @@ CONSTRAINTS:
 
     return {
       snapshot: normalizedSnapshot,
-      executive_summary: analysis.executive_summary || (Array.isArray(analysis.facts) ? analysis.facts[0] : 'No summary available'),
       facts: Array.isArray(analysis.facts) ? analysis.facts.slice(0, 4) : ['No facts available'],
       relevance: Array.isArray(analysis.relevance) ? analysis.relevance : ['Enterprises'],
       impact: {
@@ -218,7 +217,8 @@ CONSTRAINTS:
         current_risk: analysis.ongoing_risk?.current_risk || 'Unknown',
         what_to_watch: Array.isArray(analysis.ongoing_risk?.what_to_watch) ? analysis.ongoing_risk.what_to_watch : []
       },
-      summary: Array.isArray(analysis.facts) ? analysis.facts.join(' ') : 'No summary available',
+      executive_summary: analysis.executive_summary || 'No executive summary available',
+      summary: analysis.executive_summary || (Array.isArray(analysis.facts) ? analysis.facts.join(' ') : 'No summary available'),
       attack_type: normalizedSnapshot.attack_type,
       severity: legacySeverityMap[normalizedSnapshot.severity] || 'Medium'
     };
