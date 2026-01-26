@@ -65,7 +65,7 @@ async function runAnalysisBatch() {
     const performAnalysis = analysisModule.performAnalysis || analysisModule.default?.performAnalysis;
     const isAnalysisMissing = analysisModule.isAnalysisMissing || analysisModule.default?.isAnalysisMissing;
 
-      // Select incidents missing analysis
+      // Select incidents missing analysis that were recently viewed
       const result = await query(
         `SELECT id, title, description, content, analysis
          FROM incidents
@@ -78,7 +78,8 @@ async function runAnalysisBatch() {
              AND (analysis->>'summary') IS NULL
            )
          )
-         ORDER BY published_at DESC
+         AND last_viewed_at > NOW() - INTERVAL '5 minutes'
+         ORDER BY last_viewed_at DESC, published_at DESC
          LIMIT 3`
       );
 
