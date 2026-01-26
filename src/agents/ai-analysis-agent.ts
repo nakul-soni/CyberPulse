@@ -36,6 +36,7 @@ export interface AIAnalysis {
     current_risk: string;
     what_to_watch: string[];
   };
+  executive_summary: string;
   // Legacy fields for DB compatibility if needed, but we'll focus on the new ones
   summary: string; 
   attack_type: string;
@@ -72,12 +73,13 @@ export class AIAnalysisAgent {
             messages: [
               {
                 role: 'system',
-                content: `You are an expert Cyber Intelligence Analyst. Your goal is to produce factual, action-oriented intelligence summaries.
+                content: `You are an expert Cyber Intelligence Analyst. Your goal is to produce factual, action-oriented intelligence summaries that are so clear a user can understand the entire scenario within 60 seconds.
 NON-NEGOTIABLE PRINCIPLES:
 - Facts before interpretation: No opinions or generic concern statements.
 - Signal over noise: Remove buzzwords, fluff, and marketing language.
 - Zero ambiguity: Use clear metadata.
 - No generic AI phrasing: Avoid "raises concerns", "robust security", "exercise caution", "enhanced protection".
+- Headline First: Provide a punchy 2-3 line executive summary that captures the "What, Who, and How" perfectly.
 Always respond with valid JSON only.`,
               },
               {
@@ -126,6 +128,7 @@ Article Content: ${description || 'No description available'}
 
 The response MUST be a valid JSON object matching this exact structure:
 {
+  "executive_summary": "2-3 lines Headline or Incident Summary that explains the complete scenario perfectly. It should be punchy and clear enough for a user to understand what happened within 60 seconds.",
   "snapshot": {
     "title": "🛑 INCIDENT TITLE (uppercase)",
     "date": "YYYY-MM-DD",
@@ -195,6 +198,7 @@ CONSTRAINTS:
 
     return {
       snapshot: normalizedSnapshot,
+      executive_summary: analysis.executive_summary || (Array.isArray(analysis.facts) ? analysis.facts[0] : 'No summary available'),
       facts: Array.isArray(analysis.facts) ? analysis.facts.slice(0, 4) : ['No facts available'],
       relevance: Array.isArray(analysis.relevance) ? analysis.relevance : ['Enterprises'],
       impact: {
