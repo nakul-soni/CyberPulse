@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:worker": "tsc --project tsconfig.worker.json",
-    "start": "node scripts/migrate.js && next start",
+    "start": "node scripts/migrate.js && node scripts/worker.js",
     "lint": "next lint",
     "db:migrate": "node scripts/migrate.js",
     "ingest": "tsx scripts/ingest.js",
