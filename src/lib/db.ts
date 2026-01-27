@@ -284,6 +284,15 @@ export async function updateIncidentAnalysis(
   return result.rows[0];
 }
 
+// Update last_viewed_at for incidents
+export async function updateIncidentsViewed(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+  await query(
+    `UPDATE incidents SET last_viewed_at = NOW() WHERE id = ANY($1)`,
+    [ids]
+  );
+}
+
 // Create ingestion log
 export async function createIngestionLog(sourceName?: string): Promise<IngestionLog> {
   const result = await query<IngestionLog>(
