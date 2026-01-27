@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, X, ChevronDown, Sparkles, Command } from 'lucide-react';
+import { Search, Filter, X, ChevronDown, Sparkles, Command, Calendar } from 'lucide-react';
 
 interface SearchAndFiltersProps {
   onSearch: (query: string) => void;
