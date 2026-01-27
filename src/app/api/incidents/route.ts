@@ -29,39 +29,47 @@ export async function GET(request: Request) {
     });
 
     // Global Search Enhancement:
-    // If we have no results and there's a specific query, try to find it globally
-    if (result.total === 0 && query && query.length > 3 && !severity && !attackType && !date) {
-      console.log(`[Global Search] No results for "${query}", searching global intelligence...`);
-      const globalIncident = await globalSearchAgent.searchGlobalAttack(query);
+    // If we have low results and there's a specific query, try to find more globally
+    if (result.total < 3 && query && query.length > 3 && !severity && !attackType && !date) {
+      console.log(`[Global Search] Low results (${result.total}) for "${query}", searching global intelligence...`);
+      const globalIncidents = await globalSearchAgent.searchGlobalAttack(query);
       
-      if (globalIncident) {
-        // Create hash for deduplication
-        const contentHash = crypto
-          .createHash('md5')
-          .update(globalIncident.title + globalIncident.description)
-          .digest('hex');
+      if (globalIncidents && globalIncidents.length > 0) {
+        for (const incident of globalIncidents) {
+          // Create hash for deduplication
+          const contentHash = crypto
+            .createHash('md5')
+            .update(incident.title + incident.description)
+            .digest('hex');
 
-        // Insert into database
-        const newIncident = await insertIncident({
-          title: globalIncident.title,
-          description: globalIncident.description,
-          content: globalIncident.content,
-          url: globalIncident.url,
-          source: globalIncident.source,
-          published_at: new Date(globalIncident.published_at),
-          content_hash: contentHash,
-          region: globalIncident.region,
-        });
+          // Check if it already exists
+          const { incidentExistsByHash } = await import('@/lib/db');
+          const exists = await incidentExistsByHash(contentHash);
+          
+          if (!exists) {
+            // Insert into database
+            const newIncident = await insertIncident({
+              title: incident.title,
+              description: incident.description,
+              content: incident.content,
+              url: incident.url,
+              source: incident.source,
+              published_at: new Date(incident.published_at),
+              content_hash: contentHash,
+              region: incident.region,
+            });
 
-        // Add analysis
-        await updateIncidentAnalysis(newIncident.id, {
-          analysis: globalIncident.analysis,
-          severity: globalIncident.severity,
-          attack_type: globalIncident.attack_type,
-          risk_score: globalIncident.risk_score,
-        });
+            // Add analysis
+            await updateIncidentAnalysis(newIncident.id, {
+              analysis: incident.analysis,
+              severity: incident.severity,
+              attack_type: incident.attack_type,
+              risk_score: incident.risk_score,
+            });
+          }
+        }
 
-        // Re-fetch to get the newly created record
+        // Re-fetch to get all records including the new ones
         result = await getIncidents({
           page,
           limit,

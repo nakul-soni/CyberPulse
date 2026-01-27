@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { IncidentCard } from './IncidentCard';
 import { SearchAndFilters } from './SearchAndFilters';
-import { Shield, Zap, Info, Activity, AlertTriangle, TrendingUp, ChevronLeft, ChevronRight, Terminal, Lock } from 'lucide-react';
+import { Shield, Zap, Info, Activity, AlertTriangle, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Incident {
   id: string;
@@ -119,6 +119,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
 
     intervalRef.current = setInterval(async () => {
       if (pollingCountRef.current >= MAX_POLLING_ATTEMPTS) {
+        console.log('Max polling attempts reached. Stopping polling.');
         setIsPolling(false);
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
@@ -190,105 +191,66 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
     fetchIncidents('', {});
   };
 
-  const severityCounts = allIncidents.reduce((acc, inc) => {
+  const severityCounts = incidents.reduce((acc, inc) => {
     const sev = inc.severity || 'Low';
     acc[sev] = (acc[sev] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header Section */}
-      <div className="relative mb-16 opacity-0 animate-fade-in-up">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex -space-x-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-[var(--bg-primary)] bg-[var(--bg-card)] flex items-center justify-center overflow-hidden">
-                    <Shield className="w-4 h-4 text-[var(--accent-blue)]" />
-                  </div>
-                ))}
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--accent-blue)] py-1 px-3 bg-[var(--accent-blue)]/5 rounded-full border border-[var(--accent-blue)]/10">
-                Strategic Intelligence
+    <div className="max-w-7xl mx-auto px-6 sm:px-4 lg:px-8 py-10 sm:py-6">
+      <div className="mb-14 sm:mb-6 opacity-0 animate-fade-in-up stagger-1">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 sm:gap-4">
+          <div className="text-center sm:text-left">
+            <div className="flex justify-center sm:justify-start items-center gap-2 mb-4 sm:mb-1.5">
+              <span className="px-2 py-0.5 text-[10px] sm:text-[9px] font-mono uppercase tracking-[0.2em] bg-[var(--accent-blue)]/10 text-[var(--accent-cyan)] rounded border border-[var(--accent-blue)]/20">
+                Live Intelligence Feed
               </span>
             </div>
-            
-            <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 leading-[1.1]">
-              <span className="premium-gradient-text">Real-time Threat</span><br />
-              <span className="accent-gradient-text">Command Center</span>
+            <h1 className="text-4xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight mb-4 sm:mb-2 leading-tight">
+              Threat Intelligence <br className="sm:hidden" /> Dashboard
             </h1>
-            
-            <p className="text-lg text-[var(--text-secondary)] leading-relaxed font-light">
-              Autonomous security intelligence platform monitoring global attack vectors. 
-              Converting massive data streams into actionable defensive insights.
+            <p className="text-[var(--text-secondary)] max-w-2xl text-base sm:text-sm leading-relaxed mx-auto sm:mx-0">
+              Real-time cyber threat monitoring powered by advanced AI. Track global incidents with structured technical analysis.
             </p>
           </div>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-6 lg:self-end">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest mb-1">Response Time</span>
-              <span className="text-2xl font-bold font-mono text-white">42ms</span>
+      <div className="mb-12 sm:mb-6 opacity-0 animate-fade-in-up stagger-2">
+        <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto pb-4 sm:pb-0 no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 snap-x">
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <Activity className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--accent-blue)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Total</span>
             </div>
-            <div className="h-10 w-px bg-white/10" />
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest mb-1">Active Nodes</span>
-              <span className="text-2xl font-bold font-mono text-white">1,204</span>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--text-primary)]">{totalResults}</p>
+          </div>
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <AlertTriangle className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--severity-high)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">High</span>
             </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--severity-high)]">{severityCounts['High'] || 0}</p>
+          </div>
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <TrendingUp className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--severity-medium)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Med</span>
+            </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--severity-medium)]">{severityCounts['Medium'] || 0}</p>
+          </div>
+          <div className="min-w-[160px] sm:min-w-0 p-6 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl snap-center flex-1">
+            <div className="flex items-center gap-2 mb-3 sm:mb-1.5">
+              <Zap className="w-5 h-5 sm:w-3.5 sm:h-3.5 text-[var(--severity-low)]" />
+              <span className="text-[11px] sm:text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Low</span>
+            </div>
+            <p className="text-3xl sm:text-xl font-bold text-[var(--severity-low)]">{severityCounts['Low'] || 0}</p>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 opacity-0 animate-fade-in-up stagger-2">
-        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Activity className="w-12 h-12" />
-          </div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">Total Signals</p>
-          <p className="text-3xl font-black text-white group-hover:text-[var(--accent-blue)] transition-colors">{totalResults}</p>
-          <div className="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--accent-blue)] w-3/4 animate-pulse" />
-          </div>
-        </div>
-
-        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <AlertTriangle className="w-12 h-12" />
-          </div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">High Severity</p>
-          <p className="text-3xl font-black text-[var(--severity-high)] group-hover:scale-110 transition-transform origin-left">{severityCounts['High'] || 0}</p>
-          <div className="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--severity-high)] w-1/4" />
-          </div>
-        </div>
-
-        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <TrendingUp className="w-12 h-12" />
-          </div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">Medium Risk</p>
-          <p className="text-3xl font-black text-[var(--severity-medium)] group-hover:scale-110 transition-transform origin-left">{severityCounts['Medium'] || 0}</p>
-          <div className="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--severity-medium)] w-2/4" />
-          </div>
-        </div>
-
-        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Zap className="w-12 h-12" />
-          </div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">Low Priority</p>
-          <p className="text-3xl font-black text-[var(--severity-low)] group-hover:scale-110 transition-transform origin-left">{severityCounts['Low'] || 0}</p>
-          <div className="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--severity-low)] w-full opacity-30" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters Section */}
-      <div className="mb-12 opacity-0 animate-fade-in-up stagger-3">
+      <div className="mb-10 sm:mb-0 opacity-0 animate-fade-in-up stagger-3">
         <SearchAndFilters
           onSearch={handleSearch}
           onFilter={handleFilter}
@@ -296,88 +258,76 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         />
       </div>
 
-      {/* Results Info */}
       {(searchQuery || Object.values(filters).some(v => v)) && (
-        <div className="mb-8 flex items-center justify-between opacity-0 animate-fade-in">
-          <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-            {isLoading ? (
-              <div className="flex items-center gap-3 bg-[var(--bg-card)] px-4 py-2 rounded-full border border-white/5">
-                <div className="w-2 h-2 bg-[var(--accent-blue)] rounded-full animate-ping" />
-                <span>Decrypting intelligence for <span className="text-white font-mono">"{searchQuery}"</span>...</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
-                <span className="px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                  <span className="text-white font-bold">{totalResults}</span> signals found
-                </span>
-                {searchQuery && (
-                  <span className="text-[var(--accent-blue)] font-mono">/ filter: {searchQuery}</span>
-                )}
-              </div>
-            )}
-          </div>
+        <div className="mb-8 sm:mb-6 text-sm text-[var(--text-secondary)] opacity-0 animate-fade-in-up flex items-center gap-3">
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin" />
+              <span>Searching global intelligence databases for <span className="text-[var(--accent-cyan)] font-bold">"{searchQuery}"</span>...</span>
+            </div>
+          ) : (
+            <>
+              Found <span className="font-semibold text-[var(--text-primary)]">{totalResults}</span> incident{totalResults !== 1 ? 's' : ''}
+              {searchQuery && <span className="text-[var(--accent-cyan)]"> matching "{searchQuery}"</span>}
+            </>
+          )}
         </div>
       )}
 
-      {/* Grid Content */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="glass-card p-8 rounded-3xl animate-pulse">
-              <div className="flex justify-between mb-8">
-                <div className="h-6 w-24 bg-white/5 rounded-full" />
-                <div className="h-6 w-16 bg-white/5 rounded-full" />
+            <div key={i} className="p-6 sm:p-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl sm:rounded-xl animate-pulse">
+              <div className="flex gap-2 mb-4 sm:mb-3">
+                <div className="h-5 w-16 bg-[var(--bg-card-hover)] rounded-full" />
+                <div className="h-5 w-20 bg-[var(--bg-card-hover)] rounded" />
               </div>
-              <div className="h-8 w-3/4 bg-white/5 rounded-xl mb-6" />
-              <div className="space-y-3 mb-8">
-                <div className="h-4 w-full bg-white/5 rounded-lg" />
-                <div className="h-4 w-5/6 bg-white/5 rounded-lg" />
-                <div className="h-4 w-2/3 bg-white/5 rounded-lg" />
-              </div>
-              <div className="pt-8 border-t border-white/5 flex justify-between">
-                <div className="h-5 w-20 bg-white/5 rounded-lg" />
-                <div className="h-5 w-24 bg-white/5 rounded-lg" />
+              <div className="h-6 w-3/4 bg-[var(--bg-card-hover)] rounded mb-3 sm:mb-2" />
+              <div className="h-4 w-full bg-[var(--bg-card-hover)] rounded mb-2 sm:mb-1.5" />
+              <div className="h-4 w-2/3 bg-[var(--bg-card-hover)] rounded mb-4 sm:mb-3" />
+              <div className="flex justify-between pt-4 sm:pt-3 border-t border-[var(--border-primary)]">
+                <div className="h-5 w-24 bg-[var(--bg-card-hover)] rounded" />
+                <div className="h-5 w-20 bg-[var(--bg-card-hover)] rounded" />
               </div>
             </div>
           ))}
         </div>
-      ) : incidents && incidents.length > 0 ? (
-        <>
-          <div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            onMouseLeave={() => setHoveredId(null)}
-          >
-            {incidents.map((incident, index) => (
-              <div
-                key={incident.id}
-                className={`opacity-0 animate-fade-in-up stagger-${Math.min(index % 6 + 1, 6)} h-full`}
-                onMouseEnter={() => setHoveredId(incident.id)}
-              >
-                <IncidentCard 
-                  incident={incident} 
-                  isHovered={hoveredId === incident.id}
-                  isOtherHovered={hoveredId !== null && hoveredId !== incident.id}
-                />
-              </div>
-            ))}
-          </div>
+        ) : incidents && incidents.length > 0 ? (
+          <>
+            <div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4"
+              onMouseLeave={() => setHoveredId(null)}
+            >
+              {incidents.map((incident, index) => (
+                <div
+                  key={incident.id}
+                  className={`opacity-0 animate-fade-in-up stagger-${Math.min(index % 6 + 1, 6)}`}
+                  onMouseEnter={() => setHoveredId(incident.id)}
+                >
+                  <IncidentCard 
+                    incident={incident} 
+                    isHovered={hoveredId === incident.id}
+                    isOtherHovered={hoveredId !== null && hoveredId !== incident.id}
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="mt-20 flex flex-col items-center gap-8">
-              <div className="flex items-center gap-2 p-1.5 bg-[var(--bg-secondary)] border border-white/5 rounded-2xl">
+            {totalPages > 1 && (
+              <div className="mt-10 flex items-center justify-center gap-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-3 bg-[var(--bg-card)] border border-white/10 rounded-xl text-[var(--text-secondary)] hover:text-white hover:border-[var(--accent-blue)] transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--bg-card)]"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
                 </button>
                 
-                <div className="flex items-center gap-1 px-4">
+                <div className="flex items-center gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => {
-                      if (totalPages <= 5) return true;
+                      if (totalPages <= 7) return true;
                       if (page === 1 || page === totalPages) return true;
                       if (page >= currentPage - 1 && page <= currentPage + 1) return true;
                       return false;
@@ -387,17 +337,17 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
                       return (
                         <div key={page} className="flex items-center">
                           {showEllipsisBefore && (
-                            <span className="px-3 text-[var(--text-muted)] font-mono">...</span>
+                            <span className="px-2 text-[var(--text-muted)]">...</span>
                           )}
                           <button
                             onClick={() => handlePageChange(page)}
-                            className={`w-12 h-12 rounded-xl text-sm font-bold font-mono transition-all ${
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all ${
                               currentPage === page
-                                ? 'bg-[var(--accent-blue)] text-white shadow-[0_0_20px_rgba(59,130,246,0.4)]'
-                                : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/5'
+                                ? 'bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white'
+                                : 'bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]'
                             }`}
                           >
-                            {page.toString().padStart(2, '0')}
+                            {page}
                           </button>
                         </div>
                       );
@@ -407,75 +357,46 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-3 bg-[var(--bg-card)] border border-white/10 rounded-xl text-[var(--text-secondary)] hover:text-white hover:border-[var(--accent-blue)] transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--bg-card)]"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  Next
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
-              
-              <p className="text-[10px] font-bold font-mono text-[var(--text-muted)] uppercase tracking-[0.4em]">
-                Page {currentPage} of {totalPages} // {totalResults} signals logged
+            )}
+
+            {totalPages > 1 && (
+              <p className="mt-4 text-center text-sm text-[var(--text-muted)]">
+                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, totalResults)} of {totalResults} incidents
               </p>
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="text-center py-32 glass-card rounded-3xl border-dashed">
-          <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5">
-            <Shield className="w-10 h-10 text-[var(--text-muted)] opacity-20" />
+            )}
+          </>
+        ) : (
+        <div className="text-center py-20 sm:py-16 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl border-dashed opacity-0 animate-fade-in-up">
+          <div className="w-16 h-16 sm:w-14 sm:h-14 bg-[var(--bg-card-hover)] rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-3">
+            <Shield className="w-8 h-8 sm:w-7 sm:h-7 text-[var(--text-muted)]" />
           </div>
-          <h3 className="text-2xl font-black text-white mb-4">No Signals Detected</h3>
-          <p className="text-[var(--text-secondary)] text-sm mb-12 max-w-sm mx-auto">The search criteria did not match any historical or live intelligence records in our database.</p>
-          <button 
-            onClick={handleReset}
-            className="px-8 py-4 bg-white text-black rounded-2xl text-sm font-black hover:bg-[var(--accent-blue)] hover:text-white transition-all transform hover:-translate-y-1"
+          <h3 className="text-lg sm:text-base font-semibold text-[var(--text-primary)]">No incidents found</h3>
+          <p className="text-[var(--text-secondary)] text-sm sm:text-xs mb-8 sm:mb-5 px-6">Start by refreshing the news feed to fetch the latest intelligence.</p>
+          <a 
+            href="/api/ingest" 
+            className="inline-flex items-center gap-2.5 px-6 py-3 sm:px-5 sm:py-2 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] text-white rounded-xl sm:rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
           >
-            Clear All Filters
-          </button>
+            <Zap className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            Refresh Now
+          </a>
         </div>
       )}
 
-      {/* Info Panel */}
-      <div className="mt-32 p-12 glass-card rounded-[3rem] relative overflow-hidden group">
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-[var(--accent-blue)]/10 rounded-full blur-[100px] group-hover:bg-[var(--accent-blue)]/20 transition-colors" />
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="w-16 h-16 bg-[var(--accent-blue)]/10 rounded-2xl flex items-center justify-center mb-8 border border-[var(--accent-blue)]/20">
-              <Terminal className="w-8 h-8 text-[var(--accent-blue)]" />
-            </div>
-            <h4 className="text-3xl font-black text-white mb-6">Autonomous Analysis Engine</h4>
-            <p className="text-lg text-[var(--text-secondary)] leading-relaxed mb-8">
-              Every signal is processed through our multi-layered AI pipeline. We analyze TTPs (Tactics, Techniques, and Procedures), correlate with known threat actors, and generate technical remediation paths automatically.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 text-xs font-bold text-white uppercase tracking-widest">
-                <Lock className="w-3.5 h-3.5 text-[var(--accent-blue)]" />
-                AES-256 Analysis
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 text-xs font-bold text-white uppercase tracking-widest">
-                <Activity className="w-3.5 h-3.5 text-[var(--accent-cyan)]" />
-                Real-time Sync
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-8 bg-white/5 rounded-3xl border border-white/10">
-              <p className="text-4xl font-black text-white mb-2">99.9%</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Precision Rate</p>
-            </div>
-            <div className="p-8 bg-white/5 rounded-3xl border border-white/10 mt-8">
-              <p className="text-4xl font-black text-white mb-2">24/7</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Active Monitor</p>
-            </div>
-            <div className="p-8 bg-white/5 rounded-3xl border border-white/10">
-              <p className="text-4xl font-black text-white mb-2">ML-X</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Core Engine</p>
-            </div>
-            <div className="p-8 bg-white/5 rounded-3xl border border-white/10 mt-8">
-              <p className="text-4xl font-black text-white mb-2">API-v2</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Integration</p>
-            </div>
-          </div>
+      <div className="mt-16 sm:mt-10 p-6 sm:p-5 bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-3xl sm:rounded-2xl flex flex-col sm:flex-row items-start gap-5 sm:gap-4 opacity-0 animate-fade-in-up">
+        <div className="w-12 h-12 sm:w-10 sm:h-10 bg-gradient-to-br from-[var(--accent-blue)]/20 to-[var(--accent-purple)]/20 rounded-xl sm:rounded-lg flex items-center justify-center shrink-0">
+          <Info className="w-6 h-6 sm:w-5 sm:h-5 text-[var(--accent-cyan)]" />
+        </div>
+        <div>
+          <h4 className="font-bold text-base sm:text-base mb-2 sm:mb-1 text-[var(--text-primary)]">About CyberPulse AI</h4>
+          <p className="text-[var(--text-secondary)] text-xs sm:text-xs leading-relaxed max-w-3xl">
+            CyberPulse uses advanced LLMs to process raw technical data into structured intelligence. Our models classify attack types, determine severity, and generate step-by-step mitigation guides tailored for both technical and non-technical stakeholders.
+          </p>
         </div>
       </div>
     </div>
