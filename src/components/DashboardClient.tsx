@@ -160,18 +160,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
   useEffect(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentIncidents = allIncidents.slice(startIndex, endIndex);
-    setIncidents(currentIncidents);
-
-    // Update last_viewed_at for currently displayed incidents
-    if (currentIncidents.length > 0) {
-      const incidentIds = currentIncidents.map(i => i.id);
-      fetch('/api/incidents/viewed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: incidentIds }),
-      }).catch(err => console.error('Error updating viewed incidents:', err));
-    }
+    setIncidents(allIncidents.slice(startIndex, endIndex));
   }, [currentPage, allIncidents]);
 
   const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE);
