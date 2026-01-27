@@ -1,0 +1,29 @@
+name: CyberPulse Ingestion Cron
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # Every 3 hours
+  workflow_dispatch:  # Manual trigger option
+
+jobs:
+  ingestion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Trigger Railway Worker Ingestion
+        env:
+          RAILWAY_WORKER_URL: ${{ secrets.RAILWAY_WORKER_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -X POST $RAILWAY_WORKER_URL/api/ingest \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json"
