@@ -1,9 +1,13 @@
 const { Pool } = require('pg');
 const crypto = require('crypto');
 
+// Use environment variables for connection
+const connectionString = process.env.DATABASE_URL || 
+  `postgresql://${process.env.DB_USER || 'postgres'}:${process.env.DB_PASSWORD || '12345678'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || '5432'}/${process.env.DB_NAME || 'cyberpulse'}`;
+
 const pool = new Pool({
-  connectionString: 'postgresql://cyberpulse_db_user:TAqkTdek0tRoVftC3zZayhA5zIBQLl14@dpg-d5jj93q4d50c73d1ga1g-a.oregon-postgres.render.com/cyberpulse_db',
-  ssl: { rejectUnauthorized: false },
+  connectionString,
+  ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false },
 });
 
 const famousCases = [
@@ -90,18 +94,47 @@ const famousCases = [
         recommendations: ['Multi-factor build verification', 'Zero Trust Architecture']
       }
     }
+  },
+  {
+    title: 'Colonial Pipeline Ransomware Attack',
+    description: 'A critical ransomware attack on the largest fuel pipeline in the United States, causing widespread fuel shortages and a state of emergency.',
+    content: 'In May 2021, the Colonial Pipeline, which provides 45% of the fuel to the US East Coast, was compromised by the DarkSide ransomware gang. The attack targeted the company\'s billing network, but the pipeline was shut down for six days as a precaution, leading to panic buying and fuel shortages. The company paid a $4.4 million ransom to regain access to its data.',
+    url: 'https://en.wikipedia.org/wiki/Colonial_Pipeline_ransomware_attack',
+    source: 'FBI / CISA Intelligence Report',
+    published_at: '2021-05-07T00:00:00Z',
+    severity: 'High',
+    attack_type: 'Ransomware',
+    risk_score: 97,
+    region: 'North America / USA',
+    analysis: {
+      summary: 'High-impact ransomware attack on critical infrastructure.',
+      threat_actor: 'DarkSide (Ransomware-as-a-Service group)',
+      vulnerabilities: ['Compromised VPN credentials (single-factor authentication)'],
+      impact: 'Operational shutdown of critical energy infrastructure, regional fuel shortages, $4.4M ransom paid.',
+      mitigation_steps: ['Multi-factor authentication (MFA)', 'Network segmentation between IT and OT', 'Enhanced credential monitoring'],
+      case_study: {
+        title: 'Case Study: Colonial Pipeline',
+        background: 'Ransomware attack on the largest refined products pipeline in the US.',
+        attack_vector: 'Credential theft (Leaked VPN password)',
+        incident_flow: ['Access via legacy VPN profile', 'Encryption of IT systems (Billing/Accounting)', 'Precautionary shutdown of OT (Pipeline operations)', 'Ransom payment and recovery'],
+        outcome: 'National security implications and significant policy shifts in infrastructure cybersecurity.',
+        lessons_learned: ['MFA is non-negotiable for remote access', 'IT/OT convergence requires strict isolation', 'Ransomware affects more than just data'],
+        recommendations: ['Zero-trust remote access', 'Regular tabletop exercises for incident response']
+      }
+    }
   }
 ];
 
 async function seed() {
   try {
+    console.log(`Using connection: ${connectionString.split('@')[1]}`);
     for (const incident of famousCases) {
       const contentHash = crypto
         .createHash('md5')
         .update(incident.title + incident.description)
         .digest('hex');
 
-      const check = await pool.query('SELECT id FROM incidents WHERE content_hash = $1', [contentHash]);
+      const check = await pool.query('SELECT id FROM incidents WHERE content_hash = $1 OR url = $2', [contentHash, incident.url]);
       
       if (check.rowCount === 0) {
         console.log(`Seeding: ${incident.title}`);
