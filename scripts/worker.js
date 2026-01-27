@@ -65,7 +65,7 @@ async function runAnalysisBatch() {
     const performAnalysis = analysisModule.performAnalysis || analysisModule.default?.performAnalysis;
     const isAnalysisMissing = analysisModule.isAnalysisMissing || analysisModule.default?.isAnalysisMissing;
 
-      // Select incidents missing analysis that were recently viewed
+      // Select incidents missing analysis: TODAY'S + RECENTLY VIEWED
       const result = await query(
         `SELECT id, title, description, content, analysis
          FROM incidents
@@ -78,9 +78,16 @@ async function runAnalysisBatch() {
              AND (analysis->>'summary') IS NULL
            )
          )
-         AND last_viewed_at > NOW() - INTERVAL '5 minutes'
-         ORDER BY last_viewed_at DESC, published_at DESC
-         LIMIT 3`
+         AND (
+           -- Include all incidents from today
+           DATE(published_at) = CURRENT_DATE
+           -- OR recently ingested incidents (new ones)
+           OR ingested_at > NOW() - INTERVAL '2 hours'
+           -- OR recently viewed incidents (prioritize user interaction)
+           OR last_viewed_at > NOW() - INTERVAL '30 minutes'
+         )
+         ORDER BY last_viewed_at DESC, ingested_at DESC, published_at DESC
+         LIMIT 10`
       );
 
     const incidents = result.rows || [];
