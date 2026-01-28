@@ -222,25 +222,25 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
       <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
 
       <motion.div 
-        className="relative max-w-7xl mx-auto px-6 sm:px-4 lg:px-8 py-12 sm:py-8"
+        className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
         {/* Header Section */}
-        <motion.div className="mb-16 sm:mb-8" variants={itemVariants}>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 sm:gap-4">
+        <motion.div className="mb-8 sm:mb-16" variants={itemVariants}>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-8">
             <div className="text-center sm:text-left">
-              <div className="flex justify-center sm:justify-start items-center gap-3 mb-4 sm:mb-2">
+              <div className="flex justify-center sm:justify-start items-center gap-3 mb-2 sm:mb-4">
                 <span className="flex items-center gap-2 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] glass text-[var(--accent-cyan)] rounded-full border border-[var(--accent-blue)]/20 shadow-lg shadow-blue-500/5">
                   <Activity className="w-3 h-3 animate-pulse" />
                   Live Intelligence Feed
                 </span>
               </div>
-              <h1 className="text-5xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight mb-4 sm:mb-2 leading-tight">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] tracking-tight mb-2 sm:mb-4 leading-tight">
                 Cyber <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)]">Pulse</span> Dashboard
               </h1>
-              <p className="text-[var(--text-secondary)] max-w-2xl text-lg sm:text-sm leading-relaxed mx-auto sm:mx-0">
+              <p className="text-[var(--text-secondary)] max-w-2xl text-sm sm:text-base lg:text-lg leading-relaxed mx-auto sm:mx-0">
                 Next-generation threat monitoring powered by AI. Real-time analysis of global cyber security incidents.
               </p>
             </div>
@@ -248,8 +248,8 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         </motion.div>
 
         {/* Stats Grid */}
-        <motion.div className="mb-14 sm:mb-8" variants={itemVariants}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-3">
+        <motion.div className="mb-8 sm:mb-14" variants={itemVariants}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {[
               { label: 'Total', value: totalResults, icon: Activity, color: 'var(--accent-blue)' },
               { label: 'High', value: severityCounts['High'] || 0, icon: AlertTriangle, color: 'var(--severity-high)' },
@@ -258,18 +258,18 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
             ].map((stat, i) => (
               <motion.div 
                 key={stat.label}
-                className="relative p-6 sm:p-4 glass-dark rounded-2xl border border-white/5 overflow-hidden group hover:border-white/10 transition-colors"
+                className="relative p-4 sm:p-6 glass-dark rounded-2xl border border-white/5 overflow-hidden group hover:border-white/10 transition-colors"
                 whileHover={{ y: -4, scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center gap-3 mb-3 sm:mb-1.5">
+                <div className="relative flex items-center gap-3 mb-1.5 sm:mb-3">
                   <div className="p-2 rounded-lg bg-white/5">
                     <stat.icon className="w-5 h-5 sm:w-4 sm:h-4" style={{ color: stat.color }} />
                   </div>
                   <span className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest">{stat.label}</span>
                 </div>
-                <p className="relative text-3xl sm:text-2xl font-bold tracking-tight" style={{ color: i === 0 ? 'var(--text-primary)' : stat.color }}>
+                <p className="relative text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: i === 0 ? 'var(--text-primary)' : stat.color }}>
                   {stat.value}
                 </p>
               </motion.div>
@@ -278,7 +278,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         </motion.div>
 
         {/* Filters Section */}
-        <motion.div className="mb-12 sm:mb-8" variants={itemVariants}>
+        <motion.div className="mb-8 sm:mb-12" variants={itemVariants}>
           <div className="glass-dark p-1 rounded-2xl border border-white/5">
             <SearchAndFilters
               onSearch={handleSearch}
@@ -295,7 +295,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-8 sm:mb-6 flex items-center gap-3 text-sm"
+              className="mb-6 sm:mb-8 flex items-center gap-3 text-sm"
             >
               {isLoading ? (
                 <div className="flex items-center gap-3 px-4 py-2 glass rounded-full">
@@ -316,14 +316,14 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         <LayoutGroup>
           <div className="min-h-[400px]">
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                  <div key={i} className="h-[280px] glass-dark rounded-3xl animate-pulse border border-white/5" />
+                  <div key={i} className="h-[280px] glass-dark rounded-2xl animate-pulse border border-white/5" />
                 ))}
               </div>
             ) : incidents && incidents.length > 0 ? (
               <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
                 onMouseLeave={() => setHoveredId(null)}
                 layout
               >
@@ -349,7 +349,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
               </motion.div>
             ) : (
               <motion.div 
-                className="text-center py-24 sm:py-16 glass-dark rounded-3xl border border-white/5 border-dashed"
+                className="text-center py-16 sm:py-24 glass-dark rounded-2xl border border-white/5 border-dashed"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
@@ -375,7 +375,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
         {/* Pagination */}
         {!isLoading && totalPages > 1 && (
           <motion.div 
-            className="mt-16 flex flex-col items-center gap-6"
+            className="mt-12 flex flex-col items-center gap-6"
             variants={itemVariants}
           >
             <div className="flex items-center gap-3">
@@ -432,7 +432,7 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
 
         {/* Footer Info */}
         <motion.div 
-          className="mt-20 sm:mt-12 p-8 sm:p-6 glass-dark rounded-3xl border border-white/5 flex flex-col sm:flex-row items-center gap-6 sm:gap-4"
+          className="mt-12 sm:mt-20 p-6 sm:p-8 glass-dark rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center gap-6 sm:gap-4"
           variants={itemVariants}
         >
           <div className="w-14 h-14 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10">

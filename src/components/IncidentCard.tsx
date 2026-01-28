@@ -49,7 +49,7 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
     <Link href={`/incident/${incident.id}`} className="block h-full outline-none">
       <motion.div 
         className={`
-          relative h-full p-6 sm:p-5 glass-dark rounded-[24px] border border-white/5 
+          relative h-full p-4 sm:p-6 glass-dark rounded-2xl border border-white/5 
           transition-all duration-500 ease-out cursor-pointer group overflow-hidden
           ${isOtherHovered ? 'opacity-40 grayscale-[0.5] scale-[0.98]' : 'opacity-100 grayscale-0 scale-100'}
         `}
@@ -64,7 +64,7 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
         
         <div className="relative z-10 flex flex-col h-full">
           {/* Top Row: Badges and Date */}
-          <div className="flex items-start justify-between mb-5 gap-3">
+          <div className="flex items-start justify-between mb-3 gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <SeverityBadge severity={incident.severity} />
               {incident.attack_type && (
@@ -80,12 +80,12 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
           </div>
 
           {/* Title */}
-          <h3 className="text-lg sm:text-base font-bold leading-snug mb-3 text-[var(--text-primary)] group-hover:text-[var(--accent-cyan)] transition-colors line-clamp-2">
+          <h3 className="text-base sm:text-lg font-bold leading-snug mb-2 text-[var(--text-primary)] group-hover:text-[var(--accent-cyan)] transition-colors line-clamp-2">
             {incident.title}
           </h3>
 
           {/* Summary / Analysis */}
-          <div className="text-[var(--text-secondary)] text-sm sm:text-xs line-clamp-3 mb-6 leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity flex-grow">
+          <div className="text-[var(--text-secondary)] text-sm sm:text-xs line-clamp-3 mb-4 leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity flex-grow">
             {analysis?.summary || analysis?.why_it_matters || (
               <div className="flex items-center gap-2 text-[var(--text-muted)] italic">
                 <ShieldAlert className="w-3.5 h-3.5 animate-pulse" />
@@ -95,7 +95,7 @@ export function IncidentCard({ incident, isHovered = false, isOtherHovered = fal
           </div>
 
           {/* Bottom Row: Source and Read Button */}
-          <div className="pt-4 mt-auto border-t border-white/5 flex items-center justify-between">
+          <div className="pt-3 mt-auto border-t border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-[var(--accent-blue)]/30 transition-colors">
                 <Newspaper className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent-blue)] transition-colors" />

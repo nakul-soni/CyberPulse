@@ -145,7 +145,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
       <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[var(--bg-primary)]/80 backdrop-blur-2xl px-6 py-4 sm:px-8 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[var(--bg-primary)]/80 backdrop-blur-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
         <Link 
           href="/" 
           className="group flex items-center gap-2.5 text-[10px] font-mono font-bold text-[var(--text-secondary)] hover:text-[var(--accent-cyan)] transition-all uppercase tracking-[0.2em]"
@@ -167,7 +167,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
       </header>
 
       <motion.main 
-        className="relative max-w-5xl mx-auto px-6 py-12 sm:py-20 space-y-20 sm:space-y-32"
+        className="relative max-w-5xl mx-auto px-4 py-8 sm:py-16 space-y-16 sm:space-y-24"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -175,12 +175,12 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
         
         {/* 1️⃣ INCIDENT SNAPSHOT */}
         <motion.section variants={sectionVariants}>
-          <div className="relative glass-dark rounded-[40px] p-10 sm:p-16 border border-white/5 overflow-hidden shadow-2xl">
+          <div className="relative glass-dark rounded-3xl p-6 sm:p-12 border border-white/5 overflow-hidden shadow-2xl">
             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[var(--accent-blue)] via-[var(--accent-purple)] to-[var(--accent-cyan)]" />
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/5 blur-[100px] rounded-full" />
             
             <motion.h1 
-              className="text-3xl sm:text-5xl font-black mb-12 tracking-tight leading-[1.1] sm:max-w-4xl"
+              className="text-2xl sm:text-4xl font-black mb-8 tracking-tight leading-[1.1] sm:max-w-4xl"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
@@ -188,7 +188,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
               {snapshot.title}
             </motion.h1>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10">
               {[
                 { label: 'Date', value: snapshot.date, icon: Calendar, color: 'text-blue-400' },
                 { label: 'Affected', value: snapshot.affected, icon: Target, color: 'text-purple-400' },
@@ -200,7 +200,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
                     <item.icon className="w-4 h-4" />
                     <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">{item.label}</span>
                   </div>
-                  <p className={`text-lg sm:text-xl font-bold tracking-tight ${item.color}`}>{item.value}</p>
+                  <p className={`text-base sm:text-lg font-bold tracking-tight ${item.color}`}>{item.value}</p>
                 </div>
               ))}
             </div>
@@ -215,8 +215,8 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
             </h2>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-purple)]/20 to-transparent blur-3xl opacity-30" />
-              <div className="relative glass-dark border-l-[6px] border-[var(--accent-purple)] p-10 sm:p-14 rounded-r-[40px] rounded-l-lg shadow-xl">
-                <p className="text-xl sm:text-3xl font-bold text-[var(--text-primary)] leading-relaxed italic opacity-90">
+              <div className="relative glass-dark border-l-[6px] border-[var(--accent-purple)] p-6 sm:p-10 rounded-r-3xl rounded-l-lg shadow-xl">
+                <p className="text-lg sm:text-2xl font-bold text-[var(--text-primary)] leading-relaxed italic opacity-90">
                   "{executive_summary}"
                 </p>
               </div>
@@ -229,14 +229,14 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
           <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-[var(--accent-cyan)] flex items-center gap-3">
             <History className="w-5 h-5" /> Timeline Analysis
           </h2>
-          <div className="glass-dark border border-white/5 rounded-[40px] p-8 sm:p-14 space-y-10">
+          <div className="glass-dark border border-white/5 rounded-3xl p-6 sm:p-10 space-y-8">
             {facts.map((fact: string, i: number) => (
               <div key={i} className="flex gap-8 items-start group">
                 <div className="flex flex-col items-center shrink-0 mt-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-cyan)] shadow-[0_0_10px_var(--accent-cyan)] group-hover:scale-150 transition-transform" />
                   {i !== facts.length - 1 && <div className="w-px h-16 bg-gradient-to-b from-[var(--accent-cyan)]/50 to-transparent mt-2" />}
                 </div>
-                <p className="text-[var(--text-secondary)] leading-relaxed text-lg sm:text-xl">{fact}</p>
+                <p className="text-[var(--text-secondary)] leading-relaxed text-base sm:text-lg">{fact}</p>
               </div>
             ))}
           </div>
@@ -254,12 +254,12 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
               { label: 'Legal Liability', value: impact.legal, color: 'amber', icon: Landmark },
               { label: 'Market Reputation', value: impact.trust, color: 'purple', icon: User },
             ].map((item, i) => (
-              <div key={i} className={`p-8 sm:p-10 bg-${item.color}-500/5 border border-${item.color}-500/10 rounded-[32px] space-y-4 hover:bg-${item.color}-500/10 transition-colors group`}>
+              <div key={i} className={`p-6 sm:p-8 bg-${item.color}-500/5 border border-${item.color}-500/10 rounded-2xl space-y-4 hover:bg-${item.color}-500/10 transition-colors group`}>
                 <div className="flex items-center justify-between">
                   <h3 className={`text-[10px] font-mono font-bold uppercase tracking-widest text-${item.color}-400`}>{item.label}</h3>
                   <item.icon className={`w-4 h-4 text-${item.color}-400/50 group-hover:text-${item.color}-400 transition-colors`} />
                 </div>
-                <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed">{item.value}</p>
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">{item.value}</p>
               </div>
             ))}
           </div>
@@ -277,7 +277,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
               </h3>
               <div className="space-y-3">
                 {actions.user.map((a: string, i: number) => (
-                  <div key={i} className="p-6 glass-dark border border-emerald-500/10 rounded-2xl text-sm sm:text-base text-[var(--text-secondary)] flex gap-4 items-start group hover:border-emerald-500/30 transition-colors">
+                  <div key={i} className="p-4 glass-dark border border-emerald-500/10 rounded-xl text-xs sm:text-sm text-[var(--text-secondary)] flex gap-4 items-start group hover:border-emerald-500/30 transition-colors">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 shrink-0 group-hover:scale-125 transition-transform" /> 
                     {a}
                   </div>
@@ -291,7 +291,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
               </h3>
               <div className="space-y-3">
                 {actions.organization.map((a: string, i: number) => (
-                  <div key={i} className="p-6 glass-dark border border-[var(--accent-blue)]/10 rounded-2xl text-sm sm:text-base text-[var(--text-secondary)] flex gap-4 items-start group hover:border-[var(--accent-blue)]/30 transition-colors">
+                  <div key={i} className="p-4 glass-dark border border-[var(--accent-blue)]/10 rounded-xl text-xs sm:text-sm text-[var(--text-secondary)] flex gap-4 items-start group hover:border-[var(--accent-blue)]/30 transition-colors">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] mt-2 shrink-0 group-hover:scale-125 transition-transform" /> 
                     {a}
                   </div>
@@ -304,7 +304,7 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
 
         {/* 5️⃣ RISK PROFILE */}
         <motion.section variants={sectionVariants}>
-          <div className="relative bg-gradient-to-br from-[#0d0d14] to-[#050508] border border-white/5 rounded-[48px] p-10 sm:p-20 overflow-hidden shadow-2xl">
+          <div className="relative bg-gradient-to-br from-[#0d0d14] to-[#050508] border border-white/5 rounded-3xl p-6 sm:p-12 overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 w-full h-full bg-grid-pattern opacity-10" />
             <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] bg-orange-500/5 blur-[120px] rounded-full" />
             
@@ -314,11 +314,11 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
               </div>
               <div className="flex-1 space-y-4">
                 <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-orange-400">Threat Trajectory</h2>
-                <p className="text-2xl sm:text-4xl font-black tracking-tight">{ongoing_risk.current_risk}</p>
+                <p className="text-xl sm:text-3xl font-black tracking-tight">{ongoing_risk.current_risk}</p>
                 
                 <div className="pt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {ongoing_risk.what_to_watch.map((item: string, i: number) => (
-                    <div key={i} className="px-6 py-4 glass rounded-2xl border border-white/5 text-sm text-[var(--text-secondary)] flex items-center gap-4">
+                    <div key={i} className="px-4 py-3 glass rounded-2xl border border-white/5 text-sm text-[var(--text-secondary)] flex items-center gap-4">
                       <div className="w-2 h-2 rounded-full bg-orange-400 shrink-0 shadow-[0_0_8px_var(--orange-400)]" />
                       {item}
                     </div>
