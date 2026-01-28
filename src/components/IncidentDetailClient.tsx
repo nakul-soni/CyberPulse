@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   Zap,
   History,
-  AlertCircle
+  AlertCircle,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import ReanalyzeButton from '@/components/ReanalyzeButton';
@@ -36,6 +37,30 @@ interface Incident {
 interface IncidentDetailClientProps {
   incident: Incident;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 80,
+      damping: 15
+    }
+  }
+};
 
 export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   const rawAnalysis = typeof incident.analysis === 'string' 
@@ -93,8 +118,11 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   if (!analysis) {
     return (
       <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-6">
-        <p className="text-[var(--text-secondary)] mb-4">Intelligence analysis pending...</p>
-        <ReanalyzeButton incidentId={incident.id} />
+        <div className="w-16 h-16 border-4 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin mb-6" />
+        <p className="text-[var(--text-secondary)] font-mono text-sm tracking-widest animate-pulse">Scanning Intelligence Databases...</p>
+        <div className="mt-8">
+          <ReanalyzeButton incidentId={incident.id} />
+        </div>
       </div>
     );
   }
@@ -102,271 +130,214 @@ export function IncidentDetailClient({ incident }: IncidentDetailClientProps) {
   const { snapshot, facts, relevance, impact, root_cause, attack_path, mistakes, actions, ongoing_risk, executive_summary } = analysis;
 
   const severityColors: Record<string, string> = {
-    'LOW': 'text-blue-400',
+    'LOW': 'text-emerald-400',
     'MEDIUM': 'text-amber-400',
     'HIGH': 'text-orange-500',
     'CRITICAL': 'text-red-500'
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-[var(--accent-cyan)]/30">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-cyan)]/30">
+      {/* Background Decor */}
+      <div className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+      <div className="fixed inset-0 bg-noise opacity-[0.02] pointer-events-none" />
+      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
+
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[var(--border-primary)] bg-[var(--bg-primary)]/80 backdrop-blur-xl px-4 py-3 sm:px-8 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[var(--bg-primary)]/80 backdrop-blur-2xl px-6 py-4 sm:px-8 flex items-center justify-between">
         <Link 
           href="/" 
-          className="group flex items-center gap-2 text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--accent-cyan)] transition-all uppercase tracking-widest"
+          className="group flex items-center gap-2.5 text-[10px] font-mono font-bold text-[var(--text-secondary)] hover:text-[var(--accent-cyan)] transition-all uppercase tracking-[0.2em]"
         >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1.5 transition-transform" />
           <span>Dashboard</span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <ReanalyzeButton incidentId={incident.id} />
           <a 
             href={incident.url} 
             target="_blank" 
-            className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[var(--accent-blue)] hover:text-[var(--accent-cyan)] transition-colors"
+            className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--accent-blue)] hover:text-[var(--accent-cyan)] transition-all group"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Original Source</span>
+            <span className="hidden sm:inline">Source Archive</span>
+            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-12">
+      <motion.main 
+        className="relative max-w-5xl mx-auto px-6 py-12 sm:py-20 space-y-20 sm:space-y-32"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         
-        {/* 1️⃣ INCIDENT SNAPSHOT (TOP SCREEN) */}
-        <section className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-8 sm:p-10 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-cyan)]" />
-          
-          <h1 className="text-2xl sm:text-3xl font-black mb-8 tracking-tight leading-tight">
-            {snapshot.title}
-          </h1>
+        {/* 1️⃣ INCIDENT SNAPSHOT */}
+        <motion.section variants={sectionVariants}>
+          <div className="relative glass-dark rounded-[40px] p-10 sm:p-16 border border-white/5 overflow-hidden shadow-2xl">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[var(--accent-blue)] via-[var(--accent-purple)] to-[var(--accent-cyan)]" />
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/5 blur-[100px] rounded-full" />
+            
+            <motion.h1 
+              className="text-3xl sm:text-5xl font-black mb-12 tracking-tight leading-[1.1] sm:max-w-4xl"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              {snapshot.title}
+            </motion.h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-[var(--text-muted)]">
-                <Calendar className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Date</span>
-              </div>
-              <p className="text-sm font-mono">{snapshot.date}</p>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-[var(--text-muted)]">
-                <Target className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Affected</span>
-              </div>
-              <p className="text-sm font-bold">{snapshot.affected}</p>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-[var(--text-muted)]">
-                <ShieldAlert className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Severity</span>
-              </div>
-              <p className={`text-sm font-black ${severityColors[snapshot.severity] || 'text-white'}`}>
-                {snapshot.severity}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-[var(--text-muted)]">
-                <Activity className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Status</span>
-              </div>
-              <p className="text-sm font-bold">{snapshot.status}</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12">
+              {[
+                { label: 'Date', value: snapshot.date, icon: Calendar, color: 'text-blue-400' },
+                { label: 'Affected', value: snapshot.affected, icon: Target, color: 'text-purple-400' },
+                { label: 'Severity', value: snapshot.severity, icon: ShieldAlert, color: severityColors[snapshot.severity] || 'text-white' },
+                { label: 'Status', value: snapshot.status, icon: Activity, color: 'text-cyan-400' },
+              ].map((item, i) => (
+                <div key={i} className="space-y-3">
+                  <div className="flex items-center gap-2 text-[var(--text-muted)]">
+                    <item.icon className="w-4 h-4" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">{item.label}</span>
+                  </div>
+                  <p className={`text-lg sm:text-xl font-bold tracking-tight ${item.color}`}>{item.value}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </section>
+        </motion.section>
 
-        {/* 1.5️⃣ EXECUTIVE SUMMARY (QUICK BREAKDOWN) */}
+        {/* 1.5️⃣ EXECUTIVE SUMMARY */}
         {executive_summary && (
-          <section className="space-y-4">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-purple)] flex items-center gap-2">
-              <Zap className="w-4 h-4" /> Executive Briefing
+          <motion.section variants={sectionVariants} className="space-y-8">
+            <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-[var(--accent-purple)] flex items-center gap-3">
+              <Sparkles className="w-5 h-5" /> Executive Intelligence
             </h2>
-            <div className="bg-gradient-to-r from-[var(--accent-purple)]/10 to-transparent border-l-4 border-[var(--accent-purple)] p-6 rounded-r-2xl">
-              <p className="text-lg font-bold text-[var(--text-primary)] leading-relaxed italic">
-                "{executive_summary}"
-              </p>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-purple)]/20 to-transparent blur-3xl opacity-30" />
+              <div className="relative glass-dark border-l-[6px] border-[var(--accent-purple)] p-10 sm:p-14 rounded-r-[40px] rounded-l-lg shadow-xl">
+                <p className="text-xl sm:text-3xl font-bold text-[var(--text-primary)] leading-relaxed italic opacity-90">
+                  "{executive_summary}"
+                </p>
+              </div>
             </div>
-          </section>
+          </motion.section>
         )}
 
-        {/* 2️⃣ WHAT ACTUALLY HAPPENED (FACTS ONLY) */}
-        <section className="space-y-4">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-cyan)] flex items-center gap-2">
-            <History className="w-4 h-4" /> What Actually Happened
+        {/* 2️⃣ WHAT ACTUALLY HAPPENED */}
+        <motion.section variants={sectionVariants} className="space-y-8">
+          <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-[var(--accent-cyan)] flex items-center gap-3">
+            <History className="w-5 h-5" /> Timeline Analysis
           </h2>
-          <div className="bg-[var(--bg-secondary)]/30 border border-white/5 rounded-2xl p-6 sm:p-8">
-            <ul className="space-y-4">
-              {facts.map((fact: string, i: number) => (
-                <li key={i} className="flex gap-4 items-start">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-cyan)] mt-2 shrink-0" />
-                  <p className="text-[var(--text-secondary)] leading-relaxed text-base">{fact}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* 3️⃣ WHO SHOULD CARE (RELEVANCE FILTER) */}
-        <section className="space-y-4">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-blue)] flex items-center gap-2">
-            <User className="w-4 h-4" /> Who Should Care
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            {relevance.map((r: string, i: number) => (
-              <div key={i} className="px-4 py-2 rounded-full bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs font-bold text-[var(--text-secondary)] flex items-center gap-2">
-                {r.includes('Individual') && <User className="w-3 h-3" />}
-                {r.includes('Enterprises') && <Building2 className="w-3 h-3" />}
-                {r.includes('Developers') && <Code2 className="w-3 h-3" />}
-                {r.includes('Healthcare') && <Stethoscope className="w-3 h-3" />}
-                {r.includes('Finance') && <Landmark className="w-3 h-3" />}
-                {r}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 4️⃣ IMPACT & DAMAGE */}
-        <section className="space-y-6">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-red-400 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" /> Impact & Damage
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-6 bg-red-500/5 border border-red-500/10 rounded-2xl space-y-2">
-              <h3 className="text-[9px] font-black uppercase tracking-widest text-red-400">Data</h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{impact.data}</p>
-            </div>
-            <div className="p-6 bg-orange-500/5 border border-orange-500/10 rounded-2xl space-y-2">
-              <h3 className="text-[9px] font-black uppercase tracking-widest text-orange-400">Operations</h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{impact.operations}</p>
-            </div>
-            <div className="p-6 bg-amber-500/5 border border-amber-500/10 rounded-2xl space-y-2">
-              <h3 className="text-[9px] font-black uppercase tracking-widest text-amber-400">Legal / Compliance</h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{impact.legal}</p>
-            </div>
-            <div className="p-6 bg-purple-500/5 border border-purple-500/10 rounded-2xl space-y-2">
-              <h3 className="text-[9px] font-black uppercase tracking-widest text-purple-400">Trust / Reputation</h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{impact.trust}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* 5️⃣ ROOT CAUSE (CONDENSED) */}
-        <section className="space-y-4">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-amber-500 flex items-center gap-2">
-            <Zap className="w-4 h-4" /> Root Cause
-          </h2>
-          <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl p-6 sm:p-8 space-y-4">
-            {root_cause.map((rc: string, i: number) => (
-              <div key={i} className="flex gap-4">
-                <span className="text-amber-500 font-mono text-xs font-bold">{i+1}.</span>
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{rc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 6️⃣ RISK / ATTACK PATH (VISUAL THINKING) */}
-        <section className="space-y-4">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-[var(--accent-blue)] flex items-center gap-2">
-            <Activity className="w-4 h-4" /> Risk / Attack Path
-          </h2>
-          <div className="bg-black/40 border border-white/5 rounded-2xl p-8 flex items-center justify-center">
-            <p className="text-base sm:text-lg font-mono text-[var(--accent-cyan)] tracking-wider text-center">
-              {attack_path}
-            </p>
-          </div>
-        </section>
-
-        {/* 7️⃣ WHAT WENT WRONG (FORMERLY “MISTAKES”) */}
-        <section className="space-y-4">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-red-500 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" /> What Went Wrong
-          </h2>
-          <div className="grid grid-cols-1 gap-4">
-            {mistakes.map((m: any, i: number) => (
-              <div key={i} className="bg-[var(--bg-card)] border border-[var(--border-primary)] p-6 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4 group hover:border-red-500/30 transition-colors">
-                <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center shrink-0">
-                  <span className="text-red-400 font-black text-xs">{i+1}</span>
+          <div className="glass-dark border border-white/5 rounded-[40px] p-8 sm:p-14 space-y-10">
+            {facts.map((fact: string, i: number) => (
+              <div key={i} className="flex gap-8 items-start group">
+                <div className="flex flex-col items-center shrink-0 mt-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-cyan)] shadow-[0_0_10px_var(--accent-cyan)] group-hover:scale-150 transition-transform" />
+                  {i !== facts.length - 1 && <div className="w-px h-16 bg-gradient-to-b from-[var(--accent-cyan)]/50 to-transparent mt-2" />}
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm mb-1 group-hover:text-red-400 transition-colors">{m.title}</h4>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{m.explanation}</p>
-                </div>
+                <p className="text-[var(--text-secondary)] leading-relaxed text-lg sm:text-xl">{fact}</p>
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
-        {/* 8️⃣ WHAT USERS SHOULD DO (ACTIONABLE ONLY) */}
-        <section className="space-y-6">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-500 flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4" /> What Users Should Do
+        {/* 3️⃣ IMPACT & DAMAGE */}
+        <motion.section variants={sectionVariants} className="space-y-10">
+          <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-red-400 flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5" /> Blast Radius
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-2">
-                <User className="w-3 h-3" /> If you are a user
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[
+              { label: 'Data Integrity', value: impact.data, color: 'red', icon: ShieldAlert },
+              { label: 'Operational Status', value: impact.operations, color: 'orange', icon: Zap },
+              { label: 'Legal Liability', value: impact.legal, color: 'amber', icon: Landmark },
+              { label: 'Market Reputation', value: impact.trust, color: 'purple', icon: User },
+            ].map((item, i) => (
+              <div key={i} className={`p-8 sm:p-10 bg-${item.color}-500/5 border border-${item.color}-500/10 rounded-[32px] space-y-4 hover:bg-${item.color}-500/10 transition-colors group`}>
+                <div className="flex items-center justify-between">
+                  <h3 className={`text-[10px] font-mono font-bold uppercase tracking-widest text-${item.color}-400`}>{item.label}</h3>
+                  <item.icon className={`w-4 h-4 text-${item.color}-400/50 group-hover:text-${item.color}-400 transition-colors`} />
+                </div>
+                <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* 4️⃣ ACTIONABLE STEPS */}
+        <motion.section variants={sectionVariants} className="space-y-10">
+          <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-emerald-400 flex items-center gap-3">
+            <ShieldCheck className="w-5 h-5" /> Mitigation Protocol
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-emerald-400 flex items-center gap-3 px-4">
+                <User className="w-4 h-4" /> Personal Defense
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {actions.user.map((a: string, i: number) => (
-                  <div key={i} className="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-xs text-[var(--text-secondary)] flex gap-3">
-                    <span className="text-emerald-500">•</span> {a}
+                  <div key={i} className="p-6 glass-dark border border-emerald-500/10 rounded-2xl text-sm sm:text-base text-[var(--text-secondary)] flex gap-4 items-start group hover:border-emerald-500/30 transition-colors">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 shrink-0 group-hover:scale-125 transition-transform" /> 
+                    {a}
                   </div>
                 ))}
-                {actions.user.length === 0 && <p className="text-xs text-[var(--text-muted)] italic">No specific actions for individual users.</p>}
+                {actions.user.length === 0 && <p className="text-sm text-[var(--text-muted)] italic px-4">No specific end-user actions required.</p>}
               </div>
             </div>
-            <div className="space-y-4">
-              <h3 className="text-[10px] font-black uppercase tracking-widest text-[var(--accent-blue)] flex items-center gap-2">
-                <Building2 className="w-3 h-3" /> If you are an organization
+            <div className="space-y-6">
+              <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--accent-blue)] flex items-center gap-3 px-4">
+                <Building2 className="w-4 h-4" /> Enterprise Response
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {actions.organization.map((a: string, i: number) => (
-                  <div key={i} className="p-4 bg-[var(--accent-blue)]/5 border border-[var(--accent-blue)]/10 rounded-xl text-xs text-[var(--text-secondary)] flex gap-3">
-                    <span className="text-[var(--accent-blue)]">•</span> {a}
+                  <div key={i} className="p-6 glass-dark border border-[var(--accent-blue)]/10 rounded-2xl text-sm sm:text-base text-[var(--text-secondary)] flex gap-4 items-start group hover:border-[var(--accent-blue)]/30 transition-colors">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] mt-2 shrink-0 group-hover:scale-125 transition-transform" /> 
+                    {a}
                   </div>
                 ))}
-                {actions.organization.length === 0 && <p className="text-xs text-[var(--text-muted)] italic">No specific actions for organizations.</p>}
+                {actions.organization.length === 0 && <p className="text-sm text-[var(--text-muted)] italic px-4">No enterprise-level mitigation reported.</p>}
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
-        {/* 9️⃣ ONGOING RISK & NEXT STEPS */}
-        <section className="bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-2xl p-8 sm:p-10 space-y-8">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center border border-orange-500/20">
-              <AlertTriangle className="w-6 h-6 text-orange-400" />
-            </div>
-            <div>
-              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-orange-400 mb-1">Ongoing Risk</h2>
-              <p className="text-xl font-bold">{ongoing_risk.current_risk}</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">What to Watch</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {ongoing_risk.what_to_watch.map((item: string, i: number) => (
-                <div key={i} className="px-4 py-3 bg-black/20 rounded-lg border border-white/5 text-xs text-[var(--text-secondary)] flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
-                  {item}
+        {/* 5️⃣ RISK PROFILE */}
+        <motion.section variants={sectionVariants}>
+          <div className="relative bg-gradient-to-br from-[#0d0d14] to-[#050508] border border-white/5 rounded-[48px] p-10 sm:p-20 overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 w-full h-full bg-grid-pattern opacity-10" />
+            <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] bg-orange-500/5 blur-[120px] rounded-full" />
+            
+            <div className="relative flex flex-col lg:flex-row items-start lg:items-center gap-12">
+              <div className="shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-orange-500/10 rounded-[32px] flex items-center justify-center border border-orange-500/20 shadow-2xl shadow-orange-500/10">
+                <AlertTriangle className="w-10 h-10 sm:w-16 sm:h-16 text-orange-400" />
+              </div>
+              <div className="flex-1 space-y-4">
+                <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-orange-400">Threat Trajectory</h2>
+                <p className="text-2xl sm:text-4xl font-black tracking-tight">{ongoing_risk.current_risk}</p>
+                
+                <div className="pt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {ongoing_risk.what_to_watch.map((item: string, i: number) => (
+                    <div key={i} className="px-6 py-4 glass rounded-2xl border border-white/5 text-sm text-[var(--text-secondary)] flex items-center gap-4">
+                      <div className="w-2 h-2 rounded-full bg-orange-400 shrink-0 shadow-[0_0_8px_var(--orange-400)]" />
+                      {item}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
-      </main>
+      </motion.main>
 
       {/* Aesthetic Footer */}
-      <footer className="max-w-4xl mx-auto px-4 py-12 border-t border-[var(--border-primary)] mt-12 text-center space-y-4">
-        <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.5em]">End of Intelligence Briefing</p>
-        <div className="flex justify-center gap-6 opacity-30">
-          <ShieldAlert className="w-4 h-4" />
-          <Activity className="w-4 h-4" />
-          <Target className="w-4 h-4" />
+      <footer className="max-w-5xl mx-auto px-6 py-24 border-t border-white/5 mt-32 text-center space-y-8 relative overflow-hidden">
+        <p className="text-[10px] font-mono font-bold text-[var(--text-muted)] uppercase tracking-[0.8em]">SECURE INTEL END_TRANSMISSION</p>
+        <div className="flex justify-center gap-10 opacity-20">
+          <ShieldAlert className="w-6 h-6" />
+          <Activity className="w-6 h-6" />
+          <Target className="w-6 h-6" />
         </div>
       </footer>
     </div>

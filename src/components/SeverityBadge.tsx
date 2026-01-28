@@ -7,25 +7,25 @@ export function cn(...inputs: ClassValue[]) {
 
 export function SeverityBadge({ severity }: { severity?: 'Low' | 'Medium' | 'High' }) {
   const colors = {
-    High: 'bg-[var(--severity-high)]/15 text-[var(--severity-high)] border-[var(--severity-high)]/30',
-    Medium: 'bg-[var(--severity-medium)]/15 text-[var(--severity-medium)] border-[var(--severity-medium)]/30',
-    Low: 'bg-[var(--severity-low)]/15 text-[var(--severity-low)] border-[var(--severity-low)]/30',
+    High: 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]',
+    Medium: 'bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]',
+    Low: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]',
   };
 
   const dots = {
-    High: 'bg-[var(--severity-high)]',
-    Medium: 'bg-[var(--severity-medium)]',
-    Low: 'bg-[var(--severity-low)]',
+    High: 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]',
+    Medium: 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]',
+    Low: 'bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]',
   };
 
   const current = severity || 'Low';
 
   return (
     <span className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+      "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase tracking-widest border",
       colors[current]
     )}>
-      <span className={cn("w-1.5 h-1.5 rounded-full", dots[current])} />
+      <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", dots[current])} />
       {current}
     </span>
   );
