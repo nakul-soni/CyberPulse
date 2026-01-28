@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -38,7 +38,7 @@ interface IncidentDetailClientProps {
   incident: Incident;
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -49,7 +49,7 @@ const containerVariants = {
   }
 };
 
-const sectionVariants = {
+const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
