@@ -70,11 +70,11 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
     if (resetPage) {
       setCurrentPage(1);
     }
-    try {
-      const params = new URLSearchParams({
-        page: '1',
-        limit: '200',
-      });
+      try {
+        const params = new URLSearchParams({
+          page: '1',
+          limit: '500',
+        });
 
       if (query) {
         params.set('query', query);
@@ -297,12 +297,14 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
               exit={{ opacity: 0, y: -10 }}
               className="mb-6 sm:mb-8 flex items-center gap-3 text-sm"
             >
-              {isLoading ? (
-                <div className="flex items-center gap-3 px-4 py-2 glass rounded-full">
-                  <div className="w-4 h-4 border-2 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin" />
-                  <span className="text-[var(--text-secondary)]">Scanning intelligence databases...</span>
-                </div>
-              ) : (
+                {isLoading ? (
+                  <div className="flex items-center gap-3 px-4 py-2 glass rounded-full">
+                    <div className="w-4 h-4 border-2 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin" />
+                    <span className="text-[var(--text-secondary)]">
+                      {searchQuery ? `Scanning global intelligence for "${searchQuery}"...` : 'Updating intelligence feed...'}
+                    </span>
+                  </div>
+                ) : (
                 <div className="flex items-center gap-2 px-4 py-2 glass rounded-full text-[var(--text-secondary)]">
                   <Sparkles className="w-4 h-4 text-[var(--accent-cyan)]" />
                   Found <span className="text-[var(--text-primary)] font-bold">{totalResults}</span> results

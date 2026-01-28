@@ -138,10 +138,11 @@ export async function getIncidents(options: {
 
   if (options.search) {
     // Enhanced search: title, description, attack_type, and analysis JSON fields
+    // Using websearch_to_tsquery for better user experience (supports quotes, minus, etc.)
     const searchPattern = `%${options.search}%`;
     whereClauses.push(
       `(
-        to_tsvector('english', title || ' ' || COALESCE(description, '')) @@ plainto_tsquery('english', $${paramIndex})
+        to_tsvector('english', title || ' ' || COALESCE(description, '')) @@ websearch_to_tsquery('english', $${paramIndex})
         OR title ILIKE $${paramIndex + 1}
         OR description ILIKE $${paramIndex + 1}
         OR attack_type ILIKE $${paramIndex + 1}

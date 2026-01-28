@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
     // Global Search Enhancement:
     // If we have low results and there's a specific query, try to find more globally
-    if (result.total < 3 && query && query.length > 3 && !severity && !attackType && !date) {
+    if (result.total < 5 && query && query.length >= 2 && !severity && !attackType && !date) {
       console.log(`[Global Search] Low results (${result.total}) for "${query}", searching global intelligence...`);
       const globalIncidents = await globalSearchAgent.searchGlobalAttack(query);
       
