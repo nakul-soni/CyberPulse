@@ -21,9 +21,14 @@ jobs:
       
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-      
-        - name: Run ingestion
-          env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          run: npm run ingest
+
+      - name: Run migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npm run db:migrate
+
+      - name: Run ingestion
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: npm run ingest
