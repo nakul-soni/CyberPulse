@@ -119,10 +119,12 @@ export class IngestionPipeline {
       return stats;
     } catch (error: any) {
       console.error('❌ Ingestion pipeline failed:', error);
-      await updateIngestionLog(log.id, {
-        status: 'failed',
-        error_message: error.message,
-      });
+      if (log && log.id) {
+        await updateIngestionLog(log.id, {
+          status: 'failed',
+          error_message: error.message,
+        }).catch(err => console.error('Failed to update ingestion log:', err));
+      }
       throw error;
     }
   }

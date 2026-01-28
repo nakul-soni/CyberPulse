@@ -3,18 +3,19 @@
   "version": "1.0.0",
   "description": "AI-powered cyber threat intelligence web application",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "build:worker": "tsc --project tsconfig.worker.json",
-    "start": "node scripts/migrate.js && tsx scripts/worker.js",
-    "lint": "next lint",
-    "db:migrate": "node scripts/migrate.js",
-    "ingest": "tsx scripts/ingest.js",
-    "worker": "tsx scripts/worker.js",
-    "worker:prod": "node scripts/migrate.js && node scripts/worker.js",
-    "reanalyze": "tsx scripts/reanalyze-all.js"
-  },
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "build:worker": "tsc --project tsconfig.worker.json",
+      "start": "tsx scripts/migrate.ts && tsx scripts/worker.js",
+      "lint": "next lint",
+      "db:migrate": "tsx scripts/migrate.ts",
+      "ingest": "tsx scripts/ingest.ts",
+      "worker": "tsx scripts/worker.ts",
+      "worker:prod": "tsx scripts/migrate.ts && node scripts/worker.js",
+      "reanalyze": "tsx scripts/reanalyze-all.js"
+    },
+
   "dependencies": {
     "clsx": "^2.1.0",
     "crypto-js": "^4.2.0",
