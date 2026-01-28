@@ -438,9 +438,8 @@ export function DashboardClient({ initialIncidents }: { initialIncidents: Incide
           <div className="w-14 h-14 bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-purple)] rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10">
             <Info className="w-7 h-7 text-white" />
           </div>
-          <div className="text-center sm:text-left">
-            <h4 className="font-bold text-lg mb-1 text-[var(--text-primary)]">AI Intelligence System v2.0</h4>
-            <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-2xl">
+            <div className="text-center sm:text-left">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-2xl">
               CyberPulse leverages real-time ingestion from 20+ intelligence streams. Our neural processing unit classifies incidents with 99.2% accuracy, providing critical mitigation strategies within seconds of detection.
             </p>
           </div>
