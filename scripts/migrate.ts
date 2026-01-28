@@ -36,11 +36,11 @@ async function migrate() {
     console.log('📦 Running database migration...');
     
     // Check connection first
-    try {
-      await pool.query('SELECT NOW()');
-      console.log('✅ Connected to database');
-    } catch (connError) {
-      console.error('❌ Database connection failed:', connError.message);
+      try {
+        await pool.query('SELECT NOW()');
+        console.log('✅ Connected to database');
+      } catch (connError: any) {
+        console.error('❌ Database connection failed:', connError.message);
       if (!process.env.DATABASE_URL) {
         console.log('ℹ️ Tip: Check if DATABASE_URL is set in your environment or .env file');
       }
@@ -60,7 +60,7 @@ async function migrate() {
     
     console.log('✅ Database migration completed successfully!');
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Migration failed:', error);
     console.error('Details:', JSON.stringify(error, null, 2));
     process.exit(1);

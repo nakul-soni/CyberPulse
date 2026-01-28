@@ -20,9 +20,9 @@ async function runIngestion() {
     console.log(`   Duplicates: ${stats.itemsDuplicate}`);
     console.log(`   Failed: ${stats.itemsFailed}`);
     
-    process.exit(0);
-  } catch (error) {
-    console.error('❌ Ingestion failed:', error);
+      process.exit(0);
+    } catch (error: any) {
+      console.error('❌ Ingestion failed:', error);
     process.exit(1);
   }
 }

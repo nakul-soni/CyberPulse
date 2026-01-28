@@ -43,7 +43,7 @@ async function runIngestion() {
     console.log(`   New: ${stats.itemsNew}`);
     console.log(`   Duplicates: ${stats.itemsDuplicate}`);
     console.log(`   Failed: ${stats.itemsFailed}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Ingestion failed:', error);
   }
 }
@@ -86,14 +86,14 @@ async function runAnalysisBatch() {
       try {
         await performAnalysis(incident);
         console.log(`   ✅ Analyzed incident: ${incident.id}`);
-      } catch (err: any) {
-        console.error(`   ❌ Analysis failed for ${incident.id}:`, err?.message || String(err));
+        } catch (err: any) {
+          console.error(`   ❌ Analysis failed for ${incident.id}:`, err?.message || String(err));
+        }
       }
+    } catch (error: any) {
+      console.error('❌ Analysis batch failed:', error);
     }
-  } catch (error) {
-    console.error('❌ Analysis batch failed:', error);
   }
-}
 
 console.log('✅ Worker is running. Press Ctrl+C to stop.');
 process.on('SIGINT', () => {
