@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { IncidentCard } from './IncidentCard';
 import { SearchAndFilters } from './SearchAndFilters';
 import { Shield, Zap, Info, Activity, AlertTriangle, TrendingUp, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
 
 interface Incident {
   id: string;
@@ -24,7 +24,7 @@ interface FilterState {
 
 const ITEMS_PER_PAGE = 9;
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -35,7 +35,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
     opacity: 1, 
