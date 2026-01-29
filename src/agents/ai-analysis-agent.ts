@@ -45,13 +45,19 @@ export interface AIAnalysis {
 
 export class AIAnalysisAgent {
   private apiKey: string;
-  private models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'gemma2-9b-it'];
+  private models: string[];
 
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || '';
     if (!this.apiKey) {
       throw new Error('GROQ_API_KEY environment variable is required');
     }
+
+    // Prefer explicit model from env, then fall back to known-safe defaults.
+    // IMPORTANT: Do NOT include decommissioned models here.
+    const preferred = process.env.GROQ_MODEL?.trim();
+    const fallbacks = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+    this.models = [preferred, ...fallbacks].filter(Boolean) as string[];
   }
 
   async analyzeIncident(
@@ -94,6 +100,10 @@ Always respond with valid JSON only.`,
         if (!response.ok) {
           const error = await response.text();
           if (error.includes('rate_limit_exceeded')) continue;
+          if (error.includes('model_decommissioned') || error.includes('decommissioned')) {
+            console.error('Groq model decommissioned:', error);
+            continue;
+          }
           if (error.includes('insufficient_balance') || error.includes('credits_over') || error.includes('limit_exceeded')) {
             console.error('Groq Credit/Limit error:', error);
             throw new Error('GROQ_CREDITS_EXHAUSTED');
