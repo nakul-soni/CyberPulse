@@ -56,7 +56,16 @@ async function runIngestion() {
   }
 }
 
+let rateLimitUntil = 0; // Timestamp when rate limit expires
+
 async function runAnalysisBatch() {
+  // Check if we're still rate-limited
+  if (rateLimitUntil > Date.now()) {
+    const remainingSeconds = Math.ceil((rateLimitUntil - Date.now()) / 1000);
+    console.log(`⏸️ Rate limit active. Resuming in ${remainingSeconds} seconds...`);
+    return;
+  }
+
   try {
     const dbModule = await import('../src/lib/db.js').catch(() => import('../src/lib/db.ts'));
     const query = dbModule.query || dbModule.default?.query || dbModule.default;
@@ -79,7 +88,7 @@ async function runAnalysisBatch() {
            )
          )
          ORDER BY ingested_at DESC, published_at DESC
-         LIMIT 5`
+         LIMIT 3`
       );
 
     const incidents = result.rows || [];
@@ -98,8 +107,34 @@ async function runAnalysisBatch() {
       try {
         await performAnalysis(incident);
         console.log(`   ✅ Analyzed incident: ${incident.id}`);
+        
+        // Small delay between successful analyses to avoid hitting rate limits
+        await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (err) {
-        console.error(`   ❌ Analysis failed for ${incident.id}:`, err?.message || String(err));
+        const errorMsg = err?.message || String(err);
+        console.error(`   ❌ Analysis failed for ${incident.id}:`, errorMsg);
+        
+        // Check if it's a rate limit error and set pause time
+        if (errorMsg.includes('rate limit') || errorMsg.includes('Rate limit') || errorMsg.includes('TPD')) {
+          // Extract wait time from error message if available, otherwise default to 5 minutes
+          const waitMatch = errorMsg.match(/try again in ([\d.]+)s/i) || errorMsg.match(/try again in ([\d]+)m/i);
+          let waitSeconds = 5 * 60; // Default 5 minutes
+          
+          if (waitMatch) {
+            const value = parseFloat(waitMatch[1]);
+            if (errorMsg.includes('m')) {
+              waitSeconds = value * 60; // Convert minutes to seconds
+            } else {
+              waitSeconds = value; // Already in seconds
+            }
+            // Add buffer time
+            waitSeconds = Math.ceil(waitSeconds * 1.2); // Add 20% buffer
+          }
+          
+          rateLimitUntil = Date.now() + (waitSeconds * 1000);
+          console.warn(`   ⚠️ Rate limit detected. Pausing analysis for ${Math.ceil(waitSeconds / 60)} minutes.`);
+          break; // Stop processing this batch
+        }
       }
     }
   } catch (error) {

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS incidents (
     -- AI Analysis fields
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'analyzing', 'analyzed', 'failed')),
     severity VARCHAR(10) CHECK (severity IN ('Low', 'Medium', 'High')),
-    attack_type VARCHAR(50),
+    attack_type VARCHAR(200),
     risk_score INTEGER CHECK (risk_score >= 0 AND risk_score <= 100),
     analysis JSONB,
     

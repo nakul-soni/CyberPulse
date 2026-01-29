@@ -269,20 +269,42 @@ export async function updateIncidentAnalysis(
     risk_score?: number;
   }
 ): Promise<Incident> {
-  const result = await query<Incident>(
-    `UPDATE incidents 
-     SET analysis = $1, severity = $2, attack_type = $3, risk_score = $4, status = 'analyzed'
-     WHERE id = $5
-     RETURNING *`,
-    [
-      JSON.stringify(analysis.analysis),
-      analysis.severity || null,
-      analysis.attack_type || null,
-      analysis.risk_score || null,
-      id,
-    ]
-  );
-  return result.rows[0];
+  // Truncate attack_type to prevent database errors (safety limit: 200 chars)
+  // This handles cases where the database column might still be VARCHAR(50)
+  const attackType = analysis.attack_type 
+    ? analysis.attack_type.substring(0, 200).trim()
+    : null;
+  
+  // Ensure severity is valid
+  const severity = analysis.severity && ['Low', 'Medium', 'High'].includes(analysis.severity)
+    ? analysis.severity
+    : null;
+
+  try {
+    const result = await query<Incident>(
+      `UPDATE incidents 
+       SET analysis = $1, severity = $2, attack_type = $3, risk_score = $4, status = 'analyzed'
+       WHERE id = $5
+       RETURNING *`,
+      [
+        JSON.stringify(analysis.analysis),
+        severity,
+        attackType,
+        analysis.risk_score || null,
+        id,
+      ]
+    );
+    return result.rows[0];
+  } catch (error: any) {
+    // Provide more detailed error information
+    if (error.message.includes('value too long for type character varying')) {
+      console.error(`❌ Database column length error for incident ${id}:`, error.message);
+      console.error(`   attack_type length: ${attackType?.length || 0} chars`);
+      console.error(`   attack_type value: ${attackType?.substring(0, 100)}...`);
+      throw new Error(`Database column length error: ${error.message}. Please run migration script: scripts/fix-column-lengths.sql`);
+    }
+    throw error;
+  }
 }
 
 // Update last_viewed_at for incidents

@@ -20,7 +20,7 @@ export async function performAnalysis(incident: { id: string; title: string; des
     const ai = await aiAgent.analyzeIncident(incident.title, content);
     
     if (!ai) {
-      throw new Error('AI analysis returned null');
+      throw new Error('AI analysis returned null - all models failed or returned invalid responses');
     }
 
     const caseStudy = csAgent.enhanceCaseStudy(
@@ -30,20 +30,34 @@ export async function performAnalysis(incident: { id: string; title: string; des
     );
     const risk = riskAgent.assessRisk(ai);
 
-    const updatedIncident = await updateIncidentAnalysis(incident.id, {
-      analysis: { ...ai, case_study: caseStudy },
-      severity: risk.severity,
-      attack_type: ai.attack_type,
-      risk_score: risk.risk_score,
-    });
+    try {
+      const updatedIncident = await updateIncidentAnalysis(incident.id, {
+        analysis: { ...ai, case_study: caseStudy },
+        severity: risk.severity,
+        attack_type: ai.attack_type,
+        risk_score: risk.risk_score,
+      });
 
-    return updatedIncident;
-  } catch (error) {
+      return updatedIncident;
+    } catch (dbError: any) {
+      // Separate database errors from AI errors
+      console.error(`💾 Database error while saving analysis for ${incident.id}:`, dbError.message);
+      if (dbError.message.includes('value too long for type character varying')) {
+        throw new Error(`Database schema issue: ${dbError.message}. Please run: psql $DATABASE_URL -f scripts/fix-column-lengths.sql`);
+      }
+      throw dbError;
+    }
+  } catch (error: any) {
     // Mark as failed
     await query(
       `UPDATE incidents SET status = 'failed' WHERE id = $1`,
       [incident.id]
-    );
+    ).catch(err => console.error('Failed to update status:', err));
+    
+    // Re-throw with better context
+    if (error.message.includes('AI analysis returned null')) {
+      throw error; // Keep original message
+    }
     throw error;
   }
 }
