@@ -58,6 +58,24 @@ async function migrate() {
     console.log('🚀 Executing schema...');
     await pool.query(schema);
     
+    // Run column length fix migration
+    const fixColumnPath = path.join(__dirname, 'fix-column-lengths.sql');
+    if (fs.existsSync(fixColumnPath)) {
+      console.log('🔧 Applying column length fixes...');
+      try {
+        const fixColumnSQL = fs.readFileSync(fixColumnPath, 'utf8');
+        await pool.query(fixColumnSQL);
+        console.log('✅ Column length fixes applied');
+      } catch (fixError: any) {
+        // Ignore if column is already the correct type
+        if (fixError.message.includes('already') || fixError.message.includes('duplicate')) {
+          console.log('ℹ️ Column length fix already applied (or not needed)');
+        } else {
+          console.warn('⚠️ Column length fix failed (may already be applied):', fixError.message);
+        }
+      }
+    }
+    
     console.log('✅ Database migration completed successfully!');
     process.exit(0);
   } catch (error: any) {

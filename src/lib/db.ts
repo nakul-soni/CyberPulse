@@ -269,10 +269,11 @@ export async function updateIncidentAnalysis(
     risk_score?: number;
   }
 ): Promise<Incident> {
-  // Truncate attack_type to prevent database errors (safety limit: 200 chars)
-  // This handles cases where the database column might still be VARCHAR(50)
+  // Truncate attack_type to prevent database errors
+  // Safety limit: 50 chars (for old schema) or 200 chars (for new schema)
+  // We use 50 as a conservative limit until migration is confirmed
   const attackType = analysis.attack_type 
-    ? analysis.attack_type.substring(0, 200).trim()
+    ? analysis.attack_type.substring(0, 50).trim()
     : null;
   
   // Ensure severity is valid
