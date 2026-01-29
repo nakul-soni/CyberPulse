@@ -57,7 +57,16 @@ export class AIAnalysisAgent {
     // IMPORTANT: Do NOT include decommissioned models here.
     const preferred = process.env.GROQ_MODEL?.trim();
     const fallbacks = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
-    this.models = [preferred, ...fallbacks].filter(Boolean) as string[];
+    
+    // Filter out empty strings and undefined values
+    this.models = [preferred, ...fallbacks]
+      .filter((m): m is string => Boolean(m) && typeof m === 'string' && m.length > 0);
+    
+    if (this.models.length === 0) {
+      throw new Error('No valid models configured. Set GROQ_MODEL environment variable or ensure fallback models are available.');
+    }
+    
+    console.log(`📋 Using models: ${this.models.join(', ')}`);
   }
 
   async analyzeIncident(
@@ -66,8 +75,21 @@ export class AIAnalysisAgent {
   ): Promise<AIAnalysis | null> {
     const prompt = this.buildPrompt(title, description);
     
+    if (this.models.length === 0) {
+      console.error('❌ No models available for analysis. Check GROQ_MODEL environment variable.');
+      return null;
+    }
+
+    const errors: string[] = [];
+    
     for (const model of this.models) {
+      if (!model || typeof model !== 'string') {
+        console.warn(`⚠️ Skipping invalid model: ${model}`);
+        continue;
+      }
+
       try {
+        console.log(`🔄 Attempting analysis with model: ${model}`);
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -98,33 +120,73 @@ Always respond with valid JSON only.`,
         });
 
         if (!response.ok) {
-          const error = await response.text();
-          if (error.includes('rate_limit_exceeded')) continue;
-          if (error.includes('model_decommissioned') || error.includes('decommissioned')) {
-            console.error('Groq model decommissioned:', error);
+          const errorText = await response.text();
+          let errorObj: any = {};
+          try {
+            errorObj = JSON.parse(errorText);
+          } catch {
+            errorObj = { error: { message: errorText } };
+          }
+
+          const errorMsg = errorObj?.error?.message || errorText;
+          
+          if (errorMsg.includes('rate_limit_exceeded') || errorMsg.includes('rate limit')) {
+            errors.push(`${model}: Rate limit exceeded`);
+            console.warn(`⏸️ Rate limit hit for ${model}, trying next model...`);
             continue;
           }
-          if (error.includes('insufficient_balance') || error.includes('credits_over') || error.includes('limit_exceeded')) {
-            console.error('Groq Credit/Limit error:', error);
-            throw new Error('GROQ_CREDITS_EXHAUSTED');
+          
+          if (errorMsg.includes('model_decommissioned') || errorMsg.includes('decommissioned')) {
+            errors.push(`${model}: Model decommissioned`);
+            console.error(`🚫 Model ${model} is decommissioned, trying next model...`);
+            continue;
           }
-          console.error('AI API error:', error);
+          
+          if (errorMsg.includes('insufficient_balance') || errorMsg.includes('credits_over') || errorMsg.includes('limit_exceeded')) {
+            console.error('💳 Groq Credit/Limit error:', errorMsg);
+            throw new Error(`GROQ_CREDITS_EXHAUSTED: ${errorMsg}`);
+          }
+
+          errors.push(`${model}: ${errorMsg}`);
+          console.error(`❌ API error for ${model}:`, errorMsg);
           continue;
         }
 
         const data = await response.json() as { choices: Array<{ message: { content: string } }> };
         const content = data.choices[0]?.message?.content;
         
-        if (!content) continue;
+        if (!content) {
+          errors.push(`${model}: Empty response content`);
+          console.warn(`⚠️ Empty content from ${model}, trying next model...`);
+          continue;
+        }
 
-        const analysis = JSON.parse(content) as AIAnalysis;
-        return this.validateAndNormalize(analysis, title);
+        try {
+          const analysis = JSON.parse(content) as AIAnalysis;
+          const normalized = this.validateAndNormalize(analysis, title);
+          console.log(`✅ Successfully analyzed with ${model}`);
+          return normalized;
+        } catch (parseError: any) {
+          errors.push(`${model}: JSON parse error - ${parseError.message}`);
+          console.error(`❌ JSON parse error for ${model}:`, parseError.message);
+          console.error(`Raw content preview:`, content.substring(0, 200));
+          continue;
+        }
       } catch (error: any) {
-        console.error(`AI Analysis failed with ${model}:`, error.message);
+        const errorMsg = error.message || String(error);
+        errors.push(`${model}: ${errorMsg}`);
+        console.error(`❌ Analysis failed with ${model}:`, errorMsg);
+        
+        // Don't continue if it's a credits exhausted error
+        if (errorMsg.includes('GROQ_CREDITS_EXHAUSTED')) {
+          throw error;
+        }
         continue;
       }
     }
     
+    // All models failed
+    console.error(`❌ All models failed. Errors:`, errors.join('; '));
     return null;
   }
 
